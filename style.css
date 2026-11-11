@@ -36,6 +36,33 @@ body.dark-ui {
   --sub-surface: rgba(30, 41, 59, 0.68);
 }
 
+/* =================================================================== */
+/* 2GB RAM LOW-DEFINITION (LD) ULTRA-SMOOTH COMPOSITOR OPTIMIZATIONS   */
+/* =================================================================== */
+body.low-def-mode {
+  --light-glass-fill: rgba(252, 253, 255, 0.94);
+  --light-card-fill: rgba(255, 255, 255, 0.92);
+  --light-pill-fill: rgba(255, 255, 255, 0.94);
+
+  --dark-glass-fill: rgba(15, 23, 42, 0.95);
+  --dark-card-fill: rgba(30, 41, 59, 0.93);
+  --dark-pill-fill: rgba(30, 41, 59, 0.95);
+
+  --glass-shadow: 0 8px 20px rgba(15, 23, 42, 0.18);
+  --glass-pill-shadow: 0 4px 10px rgba(15, 23, 42, 0.12);
+}
+
+body.low-def-mode .spatial-glass,
+body.low-def-mode .spatial-pill,
+body.low-def-mode .spatial-btn-touch {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+body.low-def-mode .ui-hideable {
+  filter: none !important;
+}
+
 * {
   box-sizing: border-box;
   user-select: none;
@@ -63,6 +90,253 @@ html, body {
   height: 100%;
   display: block;
   z-index: 1;
+}
+
+/* =================================================================== */
+/* FLUID SCREEN-SIZE OPTIMIZED NON-OVERLAPPING HUD SCALING             */
+/* Small Screen = Compact UI | Large Screen = Larger Proportioned UI   */
+/* =================================================================== */
+.hud-safe-container {
+  padding-top: max(0.35rem, env(safe-area-inset-top));
+  padding-bottom: max(0.4rem, env(safe-area-inset-bottom));
+  padding-left: max(0.4rem, env(safe-area-inset-left));
+  padding-right: max(0.4rem, env(safe-area-inset-right));
+}
+
+@media (min-width: 640px) {
+  .hud-safe-container {
+    padding-top: max(0.75rem, env(safe-area-inset-top));
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+}
+
+@media (min-width: 1024px) {
+  .hud-safe-container {
+    padding-top: max(1.1rem, env(safe-area-inset-top));
+    padding-bottom: max(1.1rem, env(safe-area-inset-bottom));
+    padding-left: max(1.5rem, env(safe-area-inset-left));
+    padding-right: max(1.5rem, env(safe-area-inset-right));
+  }
+}
+
+.hud-stack-gap {
+  gap: clamp(0.22rem, 0.65vh, 0.65rem);
+}
+
+.hud-row-gap {
+  gap: clamp(0.25rem, 0.8vw, 0.75rem);
+}
+
+.hud-ctrl-gap {
+  gap: clamp(0.2rem, 0.55vw, 0.5rem);
+}
+
+/* Brand Pill Scaling */
+.hud-brand-pill {
+  padding: clamp(0.18rem, 0.45vw, 0.42rem) clamp(0.42rem, 0.85vw, 0.8rem) clamp(0.18rem, 0.45vw, 0.42rem) clamp(0.28rem, 0.65vw, 0.6rem);
+  gap: clamp(0.32rem, 0.65vw, 0.65rem);
+}
+
+.hud-crest-icon {
+  width: clamp(1.45rem, 2.6vw, 2.35rem);
+  height: clamp(1.45rem, 2.6vw, 2.35rem);
+}
+
+.hud-brand-title {
+  font-size: clamp(0.68rem, 1.1vw, 0.95rem);
+}
+
+.hud-brand-sub {
+  font-size: clamp(0.44rem, 0.65vw, 0.6rem);
+}
+
+.hud-mini-icon {
+  font-size: clamp(0.55rem, 0.8vw, 0.72rem);
+}
+
+.hud-hide-icon {
+  font-size: clamp(0.52rem, 0.75vw, 0.68rem);
+}
+
+/* Top Controls Bar Buttons */
+.hud-geo-capsule {
+  padding: clamp(0.12rem, 0.3vw, 0.25rem);
+  gap: clamp(0.14rem, 0.35vw, 0.35rem);
+}
+
+.hud-geo-btn {
+  padding: clamp(0.16rem, 0.38vw, 0.35rem) clamp(0.36rem, 0.75vw, 0.7rem);
+  font-size: clamp(0.62rem, 0.95vw, 0.8rem);
+  gap: clamp(0.2rem, 0.4vw, 0.38rem);
+}
+
+.hud-ctrl-pill {
+  padding: clamp(0.22rem, 0.48vw, 0.45rem) clamp(0.45rem, 0.9vw, 0.85rem);
+  font-size: clamp(0.62rem, 0.95vw, 0.8rem);
+  gap: clamp(0.24rem, 0.45vw, 0.42rem);
+}
+
+.hud-icon-btn {
+  width: clamp(1.55rem, 2.5vw, 2.2rem);
+  height: clamp(1.55rem, 2.5vw, 2.2rem);
+  font-size: clamp(0.62rem, 0.95vw, 0.8rem);
+}
+
+/* Collapsible Unhide Row — Takes 0px when no panels are hidden so it NEVER pushes telemetry down */
+#hud-unhide-row {
+  transition: max-height 0.32s cubic-bezier(0.16, 1, 0.3, 1), margin 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hud-unhide-row-collapsed {
+  max-height: 0 !important;
+  margin-top: -0.2rem !important;
+  margin-bottom: -0.2rem !important;
+  overflow: hidden !important;
+}
+
+.hud-unhide-row-active {
+  max-height: 2.6rem !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* Telemetry Capsules (Score, Time, Blasts, Orbs, Shield, Speedometer) */
+.hud-telemetry-card {
+  border-radius: clamp(0.85rem, 1.8vw, 1.5rem);
+  padding: clamp(0.24rem, 0.55vw, 0.55rem) clamp(0.48rem, 1vw, 1rem);
+  gap: clamp(0.32rem, 0.85vw, 0.9rem);
+}
+
+.hud-stat-block {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.hud-stat-label {
+  font-size: clamp(0.44rem, 0.65vw, 0.62rem);
+  line-height: 1.05;
+}
+
+.hud-stat-val {
+  font-size: clamp(0.66rem, 1.15vw, 1.02rem);
+}
+
+.hud-stat-val-lg {
+  font-size: clamp(0.76rem, 1.35vw, 1.25rem);
+}
+
+.hud-stat-divider {
+  width: 1px;
+  height: clamp(1.05rem, 2vw, 1.65rem);
+  flex-shrink: 0;
+}
+
+.hud-badge-pill {
+  font-size: clamp(0.45rem, 0.65vw, 0.62rem);
+  padding: clamp(0.08rem, 0.2vw, 0.16rem) clamp(0.24rem, 0.45vw, 0.4rem);
+}
+
+.hud-speed-meter {
+  width: clamp(0.36rem, 0.6vw, 0.62rem);
+  height: clamp(1.3rem, 2.3vw, 2.25rem);
+}
+
+.hud-toast-pill {
+  padding: clamp(0.2rem, 0.4vw, 0.35rem) clamp(0.6rem, 1.1vw, 0.95rem);
+  font-size: clamp(0.56rem, 0.85vw, 0.75rem);
+}
+
+/* PC Bottom Keyboard Hint Bar */
+.hud-pc-bar {
+  padding: clamp(0.26rem, 0.5vw, 0.45rem) clamp(0.65rem, 1.2vw, 1.1rem);
+  gap: clamp(0.35rem, 0.75vw, 0.75rem);
+  font-size: clamp(0.6rem, 0.85vw, 0.72rem);
+}
+
+/* Touch Controls Fluid Sizing (Small on compact phones, larger on tablets/phablets) */
+.hud-touch-cluster {
+  gap: clamp(0.3rem, 0.8vw, 0.65rem);
+}
+
+.hud-touch-steer {
+  width: clamp(2.85rem, 11.5vw, 4.8rem);
+  height: clamp(2.85rem, 11.5vw, 4.8rem);
+  border-radius: clamp(0.95rem, 3vw, 1.5rem);
+}
+
+.hud-touch-aux {
+  width: clamp(2.45rem, 9.5vw, 3.9rem);
+  height: clamp(2.45rem, 9.5vw, 3.9rem);
+  border-radius: clamp(0.8rem, 2.5vw, 1.2rem);
+}
+
+.hud-touch-fire {
+  width: clamp(3rem, 12vw, 4.9rem);
+  height: clamp(3rem, 12vw, 4.9rem);
+}
+
+.hud-touch-pedal-stack {
+  gap: clamp(0.25rem, 0.65vh, 0.5rem);
+}
+
+.hud-touch-pedal {
+  width: clamp(2.85rem, 11.5vw, 4.8rem);
+  height: clamp(2.35rem, 8.8vw, 3.85rem);
+  border-radius: clamp(0.75rem, 2.2vw, 1.15rem);
+}
+
+.hud-touch-icon {
+  font-size: clamp(0.92rem, 2.8vw, 1.45rem);
+}
+
+.hud-touch-icon-sm {
+  font-size: clamp(0.78rem, 2.2vw, 1.15rem);
+}
+
+.hud-touch-label {
+  font-size: clamp(0.46rem, 1.3vw, 0.62rem);
+}
+
+/* Modal Safe Viewport Positioning (Strictly avoids overlapping Top Header Bar) */
+.modal-safe-Overlay {
+  padding-top: clamp(3.3rem, 9vh, 5.25rem);
+  padding-bottom: max(0.6rem, env(safe-area-inset-bottom));
+  padding-left: max(0.6rem, env(safe-area-inset-left));
+  padding-right: max(0.6rem, env(safe-area-inset-right));
+}
+
+.modal-card-radius {
+  border-radius: clamp(1.35rem, 3.5vw, 2.25rem);
+}
+
+.modal-body-scroll {
+  max-height: calc(100dvh - clamp(4.1rem, 11vh, 6.2rem));
+  overflow-y: auto;
+}
+
+/* Landscape Mobile Compactness so Top & Bottom HUD never crowd the 3D road */
+@media (max-height: 520px) {
+  .hud-telemetry-card {
+    padding: 0.18rem 0.45rem;
+  }
+  .hud-touch-steer,
+  .hud-touch-fire {
+    width: 2.6rem;
+    height: 2.6rem;
+  }
+  .hud-touch-pedal {
+    width: 2.6rem;
+    height: 2.05rem;
+  }
+  .modal-safe-Overlay {
+    padding-top: 2.75rem;
+  }
+  .modal-body-scroll {
+    max-height: calc(100dvh - 3.2rem);
+  }
 }
 
 /* Translucent Frosted Liquid Glass Surfaces with 100% GPU-Composited Upper-Left Drop Wave */
@@ -250,15 +524,15 @@ body.dark-ui .title-gradient {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 24px;
-  height: 24px;
-  padding: 0 7px;
-  border-radius: 8px;
+  min-width: clamp(18px, 2vw, 24px);
+  height: clamp(18px, 2vw, 24px);
+  padding: 0 clamp(4px, 0.6vw, 7px);
+  border-radius: 7px;
   background: var(--sub-surface);
   border: 1px solid var(--glass-border);
   box-shadow: 0 2px 0 rgba(148, 163, 184, 0.32);
   font-weight: 800;
-  font-size: 0.72rem;
+  font-size: clamp(0.58rem, 0.8vw, 0.72rem);
   color: var(--text-primary);
 }
 
@@ -268,13 +542,6 @@ body.dark-ui .title-gradient {
 .modal-scroll::-webkit-scrollbar-thumb {
   background: rgba(148, 163, 184, 0.4);
   border-radius: 999px;
-}
-
-.hud-safe-container {
-  padding-top: max(0.5rem, env(safe-area-inset-top));
-  padding-bottom: max(0.6rem, env(safe-area-inset-bottom));
-  padding-left: max(0.6rem, env(safe-area-inset-left));
-  padding-right: max(0.6rem, env(safe-area-inset-right));
 }
 
 .active-selection-ring {
@@ -327,8 +594,8 @@ body.dark-ui .title-gradient {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: clamp(16px, 2vw, 22px);
+  height: clamp(16px, 2vw, 22px);
   border-radius: 9999px;
   background: var(--sub-surface);
   border: 1px solid var(--glass-border);
@@ -393,4 +660,3 @@ body.dark-ui .title-gradient {
   animation: modalFadeScaleIn 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   will-change: transform, opacity;
 }
-
