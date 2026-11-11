@@ -68,6 +68,69 @@ class PastelAudioSynth {
     osc.stop(now + 0.17);
   }
 
+  playCreditChime() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime;
+    const notes = [880, 1174.66, 1567.98];
+    notes.forEach((freq, idx) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, now + idx * 0.045);
+      gain.gain.setValueAtTime(0.14, now + idx * 0.045);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.045 + 0.22);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now + idx * 0.045);
+      osc.stop(now + idx * 0.045 + 0.22);
+    });
+  }
+
+  playShieldPowerup() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime;
+    const chord = [523.25, 659.25, 783.99, 1046.5];
+    chord.forEach((freq, idx) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, now + idx * 0.04);
+      gain.gain.setValueAtTime(0.14, now + idx * 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.04 + 0.32);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now + idx * 0.04);
+      osc.stop(now + idx * 0.04 + 0.32);
+    });
+  }
+
+  playShieldDeflect() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(640, now);
+    osc.frequency.exponentialRampToValueAtTime(140, now + 0.28);
+
+    gain.gain.setValueAtTime(0.24, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.29);
+
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.29);
+  }
+
   playVoxelExplosion(isBig = false) {
     if (this.muted) return;
     this.init();
@@ -402,7 +465,6 @@ const SKY_CRAFT_TYPES = {
   }
 };
 
-// High-Visibility Aesthetic Pastel Palette (Rich pigment so every shade is distinct & crisp in 3D)
 const PASTEL_PALETTE = [
   { key: 'sakura',      name: 'Sakura Rose',       hex: 0xff7597, css: '#ff7597', family: 'pink' },
   { key: 'babyblue',    name: 'Baby Sky Blue',     hex: 0x60a5fa, css: '#60a5fa', family: 'blue' },
@@ -442,25 +504,21 @@ class TrafficRGame {
   constructor() {
     this.audio = new PastelAudioSynth();
 
-    // Game Flow State: 'DEVICE_SELECT' | 'MODE_SELECT' | 'GARAGE' | 'PLAYING' | 'GAMEOVER'
     this.state = 'DEVICE_SELECT';
     this.deviceType = 'keyboard';
-    this.uiTheme = 'light'; // 'light' | 'dark'
-    this.gameMode = 'car';  // 'car' ("The Endless Highway") | 'balloon' ("Beyond the Fearless Sky")
+    this.uiTheme = 'light';
+    this.graphicsQuality = 'hd';
+    this.gameMode = 'car';
     this.currentGeotype = 'meadow';
     this.skyTimeMode = 'day';
     this.randomizeOnRespawn = true;
 
-    // Player Customization State
     this.playerBodyType = 'coupe';
-    this.skyCraftType = 'balloon'; // 'balloon' | 'blimp' | 'aircraft' | 'paperplane'
-    // Multi-color array of selected pastel keys (always >= 1)
+    this.skyCraftType = 'balloon';
     this.selectedPastelKeys = ['sakura', 'babyblue', 'lavender'];
 
-    // Camera View Index (Car mode defaults to Chase (0); Sky mode defaults to Top-Down (2) or Hood (1))
     this.cameraViewIndex = 0;
 
-    // Player Movement & Physics Constants
     this.WORLD_WRAP_LIMIT = 23.0;
     this.playerX = 0;
     this.playerVX = 0;
@@ -469,25 +527,26 @@ class TrafficRGame {
     this.maxSpeed = 96;
     this.currentSpeed = 46;
 
-    // Score, Survival Stopwatch & Persistent Records
     this.score = 0;
     this.survivalTime = 0;
     this.blasts = 0;
+    this.credits = 0;
+    this.totalCredits = 0;
+    this.shields = 0;
+    this.maxShields = 3;
     this.highScore = 0;
     this.bestTime = 0;
     this.lastSavedScore = 0;
     this.lastSavedTime = 0;
     this.savedSession = null;
-    this.loadSavedRecords();
 
     this.lastShotTime = 0;
     this.shotCooldown = 0.22;
 
-    // Input States
     this.keys = { left: false, right: false, up: false, down: false, space: false };
 
-    // 3D Scene Collections
     this.obstacles = [];
+    this.collectibles = [];
     this.terrainProps = [];
     this.valleyMountains = [];
     this.roadStripes = [];
@@ -500,8 +559,14 @@ class TrafficRGame {
     this.weatherParticles = null;
     this.starField = null;
     this.celestialBody = null;
+    this.playerShieldMesh = null;
 
-    // Interactive 3D Studio Preview State
+    this.sharedVoxelGeo = new THREE.BoxGeometry(0.48, 0.48, 0.48);
+    this.sharedOrbGeo = new THREE.OctahedronGeometry(0.85, 0);
+    this.sharedOrbRingGeo = new THREE.TorusGeometry(1.15, 0.08, 8, 20);
+    this.sharedShieldCoreGeo = new THREE.IcosahedronGeometry(0.78, 0);
+    this.sharedShieldShellGeo = new THREE.OctahedronGeometry(1.18, 1);
+
     this.previewYaw = 0.65;
     this.previewPitch = 0.25;
     this.previewAutoSpin = true;
@@ -509,37 +574,26 @@ class TrafficRGame {
     this.dragStartX = 0;
     this.dragStartY = 0;
 
-    // Countdown & Frame Smoothing State
     this.countdownRemaining = 0;
     this.countdownLastInt = 0;
     this.countdownRimAngle = 0;
     this.smoothedDt = 1 / 60;
 
-    // Individual UI Visibility State (Tracked independently for Laptop/Keyboard vs Mobile/Touch)
-    // Note: Mobile touch controls are never hideable.
     this.hiddenUIs = {
-      keyboard: {
-        brand: false,
-        controls: false,
-        telemetryLeft: false,
-        telemetryRight: false,
-        pcHint: false
-      },
-      touch: {
-        brand: false,
-        controls: false,
-        telemetryLeft: false,
-        telemetryRight: false
-      }
+      keyboard: { brand: false, controls: false, telemetryLeft: false, telemetryRight: false, pcHint: false },
+      touch: { brand: false, controls: false, telemetryLeft: false, telemetryRight: false }
     };
 
     this.clock = new THREE.Clock();
+
+    this.loadSavedRecords();
 
     this.initThreeScene();
     this.initPreviewScene();
     this.buildWorldGeometry();
     this.buildPlayerModels();
     this.renderPastelColorGrid();
+    this.applyGraphicsQualitySettings(false);
     this.applyGeotype('meadow', false);
     this.updateRecordDisplays();
     this.updateStudioUI();
@@ -553,11 +607,22 @@ class TrafficRGame {
       const savedTime = localStorage.getItem('velozaar_best_time');
       const lastScore = localStorage.getItem('velozaar_last_saved_score');
       const lastTime = localStorage.getItem('velozaar_last_saved_time');
+      const savedCredits = localStorage.getItem('velozaar_total_credits');
+      const savedGfx = localStorage.getItem('velozaar_gfx_quality');
       const savedRunJson = localStorage.getItem('velozaar_saved_session');
+
       if (savedScore) this.highScore = parseInt(savedScore, 10) || 0;
       if (savedTime) this.bestTime = parseFloat(savedTime) || 0;
       if (lastScore) this.lastSavedScore = parseInt(lastScore, 10) || 0;
       if (lastTime) this.lastSavedTime = parseFloat(lastTime) || 0;
+      if (savedCredits) this.totalCredits = parseInt(savedCredits, 10) || 0;
+
+      if (savedGfx === 'ld' || savedGfx === 'hd') {
+        this.graphicsQuality = savedGfx;
+      } else if (navigator.deviceMemory && navigator.deviceMemory <= 2) {
+        this.graphicsQuality = 'ld';
+      }
+
       if (savedRunJson) {
         this.savedSession = JSON.parse(savedRunJson);
       }
@@ -570,13 +635,11 @@ class TrafficRGame {
       localStorage.setItem('velozaar_best_time', String(this.bestTime.toFixed(1)));
       localStorage.setItem('velozaar_last_saved_score', String(this.lastSavedScore));
       localStorage.setItem('velozaar_last_saved_time', String(this.lastSavedTime.toFixed(1)));
+      localStorage.setItem('velozaar_total_credits', String(this.totalCredits));
+      localStorage.setItem('velozaar_gfx_quality', this.graphicsQuality);
     } catch (e) {}
   }
 
-  /**
-   * Saves the current score, survival time, and blast count up to this exact moment
-   * when the user pauses and leaves the active gameplay.
-   */
   saveCurrentGameplayProgress(keepResumableSession = true) {
     const currentScoreInt = Math.floor(this.score);
     const currentSurvTime = Number(this.survivalTime.toFixed(1));
@@ -599,6 +662,8 @@ class TrafficRGame {
         score: this.score,
         survivalTime: this.survivalTime,
         blasts: this.blasts,
+        credits: this.credits,
+        shields: this.shields,
         gameMode: this.gameMode,
         currentGeotype: this.currentGeotype,
         skyTimeMode: this.skyTimeMode,
@@ -661,6 +726,8 @@ class TrafficRGame {
     this.score = Number(s.score) || 0;
     this.survivalTime = Number(s.survivalTime) || 0;
     this.blasts = Number(s.blasts) || 0;
+    this.credits = Number(s.credits) || 0;
+    this.shields = Number(s.shields) || 0;
     this.currentSpeed = Number(s.currentSpeed) || this.baseSpeed;
     this.playerX = Number(s.playerX) || 0;
     this.playerVX = 0;
@@ -669,19 +736,22 @@ class TrafficRGame {
     this.rebuildAllPlayerMeshes();
     this.updateStudioUI();
     this.resetObstacles();
+    this.resetCollectibles();
+    this.updateShieldVisuals();
 
-    // Update HUD labels with restored scores immediately
     document.getElementById('hud-score').textContent = Math.floor(this.score);
     document.getElementById('hud-time').textContent = this.formatTime(this.survivalTime);
     document.getElementById('hud-blasts').textContent = `${this.blasts} 💥`;
+    const credEl = document.getElementById('hud-credits');
+    if (credEl) credEl.textContent = `${this.credits} 💎`;
 
     const modeIcon = document.getElementById('hud-mode-icon');
     const speedUnit = document.getElementById('hud-speed-unit');
     if (isCar) {
-      modeIcon.className = 'fa-solid fa-car-side text-[10px] text-pink-400';
+      modeIcon.className = 'fa-solid fa-car-side hud-mini-icon text-pink-400';
       speedUnit.textContent = 'SPEED (KM/H)';
     } else {
-      modeIcon.className = 'fa-solid fa-cloud-sun text-[10px] text-sky-400';
+      modeIcon.className = 'fa-solid fa-cloud-sun hud-mini-icon text-sky-400';
       speedUnit.textContent = 'AIRSPEED (KTS)';
     }
 
@@ -695,7 +765,6 @@ class TrafficRGame {
     document.getElementById('hud-pause-btn').classList.remove('hidden');
     document.getElementById('hud-pause-btn').classList.add('flex');
 
-    // Enter PAUSED state and immediately launch the smooth 3-second countdown
     this.state = 'PAUSED';
     this.resumeGameWithCountdown();
   }
@@ -713,19 +782,25 @@ class TrafficRGame {
     const btEl = document.getElementById('hud-best-time');
     const mScoreEl = document.getElementById('menu-best-score');
     const mTimeEl = document.getElementById('menu-best-time');
+    const mCredEl = document.getElementById('menu-total-credits');
+    const sCredEl = document.getElementById('studio-total-credits');
+    const fTotalCredEl = document.getElementById('final-total-credits');
 
     if (hsEl) hsEl.textContent = this.highScore;
     if (btEl) btEl.textContent = bestTimeStr;
     if (mScoreEl) mScoreEl.textContent = this.highScore;
     if (mTimeEl) mTimeEl.textContent = bestTimeStr;
+    if (mCredEl) mCredEl.textContent = this.totalCredits;
+    if (sCredEl) sCredEl.textContent = this.totalCredits;
+    if (fTotalCredEl) fTotalCredEl.textContent = `${this.totalCredits} 💎`;
 
-    // Update Saved Gameplay Session banners in Mode Select & Studio
     const modeBanner = document.getElementById('saved-session-banner-mode');
     const garageBanner = document.getElementById('saved-session-banner-garage');
     if (this.savedSession && (this.savedSession.score >= 1 || this.savedSession.survivalTime >= 0.5)) {
       const sScore = Math.floor(this.savedSession.score);
       const sTime = this.formatTime(this.savedSession.survivalTime);
       const sBlasts = `${this.savedSession.blasts || 0} 💥`;
+      const sCredits = `${this.savedSession.credits || 0} 💎`;
       const isCar = this.savedSession.gameMode === 'car';
 
       if (modeBanner) {
@@ -740,9 +815,11 @@ class TrafficRGame {
         const scEl = document.getElementById('saved-session-score');
         const tmEl = document.getElementById('saved-session-time');
         const blEl = document.getElementById('saved-session-blasts');
+        const crEl = document.getElementById('saved-session-credits');
         if (scEl) scEl.textContent = sScore;
         if (tmEl) tmEl.textContent = sTime;
         if (blEl) blEl.textContent = sBlasts;
+        if (crEl) crEl.textContent = sCredits;
       }
 
       if (garageBanner) {
@@ -750,9 +827,11 @@ class TrafficRGame {
         const gScEl = document.getElementById('garage-saved-score');
         const gTmEl = document.getElementById('garage-saved-time');
         const gBlEl = document.getElementById('garage-saved-blasts');
+        const gCrEl = document.getElementById('garage-saved-credits');
         if (gScEl) gScEl.textContent = sScore;
         if (gTmEl) gTmEl.textContent = sTime;
         if (gBlEl) gBlEl.textContent = sBlasts;
+        if (gCrEl) gCrEl.textContent = sCredits;
       }
     } else {
       if (modeBanner) modeBanner.classList.add('hidden');
@@ -760,32 +839,86 @@ class TrafficRGame {
     }
   }
 
-  /**
-   * ===================================================================
-   * INITIALIZE THREE.JS MAIN SCENE, 3D STUDIO PREVIEW & WORLD GEOMETRY
-   * ===================================================================
-   */
+  setGraphicsQuality(mode) {
+    if (mode !== 'hd' && mode !== 'ld') return;
+    this.audio.playUITap(640);
+    this.graphicsQuality = mode;
+    this.saveRecords();
+    this.applyGraphicsQualitySettings(true);
+  }
+
+  toggleGraphicsQuality() {
+    this.setGraphicsQuality(this.graphicsQuality === 'hd' ? 'ld' : 'hd');
+  }
+
+  applyGraphicsQualitySettings(notify = false) {
+    const isLD = this.graphicsQuality === 'ld';
+    document.body.classList.toggle('low-def-mode', isLD);
+
+    if (this.renderer) {
+      const targetPixelRatio = isLD ? 1 : Math.min(window.devicePixelRatio || 1, 2);
+      this.renderer.setPixelRatio(targetPixelRatio);
+      this.renderer.shadowMap.enabled = !isLD;
+      if (this.dirLight) {
+        this.dirLight.castShadow = !isLD;
+      }
+      this.renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    if (this.previewRenderer) {
+      this.previewRenderer.setPixelRatio(isLD ? 1 : Math.min(window.devicePixelRatio || 1, 2));
+      this.resizePreviewRenderer();
+    }
+
+    if (this.weatherParticles) {
+      this.weatherParticles.visible = !isLD;
+    }
+
+    const initHd = document.getElementById('init-gfx-hd');
+    const initLd = document.getElementById('init-gfx-ld');
+    if (initHd) initHd.classList.toggle('active-selection-ring', !isLD);
+    if (initLd) initLd.classList.toggle('active-selection-ring', isLD);
+
+    const pauseHd = document.getElementById('pause-gfx-hd');
+    const pauseLd = document.getElementById('pause-gfx-ld');
+    if (pauseHd) pauseHd.classList.toggle('active-selection-ring', !isLD);
+    if (pauseLd) pauseLd.classList.toggle('active-selection-ring', isLD);
+
+    const hudGfxIcon = document.getElementById('hud-gfx-icon');
+    const hudGfxLabel = document.getElementById('hud-gfx-label');
+    if (hudGfxIcon) {
+      hudGfxIcon.className = isLD ? 'fa-solid fa-bolt text-amber-400' : 'fa-solid fa-microchip text-emerald-400';
+    }
+    if (hudGfxLabel) {
+      hudGfxLabel.textContent = isLD ? 'LD 2GB' : 'HD';
+    }
+
+    if (this.mountainGroup && this.terrainProps.length > 0) {
+      this.randomizeTerrainProps();
+    }
+
+    if (notify) {
+      this.showToast(isLD ? 'LOW DEF (2GB RAM ULTRA-SMOOTH MODE) ACTIVATED ⚡' : 'HIGH DEF MODE ACTIVATED ✨');
+    }
+  }
+
   initThreeScene() {
     this.canvas = document.getElementById('game-canvas');
     this.scene = new THREE.Scene();
     this.scene.fog = new THREE.FogExp2(0xffeef2, 0.0034);
 
-    this.camera = new THREE.PerspectiveCamera(
-      54,
-      window.innerWidth / window.innerHeight,
-      0.5,
-      650
-    );
+    this.camera = new THREE.PerspectiveCamera(54, window.innerWidth / window.innerHeight, 0.5, 650);
 
+    const isLD = this.graphicsQuality === 'ld';
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
-      antialias: true,
+      antialias: !isLD,
       alpha: true,
       powerPreference: 'high-performance'
     });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    this.renderer.shadowMap.enabled = true;
+    this.renderer.setPixelRatio(isLD ? 1 : Math.min(window.devicePixelRatio || 1, 2));
+    this.renderer.shadowMap.enabled = !isLD;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.setClearColor(0x000000, 0);
 
@@ -795,9 +928,9 @@ class TrafficRGame {
 
     this.dirLight = new THREE.DirectionalLight(0xfff8f0, 0.85);
     this.dirLight.position.set(45, 95, 55);
-    this.dirLight.castShadow = true;
-    this.dirLight.shadow.mapSize.width = 2048;
-    this.dirLight.shadow.mapSize.height = 2048;
+    this.dirLight.castShadow = !isLD;
+    this.dirLight.shadow.mapSize.width = 1024;
+    this.dirLight.shadow.mapSize.height = 1024;
     this.dirLight.shadow.camera.near = 10;
     this.dirLight.shadow.camera.far = 260;
     const d = 65;
@@ -816,12 +949,13 @@ class TrafficRGame {
     this.previewScene = new THREE.Scene();
     this.previewCamera = new THREE.PerspectiveCamera(42, 1.5, 0.1, 100);
 
+    const isLD = this.graphicsQuality === 'ld';
     this.previewRenderer = new THREE.WebGLRenderer({
       canvas: previewCanvas,
-      antialias: true,
+      antialias: !isLD,
       alpha: true
     });
-    this.previewRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.previewRenderer.setPixelRatio(isLD ? 1 : Math.min(window.devicePixelRatio || 1, 2));
     this.previewRenderer.setClearColor(0x000000, 0);
 
     const amb = new THREE.HemisphereLight(0xffffff, 0x94a3b8, 0.95);
@@ -838,7 +972,6 @@ class TrafficRGame {
     this.previewStageGroup = new THREE.Group();
     this.previewScene.add(this.previewStageGroup);
 
-    // Showroom Turntable Pedestal Disc
     const discGeo = new THREE.CylinderGeometry(2.75, 2.95, 0.18, 36);
     const discMat = new THREE.MeshLambertMaterial({ color: 0x1e293b });
     const disc = new THREE.Mesh(discGeo, discMat);
@@ -889,7 +1022,6 @@ class TrafficRGame {
   }
 
   buildWorldGeometry() {
-    // 1. High-Contrast Ground Plane
     const groundGeo = new THREE.PlaneGeometry(1200, 1200);
     this.groundMat = new THREE.MeshLambertMaterial({ color: 0x2d5a4c });
     this.groundMesh = new THREE.Mesh(groundGeo, this.groundMat);
@@ -897,7 +1029,6 @@ class TrafficRGame {
     this.groundMesh.receiveShadow = true;
     this.scene.add(this.groundMesh);
 
-    // 2. HIGHWAY GROUP (Visible in Car Mode)
     this.highwayGroup = new THREE.Group();
     this.scene.add(this.highwayGroup);
 
@@ -949,7 +1080,6 @@ class TrafficRGame {
       });
     }
 
-    // 3. STRAIGHT NATURAL VALLEY RIVER GROUP (Visible in Sky Mode)
     this.riverValleyGroup = new THREE.Group();
     this.riverValleyGroup.visible = false;
     this.scene.add(this.riverValleyGroup);
@@ -981,7 +1111,6 @@ class TrafficRGame {
       const seg = new THREE.Group();
       seg.position.set(0, 0, z);
 
-      // Asymmetric organic flowing water ripples
       for (let r = 0; r < 3; r++) {
         const ripple = new THREE.Mesh(new THREE.PlaneGeometry(0.35 + (r % 2) * 0.25, 4.5 + r * 1.4), foamMat);
         ripple.rotation.x = -Math.PI / 2;
@@ -989,7 +1118,6 @@ class TrafficRGame {
         seg.add(ripple);
       }
 
-      // Natural riverside boulders
       [-1, 1].forEach(side => {
         const boulder = new THREE.Mesh(new THREE.DodecahedronGeometry(1.1 + Math.random() * 0.9, 0), rockMat);
         boulder.position.set(side * (12.5 + Math.random() * 4.5), 0.45, (Math.random() - 0.5) * 6);
@@ -1001,12 +1129,10 @@ class TrafficRGame {
       this.riverSegments.push(seg);
     }
 
-    // 4. Distant Mountain Range
     this.mountainGroup = new THREE.Group();
     this.scene.add(this.mountainGroup);
     this.generateDistantMountains();
 
-    // 5. Translucent White Sky Clouds
     this.cloudGroup = new THREE.Group();
     this.scene.add(this.cloudGroup);
     this.cloudMat = new THREE.MeshLambertMaterial({
@@ -1015,7 +1141,7 @@ class TrafficRGame {
       opacity: 0.42,
       depthWrite: false
     });
-    for (let i = 0; i < 26; i++) {
+    for (let i = 0; i < 20; i++) {
       const cloud = this.createPastelCloud();
       cloud.position.set(
         (Math.random() - 0.5) * 280,
@@ -1026,13 +1152,12 @@ class TrafficRGame {
       this.clouds.push(cloud);
     }
 
-    // 6. Celestial Sun / Moon Orb
     this.celestialGroup = new THREE.Group();
-    const sunCoreGeo = new THREE.SphereGeometry(18, 24, 24);
+    const sunCoreGeo = new THREE.SphereGeometry(18, 20, 20);
     this.celestialMat = new THREE.MeshBasicMaterial({ color: 0xfff3b0, fog: false });
     this.celestialBody = new THREE.Mesh(sunCoreGeo, this.celestialMat);
 
-    const haloGeo = new THREE.SphereGeometry(24, 24, 24);
+    const haloGeo = new THREE.SphereGeometry(24, 20, 20);
     this.celestialHaloMat = new THREE.MeshBasicMaterial({
       color: 0xffd166,
       transparent: true,
@@ -1044,8 +1169,7 @@ class TrafficRGame {
     this.celestialGroup.position.set(55, 78, -340);
     this.scene.add(this.celestialGroup);
 
-    // 7. Night Starfield
-    const starCount = 420;
+    const starCount = 320;
     const starGeo = new THREE.BufferGeometry();
     const starPos = new Float32Array(starCount * 3);
     for (let i = 0; i < starCount; i++) {
@@ -1065,8 +1189,7 @@ class TrafficRGame {
     this.starField.visible = false;
     this.scene.add(this.starField);
 
-    // 8. Ambient Weather Particles
-    const weatherCount = 260;
+    const weatherCount = 200;
     const weatherGeo = new THREE.BufferGeometry();
     const positions = new Float32Array(weatherCount * 3);
     for (let i = 0; i < weatherCount; i++) {
@@ -1087,7 +1210,7 @@ class TrafficRGame {
 
   createPastelCloud() {
     const group = new THREE.Group();
-    const puffs = 3 + Math.floor(Math.random() * 3);
+    const puffs = 3 + Math.floor(Math.random() * 2);
     for (let i = 0; i < puffs; i++) {
       const size = 2.4 + Math.random() * 2.2;
       const puff = new THREE.Mesh(new THREE.BoxGeometry(size * 1.4, size * 0.8, size), this.cloudMat);
@@ -1104,8 +1227,9 @@ class TrafficRGame {
     const geoConfig = GEOTYPES[this.currentGeotype];
     const mColors = this.skyTimeMode === 'night' ? geoConfig.night.mountainColors : geoConfig.mountainColors;
     const minBankDist = this.gameMode === 'balloon' ? 38 : 55;
+    const count = this.graphicsQuality === 'ld' ? 22 : 42;
 
-    for (let i = 0; i < 44; i++) {
+    for (let i = 0; i < count; i++) {
       const radius = 18 + Math.random() * 34;
       const height = 28 + Math.random() * 68;
       const segments = this.currentGeotype === 'canyon' ? 4 : 5;
@@ -1123,11 +1247,6 @@ class TrafficRGame {
     }
   }
 
-  /**
-   * ===================================================================
-   * BUILD CUSTOMIZABLE PLAYER MODELS (4 Cars + 4 Sky Craft)
-   * ===================================================================
-   */
   buildPlayerModels() {
     this.playerRoot = new THREE.Group();
     this.scene.add(this.playerRoot);
@@ -1136,17 +1255,25 @@ class TrafficRGame {
     this.balloonModel = new THREE.Group();
     this.playerRoot.add(this.carModel, this.balloonModel);
 
+    const shieldGeo = new THREE.IcosahedronGeometry(3.15, 1);
+    const shieldMat = new THREE.MeshBasicMaterial({
+      color: 0x34d399,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.42
+    });
+    this.playerShieldMesh = new THREE.Mesh(shieldGeo, shieldMat);
+    this.playerShieldMesh.position.set(0, 1.4, 0);
+    this.playerShieldMesh.visible = false;
+    this.playerRoot.add(this.playerShieldMesh);
+
     this.rebuildAllPlayerMeshes();
   }
 
-  /**
-   * Rebuilds both the main world player vehicle AND the interactive 3D Studio preview model
-   */
   rebuildAllPlayerMeshes() {
     this.spinningPropellers = [];
     this.previewPropellers = [];
 
-    // 1. Rebuild Main World Car
     while (this.carModel.children.length > 0) {
       this.carModel.remove(this.carModel.children[0]);
     }
@@ -1156,7 +1283,6 @@ class TrafficRGame {
     this.carWheels = carBuilt.wheels;
     this.carFlames = carBuilt.flames;
 
-    // 2. Rebuild Main World Sky Craft (Balloon / Blimp / Mini Aircraft / Paper Plane)
     while (this.balloonModel.children.length > 0) {
       this.balloonModel.remove(this.balloonModel.children[0]);
     }
@@ -1168,7 +1294,6 @@ class TrafficRGame {
     this.carModel.visible = this.gameMode === 'car';
     this.balloonModel.visible = this.gameMode === 'balloon';
 
-    // 3. Rebuild Interactive 3D Preview Vehicle in Screen 3 Studio
     if (this.previewVehicleHolder) {
       while (this.previewVehicleHolder.children.length > 0) {
         this.previewVehicleHolder.remove(this.previewVehicleHolder.children[0]);
@@ -1187,7 +1312,6 @@ class TrafficRGame {
         }
       }
 
-      // Automatically center the 3D vehicle's bounding box right above the showroom turntable
       const box = new THREE.Box3().setFromObject(previewObj);
       const center = new THREE.Vector3();
       box.getCenter(center);
@@ -1197,9 +1321,6 @@ class TrafficRGame {
     }
   }
 
-  /**
-   * Constructs a customizable 3D Car mesh supporting single or multi-color pastel palettes
-   */
   constructCarHierarchy(bodyType, hexPalette) {
     const root = new THREE.Group();
     const wheels = [];
@@ -1348,17 +1469,12 @@ class TrafficRGame {
     return { root, wheels, flames };
   }
 
-  /**
-   * Constructs 1 of the 4 Sky Craft (Hot Air Balloon, Aero Blimp, Mini Aircraft, Paper Plane)
-   * using the user's selected single or multi-color pastel palette!
-   */
   constructSkyCraftHierarchy(craftType, hexPalette, propList) {
     const root = new THREE.Group();
     const burnerFlameMat = new THREE.MeshBasicMaterial({ color: 0xffbe0b });
     let flame = new THREE.Mesh(new THREE.ConeGeometry(0.38, 1.0, 8), burnerFlameMat);
 
     if (craftType === 'balloon') {
-      // 1. HOT AIR BALLOON
       const basketMat = new THREE.MeshLambertMaterial({ color: 0xe09f67 });
       const basketRimMat = new THREE.MeshLambertMaterial({ color: 0xc97b43 });
       const basketBody = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.15, 1.5), basketMat);
@@ -1396,11 +1512,9 @@ class TrafficRGame {
         root.add(bandMesh);
       });
     } else if (craftType === 'blimp') {
-      // 2. AERO BLIMP (Multi-Segmented Pastel Hull + Gondola + Cruciform Tail Fins + Twin Props)
       const hullGroup = new THREE.Group();
       hullGroup.position.y = 3.2;
 
-      // Build 5 longitudinal hull rings so multiple pastel colors band smoothly along the blimp
       const hullSlices = [
         { z: -2.2, rFront: 0.35, rBack: 1.35, len: 1.3 },
         { z: -0.9, rFront: 1.35, rBack: 1.85, len: 1.3 },
@@ -1419,7 +1533,6 @@ class TrafficRGame {
         hullGroup.add(slice);
       });
 
-      // Cruciform Tail Fins
       const finColor = hexPalette[(hexPalette.length - 1) % hexPalette.length];
       const finMat = this.createPastelVehicleMaterial(finColor);
       const vFin = new THREE.Mesh(new THREE.BoxGeometry(0.18, 2.5, 1.4), finMat);
@@ -1428,7 +1541,6 @@ class TrafficRGame {
       hFin.position.set(0, 0, 2.65);
       hullGroup.add(vFin, hFin);
 
-      // Gondola Cabin underneath
       const gondolaMat = this.createPastelVehicleMaterial(hexPalette[1 % hexPalette.length]);
       const glassMat = new THREE.MeshBasicMaterial({ color: 0x7dd3fc });
       const gondola = new THREE.Mesh(new THREE.BoxGeometry(1.25, 0.85, 2.4), gondolaMat);
@@ -1437,7 +1549,6 @@ class TrafficRGame {
       windowStrip.position.set(0, -1.78, 0.1);
       hullGroup.add(gondola, windowStrip);
 
-      // Twin Gondola Side Propellers
       const propMat = new THREE.MeshLambertMaterial({ color: 0x1e293b });
       [-0.85, 0.85].forEach(px => {
         const pod = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.5, 8), propMat);
@@ -1453,7 +1564,6 @@ class TrafficRGame {
       flame.position.set(0, 3.2, 3.75);
       root.add(hullGroup, flame);
     } else if (craftType === 'aircraft') {
-      // 3. MINI AIRCRAFT (Sport Monoplane with Spinning Propeller, Canopy, Wings & Tail)
       const planeGroup = new THREE.Group();
       planeGroup.position.y = 2.6;
 
@@ -1467,14 +1577,12 @@ class TrafficRGame {
       const glassMat = new THREE.MeshBasicMaterial({ color: 0xbae6fd });
       const darkMat = new THREE.MeshLambertMaterial({ color: 0x1e293b });
 
-      // Fuselage & Nose Cone
       const fuselage = new THREE.Mesh(new THREE.BoxGeometry(1.15, 1.05, 4.2), fuselageMat);
       fuselage.castShadow = true;
       const noseCone = new THREE.Mesh(new THREE.ConeGeometry(0.65, 1.1, 12), accentMat);
       noseCone.rotation.x = -Math.PI / 2;
       noseCone.position.z = -2.55;
 
-      // Main Swept Wing + Wingtip Tanks
       const mainWing = new THREE.Mesh(new THREE.BoxGeometry(5.6, 0.18, 1.35), wingMat);
       mainWing.position.set(0, 0.05, -0.35);
       mainWing.castShadow = true;
@@ -1486,17 +1594,14 @@ class TrafficRGame {
         planeGroup.add(tipTank);
       });
 
-      // Bubble Canopy
       const canopy = new THREE.Mesh(new THREE.BoxGeometry(0.92, 0.58, 1.65), glassMat);
       canopy.position.set(0, 0.72, -0.15);
 
-      // Tail Fin & Horizontal Stabilizer
       const tailV = new THREE.Mesh(new THREE.BoxGeometry(0.18, 1.25, 1.1), accentMat);
       tailV.position.set(0, 0.85, 1.65);
       const tailH = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.16, 0.85), wingMat);
       tailH.position.set(0, 0.35, 1.7);
 
-      // Spinning Nose Propeller
       const propHub = new THREE.Group();
       propHub.position.set(0, 0, -3.12);
       const blade1 = new THREE.Mesh(new THREE.BoxGeometry(1.85, 0.18, 0.06), darkMat);
@@ -1510,7 +1615,6 @@ class TrafficRGame {
       flame.position.set(0, 2.55, 2.5);
       root.add(planeGroup, flame);
     } else if (craftType === 'paperplane') {
-      // 4. PAPER PLANE (3D Thick-Winged Origami Delta Glider with Crisp Fold Creases)
       const paperGroup = new THREE.Group();
       paperGroup.position.y = 2.6;
 
@@ -1523,7 +1627,6 @@ class TrafficRGame {
       const keelMat = this.createPastelVehicleMaterial(c2, true, true);
       const trimMat = new THREE.MeshBasicMaterial({ color: 0x1e293b });
 
-      // Left Outer Delta Wing
       const leftWingGeo = new THREE.BufferGeometry();
       const lwVertices = new Float32Array([
         0, 0.25, -2.85,
@@ -1534,7 +1637,6 @@ class TrafficRGame {
       leftWingGeo.computeVertexNormals();
       const leftWing = new THREE.Mesh(leftWingGeo, leftWingMat);
 
-      // Right Outer Delta Wing
       const rightWingGeo = new THREE.BufferGeometry();
       const rwVertices = new Float32Array([
         0, 0.25, -2.85,
@@ -1545,7 +1647,6 @@ class TrafficRGame {
       rightWingGeo.computeVertexNormals();
       const rightWing = new THREE.Mesh(rightWingGeo, rightWingMat);
 
-      // Center V-Keel Fold
       const keelLeftGeo = new THREE.BufferGeometry();
       const klVertices = new Float32Array([
         0, 0.25, -2.85,
@@ -1566,7 +1667,6 @@ class TrafficRGame {
       keelRightGeo.computeVertexNormals();
       const keelRight = new THREE.Mesh(keelRightGeo, keelMat);
 
-      // Crisp Spine & Wing-Edge Crease Bars so the Paper Plane has unmistakable 3D form
       const spineCrease = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.08, 5.0), trimMat);
       spineCrease.position.set(0, 0.25, -0.35);
 
@@ -1580,11 +1680,6 @@ class TrafficRGame {
     return { root, flame };
   }
 
-  /**
-   * ===================================================================
-   * STUDIO CUSTOMIZATION & PASTEL MULTI-COLOR UI HANDLERS
-   * ===================================================================
-   */
   renderPastelColorGrid() {
     const grid = document.getElementById('pastel-color-grid');
     if (!grid) return;
@@ -1618,7 +1713,6 @@ class TrafficRGame {
     this.audio.playUITap(690);
     const idx = this.selectedPastelKeys.indexOf(colorKey);
     if (idx > -1) {
-      // Always keep at least 1 pastel color selected
       if (this.selectedPastelKeys.length > 1) {
         this.selectedPastelKeys.splice(idx, 1);
       } else {
@@ -1661,19 +1755,14 @@ class TrafficRGame {
     this.updateStudioUI();
   }
 
-  /**
-   * Enforces initial camera mode rules when selecting Car vs Sky mode:
-   * - Sky Mode ("Beyond the Fearless Sky") initial camera -> Top-Down Cam (2) or Hood Cam (1)
-   * - Car Mode ("The Endless Highway") initial camera -> Anything except Hood Cam (defaults to Chase Cam (0))
-   */
   applyDefaultCameraForMode(mode) {
     if (mode === 'balloon') {
       if (this.cameraViewIndex !== 1 && this.cameraViewIndex !== 2) {
-        this.cameraViewIndex = 2; // Top-Down Cam default for Sky Mode
+        this.cameraViewIndex = 2;
       }
     } else {
       if (this.cameraViewIndex === 1) {
-        this.cameraViewIndex = 0; // Chase Cam default for Car Mode (never Hood initially)
+        this.cameraViewIndex = 0;
       }
     }
     this.syncCameraUI();
@@ -1692,20 +1781,14 @@ class TrafficRGame {
 
     for (let i = 0; i < 4; i++) {
       const btn = document.getElementById(`studio-cam-${i}`);
-      if (btn) {
-        btn.classList.toggle('active-selection-ring', i === this.cameraViewIndex);
-      }
+      if (btn) btn.classList.toggle('active-selection-ring', i === this.cameraViewIndex);
       const pauseCamBtn = document.getElementById(`pause-cam-${i}`);
-      if (pauseCamBtn) {
-        pauseCamBtn.classList.toggle('active-selection-ring', i === this.cameraViewIndex);
-      }
+      if (pauseCamBtn) pauseCamBtn.classList.toggle('active-selection-ring', i === this.cameraViewIndex);
     }
   }
 
   updateStudioUI() {
     const isCar = this.gameMode === 'car';
-
-    // Mode tabs & headings
     const badgeEl = document.getElementById('studio-mode-badge');
     const launchBtnText = document.getElementById('studio-launch-btn-text');
     const tabCar = document.getElementById('studio-tab-car');
@@ -1713,40 +1796,33 @@ class TrafficRGame {
     const carSelector = document.getElementById('garage-car-selector');
     const skySelector = document.getElementById('garage-sky-selector');
 
-    if (badgeEl) {
-      badgeEl.textContent = isCar ? 'The Endless Highway' : 'Beyond the Fearless Sky';
-    }
+    if (badgeEl) badgeEl.textContent = isCar ? 'The Endless Highway' : 'Beyond the Fearless Sky';
     if (launchBtnText) {
-      launchBtnText.textContent = isCar
-        ? 'INITIATE THE ENDLESS HIGHWAY'
-        : 'INITIATE BEYOND THE FEARLESS SKY';
+      launchBtnText.textContent = isCar ? 'INITIATE THE ENDLESS HIGHWAY' : 'INITIATE BEYOND THE FEARLESS SKY';
     }
     if (tabCar && tabSky) {
       tabCar.className = isCar
-        ? 'px-3 py-1 rounded-full text-xs font-extrabold transition bg-pink-500 text-white shadow-sm'
-        : 'px-3 py-1 rounded-full text-xs font-extrabold transition hud-text-secondary';
+        ? 'px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-extrabold transition bg-pink-500 text-white shadow-sm'
+        : 'px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-extrabold transition hud-text-secondary';
       tabSky.className = !isCar
-        ? 'px-3 py-1 rounded-full text-xs font-extrabold transition bg-sky-500 text-white shadow-sm'
-        : 'px-3 py-1 rounded-full text-xs font-extrabold transition hud-text-secondary';
+        ? 'px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-extrabold transition bg-sky-500 text-white shadow-sm'
+        : 'px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-extrabold transition hud-text-secondary';
     }
     if (carSelector && skySelector) {
       carSelector.classList.toggle('hidden', !isCar);
       skySelector.classList.toggle('hidden', isCar);
     }
 
-    // Highlight active Car chassis button
     Object.keys(PLAYER_BODY_TYPES).forEach(k => {
       const btn = document.getElementById(`body-btn-${k}`);
       if (btn) btn.classList.toggle('active-selection-ring', k === this.playerBodyType);
     });
 
-    // Highlight active Sky craft button
     Object.keys(SKY_CRAFT_TYPES).forEach(k => {
       const btn = document.getElementById(`sky-btn-${k}`);
       if (btn) btn.classList.toggle('active-selection-ring', k === this.skyCraftType);
     });
 
-    // Populate live Specifications Card
     const specData = isCar ? PLAYER_BODY_TYPES[this.playerBodyType] : SKY_CRAFT_TYPES[this.skyCraftType];
     const titleEl = document.getElementById('spec-vehicle-title');
     const classEl = document.getElementById('spec-vehicle-class');
@@ -1765,11 +1841,6 @@ class TrafficRGame {
     this.syncCameraUI();
   }
 
-  /**
-   * ===================================================================
-   * 3-STEP INITIATION NAVIGATION & PER-UI-ZONE CORNER THEME SWITCHER
-   * ===================================================================
-   */
   setUITheme(theme) {
     this.audio.playUITap(620);
     const nextTheme = theme === 'dark' ? 'dark' : 'light';
@@ -1783,9 +1854,7 @@ class TrafficRGame {
       this.themeTransitionTimer = null;
     }
 
-    // Trigger 100% GPU-composited scale3d radial drop wave from the upper-left corner (0% 0%) of each UI zone
     document.body.classList.remove('theme-to-dark', 'theme-to-light');
-    // Force a tiny reflow only if restarting mid-animation
     void document.body.offsetWidth;
 
     document.body.classList.toggle('dark-ui', isDark);
@@ -1868,7 +1937,6 @@ class TrafficRGame {
     this.audio.playUITap(650);
     this.gameMode = mode;
 
-    // Toggle Highway vs Winding River Valley in the 3D world
     const isCar = mode === 'car';
     this.highwayGroup.visible = isCar;
     this.riverValleyGroup.visible = !isCar;
@@ -1908,11 +1976,6 @@ class TrafficRGame {
     this.showToast(`SCORE SAVED UNTIL PAUSE: ${savedPts} PTS • ${savedSecs}`);
   }
 
-  /**
-   * ===================================================================
-   * PAUSE SCREEN & 3-SECOND CIRCULAR RIM COUNTDOWN LOGIC
-   * ===================================================================
-   */
   togglePause() {
     if (this.state === 'PLAYING') {
       this.pauseGame();
@@ -1927,12 +1990,14 @@ class TrafficRGame {
     this.audio.stopEngineSound();
     this.state = 'PAUSED';
 
-    // Automatically bank current score & time up to this pause moment
     this.saveCurrentGameplayProgress(true);
 
     document.getElementById('pause-score').textContent = Math.floor(this.score);
     document.getElementById('pause-time').textContent = this.formatTime(this.survivalTime);
     document.getElementById('pause-blasts').textContent = `${this.blasts} 💥`;
+    const pCredEl = document.getElementById('pause-credits');
+    if (pCredEl) pCredEl.textContent = `${this.credits} 💎`;
+    this.updateShieldVisuals();
 
     const pauseIcon = document.getElementById('hud-pause-icon');
     const pauseLabel = document.getElementById('hud-pause-label');
@@ -1988,10 +2053,9 @@ class TrafficRGame {
     if (subEl) {
       subEl.textContent =
         num === 3 ? 'Synchronizing Telemetry' :
-        num === 2 ? 'spooling Thrusters' : 'Full Throttle Ready';
+        num === 2 ? 'Spooling Thrusters' : 'Full Throttle Ready';
     }
 
-    // Rotate the outer circular rim by 120 degrees each second
     this.countdownRimAngle += 120;
     if (rimEl) {
       rimEl.style.transform = `rotate(${this.countdownRimAngle}deg)`;
@@ -2001,11 +2065,6 @@ class TrafficRGame {
     this.audio.playUITap(toneMap[num] || 660);
   }
 
-  /**
-   * ===================================================================
-   * 360° STUDIO PREVIEW CONTROLS
-   * ===================================================================
-   */
   setPreviewAngle(yaw, pitch) {
     this.audio.playUITap(600);
     this.previewAutoSpin = false;
@@ -2030,11 +2089,6 @@ class TrafficRGame {
     ].hex;
   }
 
-  /**
-   * ===================================================================
-   * PROCEDURAL TERRAIN PROPS & RANDOMIZATION
-   * ===================================================================
-   */
   createTerrainProp(type) {
     const group = new THREE.Group();
 
@@ -2042,7 +2096,7 @@ class TrafficRGame {
       const trunkMat = new THREE.MeshLambertMaterial({ color: 0x9c6644 });
       const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.5, 2.2, 7), trunkMat);
       trunk.position.y = 1.1;
-      trunk.castShadow = true;
+      trunk.castShadow = this.graphicsQuality !== 'ld';
       group.add(trunk);
 
       const foliageColor =
@@ -2053,24 +2107,24 @@ class TrafficRGame {
       if (type === 'sakura') {
         const crown = new THREE.Mesh(new THREE.DodecahedronGeometry(2.2, 0), foliageMat);
         crown.position.y = 3.2;
-        crown.castShadow = true;
+        crown.castShadow = this.graphicsQuality !== 'ld';
         group.add(crown);
       } else {
         for (let l = 0; l < 3; l++) {
           const cone = new THREE.Mesh(new THREE.ConeGeometry(2.2 - l * 0.45, 2.4, 7), foliageMat);
           cone.position.y = 2.4 + l * 1.35;
-          cone.castShadow = true;
+          cone.castShadow = this.graphicsQuality !== 'ld';
           group.add(cone);
         }
       }
     } else if (type === 'snowman') {
       const snowMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
-      const b1 = new THREE.Mesh(new THREE.SphereGeometry(1.3, 10, 10), snowMat);
+      const b1 = new THREE.Mesh(new THREE.SphereGeometry(1.3, 8, 8), snowMat);
       b1.position.y = 1.2;
-      const b2 = new THREE.Mesh(new THREE.SphereGeometry(0.95, 10, 10), snowMat);
+      const b2 = new THREE.Mesh(new THREE.SphereGeometry(0.95, 8, 8), snowMat);
       b2.position.y = 2.9;
       const nose = new THREE.Mesh(
-        new THREE.ConeGeometry(0.18, 0.8, 6),
+        new THREE.ConeGeometry(0.18, 0.8, 5),
         new THREE.MeshLambertMaterial({ color: 0xff9f1c })
       );
       nose.rotation.x = Math.PI / 2;
@@ -2089,7 +2143,7 @@ class TrafficRGame {
         flatShading: true
       });
       for (let k = 0; k < 3; k++) {
-        const branch = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.55, 3.8 + k * 1.1, 7), cMat);
+        const branch = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.55, 3.8 + k * 1.1, 6), cMat);
         branch.position.set((k - 1) * 0.9, 1.9 + k * 0.4, 0);
         branch.rotation.z = (k - 1) * 0.28;
         group.add(branch);
@@ -2097,9 +2151,9 @@ class TrafficRGame {
     } else if (type === 'mesa' || type === 'cactus' || type === 'arch') {
       if (type === 'cactus') {
         const cacMat = new THREE.MeshLambertMaterial({ color: 0x52b788 });
-        const mainStem = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.48, 4.5, 8), cacMat);
+        const mainStem = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.48, 4.5, 7), cacMat);
         mainStem.position.y = 2.25;
-        const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 1.8, 8), cacMat);
+        const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 1.8, 7), cacMat);
         arm.position.set(0.75, 2.6, 0);
         arm.rotation.z = Math.PI / 4;
         group.add(mainStem, arm);
@@ -2107,7 +2161,7 @@ class TrafficRGame {
         const mesaMat = new THREE.MeshLambertMaterial({ color: 0xf4a261, flatShading: true });
         const mesa = new THREE.Mesh(new THREE.CylinderGeometry(2.6, 3.8, 5.2, 6), mesaMat);
         mesa.position.y = 2.6;
-        mesa.castShadow = true;
+        mesa.castShadow = this.graphicsQuality !== 'ld';
         group.add(mesa);
       }
     } else {
@@ -2128,8 +2182,9 @@ class TrafficRGame {
 
     const geoConfig = GEOTYPES[this.currentGeotype];
     const propTypes = geoConfig.propTypes;
+    const count = this.graphicsQuality === 'ld' ? 32 : 65;
 
-    for (let i = 0; i < 65; i++) {
+    for (let i = 0; i < count; i++) {
       const pType = propTypes[Math.floor(Math.random() * propTypes.length)];
       const prop = this.createTerrainProp(pType);
 
@@ -2145,11 +2200,6 @@ class TrafficRGame {
     this.generateDistantMountains();
   }
 
-  /**
-   * ===================================================================
-   * TRAFFIC & SKY BIRD OBSTACLE FACTORIES
-   * ===================================================================
-   */
   createTrafficObstacle(zPos) {
     const group = new THREE.Group();
     const vehicleClass = TRAFFIC_CLASSES[Math.floor(Math.random() * TRAFFIC_CLASSES.length)];
@@ -2166,14 +2216,14 @@ class TrafficRGame {
     if (vehicleClass === 'semiTruck') {
       const trailer = new THREE.Mesh(new THREE.BoxGeometry(2.9, 2.85, 6.6), whiteMat);
       trailer.position.set(0, 1.75, -0.8);
-      trailer.castShadow = true;
+      trailer.castShadow = this.graphicsQuality !== 'ld';
 
       const sideStripe = new THREE.Mesh(new THREE.BoxGeometry(2.94, 0.55, 6.4), primaryMat);
       sideStripe.position.set(0, 1.75, -0.8);
 
       const cab = new THREE.Mesh(new THREE.BoxGeometry(2.75, 2.15, 2.3), primaryMat);
       cab.position.set(0, 1.4, 3.8);
-      cab.castShadow = true;
+      cab.castShadow = this.graphicsQuality !== 'ld';
 
       const windshield = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.65, 0.2), glassMat);
       windshield.position.set(0, 1.9, 4.92);
@@ -2184,7 +2234,7 @@ class TrafficRGame {
     } else if (vehicleClass === 'cityBus') {
       const busBody = new THREE.Mesh(new THREE.BoxGeometry(2.85, 2.55, 8.2), primaryMat);
       busBody.position.y = 1.6;
-      busBody.castShadow = true;
+      busBody.castShadow = this.graphicsQuality !== 'ld';
 
       const roof = new THREE.Mesh(new THREE.BoxGeometry(2.7, 0.25, 7.9), whiteMat);
       roof.position.y = 2.95;
@@ -2198,9 +2248,9 @@ class TrafficRGame {
     } else if (vehicleClass === 'motorcycle') {
       const bikeFrame = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.75, 2.5), primaryMat);
       bikeFrame.position.y = 0.72;
-      bikeFrame.castShadow = true;
+      bikeFrame.castShadow = this.graphicsQuality !== 'ld';
 
-      const wheelGeo = new THREE.CylinderGeometry(0.42, 0.42, 0.26, 10);
+      const wheelGeo = new THREE.CylinderGeometry(0.42, 0.42, 0.26, 8);
       wheelGeo.rotateZ(Math.PI / 2);
       const frontW = new THREE.Mesh(wheelGeo, wheelMat);
       frontW.position.set(0, 0.42, 1.05);
@@ -2212,7 +2262,7 @@ class TrafficRGame {
         new THREE.MeshLambertMaterial({ color: 0x1e293b })
       );
       riderTorso.position.set(0, 1.38, -0.1);
-      const helmet = new THREE.Mesh(new THREE.SphereGeometry(0.34, 8, 8), whiteMat);
+      const helmet = new THREE.Mesh(new THREE.SphereGeometry(0.34, 6, 6), whiteMat);
       helmet.position.set(0, 1.92, 0.05);
 
       group.add(bikeFrame, frontW, rearW, riderTorso, helmet);
@@ -2221,7 +2271,7 @@ class TrafficRGame {
     } else if (vehicleClass === 'pickup') {
       const bed = new THREE.Mesh(new THREE.BoxGeometry(2.45, 0.85, 4.8), primaryMat);
       bed.position.y = 0.72;
-      bed.castShadow = true;
+      bed.castShadow = this.graphicsQuality !== 'ld';
 
       const cab = new THREE.Mesh(new THREE.BoxGeometry(2.3, 0.85, 2.1), primaryMat);
       cab.position.set(0, 1.5, 0.8);
@@ -2233,7 +2283,7 @@ class TrafficRGame {
     } else {
       const chassis = new THREE.Mesh(new THREE.BoxGeometry(2.25, 0.8, 3.7), primaryMat);
       chassis.position.y = 0.65;
-      chassis.castShadow = true;
+      chassis.castShadow = this.graphicsQuality !== 'ld';
 
       const topCab = new THREE.Mesh(new THREE.BoxGeometry(1.95, 0.72, 2.3), whiteMat);
       topCab.position.set(0, 1.36, -0.15);
@@ -2279,7 +2329,7 @@ class TrafficRGame {
     const bodyMat = new THREE.MeshLambertMaterial({ color, flatShading: true });
     const wingMat = new THREE.MeshLambertMaterial({ color: 0xffffff, flatShading: true });
 
-    const body = new THREE.Mesh(new THREE.ConeGeometry(0.75, 2.5, 5), bodyMat);
+    const body = new THREE.Mesh(new THREE.ConeGeometry(0.75, 2.5, 4), bodyMat);
     body.rotation.x = Math.PI / 2;
     group.add(body);
 
@@ -2330,10 +2380,10 @@ class TrafficRGame {
     this.obstacles.forEach(obs => this.scene.remove(obs));
     this.obstacles = [];
 
-    const initialThreeSecondClearDistance = -205;
-    const count = 18;
+    const initialClearDistance = -205;
+    const count = 16;
     for (let i = 0; i < count; i++) {
-      const z = initialThreeSecondClearDistance - i * 19;
+      const z = initialClearDistance - i * 19;
       if (this.gameMode === 'car') {
         this.createTrafficObstacle(z);
       } else {
@@ -2342,11 +2392,62 @@ class TrafficRGame {
     }
   }
 
-  /**
-   * ===================================================================
-   * CAMERA & SKY TIME SWITCHERS
-   * ===================================================================
-   */
+  createCollectible(zPos) {
+    const group = new THREE.Group();
+    const isShield = Math.random() < 0.28;
+
+    if (isShield) {
+      const core = new THREE.Mesh(this.sharedShieldCoreGeo, new THREE.MeshBasicMaterial({ color: 0x34d399 }));
+      const shell = new THREE.Mesh(this.sharedShieldShellGeo, new THREE.MeshBasicMaterial({ color: 0x6ee7b7, wireframe: true, transparent: true, opacity: 0.65 }));
+      group.add(core, shell);
+      group.scale.set(0.9, 0.9, 0.9);
+      group.userData = { type: 'shield', hitRadius: 2.1 };
+    } else {
+      const orb = new THREE.Mesh(this.sharedOrbGeo, new THREE.MeshBasicMaterial({ color: 0x38bdf8 }));
+      const ring = new THREE.Mesh(this.sharedOrbRingGeo, new THREE.MeshBasicMaterial({ color: 0x7dd3fc, side: THREE.DoubleSide }));
+      ring.rotation.x = Math.PI / 2;
+      group.add(orb, ring);
+      group.scale.set(0.85, 0.85, 0.85);
+      group.userData = { type: 'credit', hitRadius: 1.9 };
+    }
+
+    const xPos = (Math.random() - 0.5) * (this.WORLD_WRAP_LIMIT * 1.6);
+    const yPos = this.gameMode === 'car' ? 1.4 : 6.8;
+    group.position.set(xPos, yPos, zPos);
+
+    this.scene.add(group);
+    this.collectibles.push(group);
+  }
+
+  resetCollectibles() {
+    this.collectibles.forEach(c => this.scene.remove(c));
+    this.collectibles = [];
+
+    const count = 10;
+    for (let i = 0; i < count; i++) {
+      const z = -130 - i * 25;
+      this.createCollectible(z);
+    }
+  }
+
+  updateShieldVisuals() {
+    const shieldEl = document.getElementById('hud-shield');
+    const pauseShieldEl = document.getElementById('pause-shield');
+    const shieldText = this.shields > 0 ? `${this.shields} 🛡️` : '0 🛡️';
+
+    if (shieldEl) {
+      shieldEl.textContent = shieldText;
+      shieldEl.className = this.shields > 0
+        ? 'hud-stat-val font-black text-emerald-400 tabular-nums leading-tight'
+        : 'hud-stat-val font-black text-slate-400 tabular-nums leading-tight';
+    }
+    if (pauseShieldEl) pauseShieldEl.textContent = shieldText;
+
+    if (this.playerShieldMesh) {
+      this.playerShieldMesh.visible = this.shields > 0;
+    }
+  }
+
   cycleCameraView() {
     this.audio.playUITap(760);
     this.cameraViewIndex = (this.cameraViewIndex + 1) % CAMERA_VIEWS.length;
@@ -2362,13 +2463,7 @@ class TrafficRGame {
     this.setGeotype(nextKey);
   }
 
-  /**
-   * ===================================================================
-   * INDIVIDUAL UI HIDE & CENTRALIZED UNHIDE ALL SYSTEM
-   * ===================================================================
-   */
   hideUIElement(panelKey) {
-    // Touch controls on mobile cannot be hidden; pcHint only applies to keyboard mode
     const modeMap = this.hiddenUIs[this.deviceType];
     if (!modeMap || !(panelKey in modeMap)) return;
 
@@ -2405,7 +2500,6 @@ class TrafficRGame {
       const el = document.getElementById(cfg.id);
       if (!el) return;
 
-      // Only count panels that are relevant to the current state & device mode
       const isHidden = Boolean(modeMap[cfg.key]);
       el.classList.toggle(cfg.hideClass, isHidden);
 
@@ -2422,9 +2516,14 @@ class TrafficRGame {
       }
     });
 
-    // Toggle the centralized Unhide All UI button
+    const unhideRow = document.getElementById('hud-unhide-row');
     const unhideBtn = document.getElementById('hud-unhide-all-btn');
     const countBadge = document.getElementById('hud-unhide-count');
+
+    if (unhideRow) {
+      unhideRow.classList.toggle('hud-unhide-row-active', hiddenCount > 0);
+      unhideRow.classList.toggle('hud-unhide-row-collapsed', hiddenCount === 0);
+    }
     if (unhideBtn) {
       unhideBtn.classList.toggle('ui-unhide-hidden', hiddenCount === 0);
     }
@@ -2461,11 +2560,6 @@ class TrafficRGame {
     this.setSkyTimeMode(this.skyTimeMode === 'day' ? 'night' : 'day');
   }
 
-  /**
-   * ===================================================================
-   * 3D VOXEL PARTICLE EXPLOSIONS & SHOOTER PROJECTILES
-   * ===================================================================
-   */
   fireBlaster() {
     if (this.state !== 'PLAYING') return;
     const now = performance.now() / 1000;
@@ -2491,14 +2585,14 @@ class TrafficRGame {
     this.projectiles.push(orbGroup);
   }
 
-  spawnVoxelExplosion(position, baseColor = 0xff8fab, count = 34) {
+  spawnVoxelExplosion(position, baseColor = 0xff8fab, count = 28) {
+    if (this.graphicsQuality === 'ld') count = Math.floor(count * 0.5);
     const palette = [baseColor, 0xffffff, 0xffd166, 0x72efdd, 0xbdb2ff];
-    const boxGeo = new THREE.BoxGeometry(0.48, 0.48, 0.48);
 
     for (let i = 0; i < count; i++) {
       const col = palette[i % palette.length];
       const mat = new THREE.MeshLambertMaterial({ color: col });
-      const voxel = new THREE.Mesh(boxGeo, mat);
+      const voxel = new THREE.Mesh(this.sharedVoxelGeo, mat);
       voxel.position.copy(position);
       voxel.position.x += (Math.random() - 0.5) * 1.5;
       voxel.position.y += (Math.random() - 0.5) * 1.5;
@@ -2521,11 +2615,6 @@ class TrafficRGame {
     }
   }
 
-  /**
-   * ===================================================================
-   * UI & GEOTYPE MANAGEMENT
-   * ===================================================================
-   */
   setDeviceType(type) {
     this.deviceType = type;
     const iconEl = document.getElementById('hud-device-icon');
@@ -2576,8 +2665,8 @@ class TrafficRGame {
     const muted = this.audio.toggleMute();
     const icon = document.getElementById('hud-audio-icon');
     icon.className = muted
-      ? 'fa-solid fa-volume-xmark text-[11px] text-slate-400'
-      : 'fa-solid fa-volume-high text-[11px] text-pink-400';
+      ? 'fa-solid fa-volume-xmark text-slate-400'
+      : 'fa-solid fa-volume-high text-pink-400';
   }
 
   toggleRandomizeGeotype(checked) {
@@ -2658,15 +2747,11 @@ class TrafficRGame {
       if (hudBtn) {
         hudBtn.className =
           g === key
-            ? 'geo-pill px-2 py-1 rounded-full text-[11px] sm:text-xs font-bold transition-all flex items-center gap-1 bg-pink-500/20 text-pink-500 shadow-sm scale-105'
-            : 'geo-pill px-2 py-1 rounded-full text-[11px] sm:text-xs font-semibold transition-all flex items-center gap-1 hud-text-secondary hover:bg-white/20';
+            ? 'geo-pill hud-geo-btn rounded-full font-bold transition-all flex items-center bg-pink-500/20 text-pink-500 shadow-sm'
+            : 'geo-pill hud-geo-btn rounded-full font-semibold transition-all flex items-center hud-text-secondary hover:bg-white/20';
       }
-      if (menuBtn) {
-        menuBtn.classList.toggle('active-selection-ring', g === key);
-      }
-      if (pauseBtn) {
-        pauseBtn.classList.toggle('active-selection-ring', g === key);
-      }
+      if (menuBtn) menuBtn.classList.toggle('active-selection-ring', g === key);
+      if (pauseBtn) pauseBtn.classList.toggle('active-selection-ring', g === key);
     });
 
     const pauseBiomeBadge = document.getElementById('pause-current-biome-badge');
@@ -2694,11 +2779,6 @@ class TrafficRGame {
     }, 2400);
   }
 
-  /**
-   * ===================================================================
-   * GAME FLOW: START, RESPAWN, GAME OVER
-   * ===================================================================
-   */
   startGame(mode) {
     this.audio.playUITap(740);
     this.gameMode = mode;
@@ -2710,6 +2790,8 @@ class TrafficRGame {
     this.score = 0;
     this.survivalTime = 0;
     this.blasts = 0;
+    this.credits = 0;
+    this.shields = 0;
 
     const isCar = mode === 'car';
     this.highwayGroup.visible = isCar;
@@ -2722,10 +2804,10 @@ class TrafficRGame {
     const modeIcon = document.getElementById('hud-mode-icon');
     const speedUnit = document.getElementById('hud-speed-unit');
     if (isCar) {
-      modeIcon.className = 'fa-solid fa-car-side text-[10px] text-pink-400';
+      modeIcon.className = 'fa-solid fa-car-side hud-mini-icon text-pink-400';
       speedUnit.textContent = 'SPEED (KM/H)';
     } else {
-      modeIcon.className = 'fa-solid fa-cloud-sun text-[10px] text-sky-400';
+      modeIcon.className = 'fa-solid fa-cloud-sun hud-mini-icon text-sky-400';
       speedUnit.textContent = 'AIRSPEED (KTS)';
     }
 
@@ -2747,12 +2829,16 @@ class TrafficRGame {
     if (pauseLabel) pauseLabel.textContent = 'Pause';
 
     document.getElementById('hud-time').textContent = '0.0s';
+    const credEl = document.getElementById('hud-credits');
+    if (credEl) credEl.textContent = '0 💎';
+    this.updateShieldVisuals();
     this.updateRecordDisplays();
 
     this.syncControlOverlays();
     this.rebuildAllPlayerMeshes();
     this.randomizeTerrainProps();
     this.resetObstacles();
+    this.resetCollectibles();
     this.audio.startEngineSound(mode);
 
     const activeVehicleName = isCar
@@ -2798,8 +2884,12 @@ class TrafficRGame {
     document.getElementById('final-score').textContent = finalScoreInt;
     document.getElementById('final-time').textContent = this.formatTime(this.survivalTime);
     document.getElementById('final-blasts').textContent = this.blasts;
+    const fCredEl = document.getElementById('final-credits');
+    if (fCredEl) fCredEl.textContent = `${this.credits} 💎`;
     document.getElementById('final-best').textContent = this.highScore;
     document.getElementById('final-best-time').textContent = this.formatTime(this.bestTime);
+    const fTotalCredEl = document.getElementById('final-total-credits');
+    if (fTotalCredEl) fTotalCredEl.textContent = `${this.totalCredits} 💎`;
 
     this.syncControlOverlays();
     setTimeout(() => {
@@ -2809,11 +2899,6 @@ class TrafficRGame {
     }, 480);
   }
 
-  /**
-   * ===================================================================
-   * EVENT LISTENERS (Keyboard, Touch, Tab Leave Save & 360° Drag)
-   * ===================================================================
-   */
   bindEvents() {
     window.addEventListener('resize', () => {
       this.camera.aspect = window.innerWidth / window.innerHeight;
@@ -2822,7 +2907,6 @@ class TrafficRGame {
       this.resizePreviewRenderer();
     });
 
-    // Automatically save current gameplay score & time if the user switches tabs or closes the window
     document.addEventListener('visibilitychange', () => {
       if (document.hidden && (this.state === 'PLAYING' || this.state === 'PAUSED' || this.state === 'COUNTDOWN')) {
         if (this.state === 'PLAYING') {
@@ -2839,7 +2923,6 @@ class TrafficRGame {
       }
     });
 
-    // 360° Interactive Drag / Touch Rotation on Studio Preview Canvas
     const previewContainer = document.getElementById('preview-canvas-container');
     if (previewContainer) {
       const onPointerDown = (clientX, clientY) => {
@@ -2893,7 +2976,6 @@ class TrafficRGame {
     window.addEventListener('keydown', e => {
       const key = e.key.toLowerCase();
 
-      // Laptop / Desktop PC Mode Exclusive Keyboard Shortcuts
       if (this.deviceType === 'keyboard') {
         if ((key === 'p' || e.code === 'Escape') && !e.repeat) {
           if (this.state === 'PLAYING' || this.state === 'PAUSED') {
@@ -2924,6 +3006,12 @@ class TrafficRGame {
         if (key === 't' && !e.repeat && this.state !== 'DEVICE_SELECT') {
           e.preventDefault();
           this.toggleUITheme();
+          return;
+        }
+
+        if (key === 'g' && !e.repeat && this.state !== 'DEVICE_SELECT') {
+          e.preventDefault();
+          this.toggleGraphicsQuality();
           return;
         }
 
@@ -3019,19 +3107,12 @@ class TrafficRGame {
     }
   }
 
-  /**
-   * ===================================================================
-   * MAIN FRAME UPDATE & MULTI-ANGLE CAMERA SYSTEM
-   * ===================================================================
-   */
   update(dt) {
     const elapsed = this.clock.getElapsedTime();
 
-    // Spin aircraft/blimp propellers
     this.spinningPropellers.forEach(p => (p.rotation.z += dt * 24));
     this.previewPropellers.forEach(p => (p.rotation.z += dt * 18));
 
-    // Update 360° Interactive Studio Preview Stage
     if (this.state === 'GARAGE' && this.previewStageGroup && this.previewRenderer) {
       if (this.previewAutoSpin && !this.isDraggingPreview) {
         this.previewYaw += dt * 0.65;
@@ -3043,12 +3124,10 @@ class TrafficRGame {
       this.previewRenderer.render(this.previewScene, this.previewCamera);
     }
 
-    // Handle Paused State (Keep world frozen while allowing live Biome/Sky/Theme changes)
     if (this.state === 'PAUSED') {
       return;
     }
 
-    // Handle 3-Second Circular Countdown State
     if (this.state === 'COUNTDOWN') {
       this.countdownRemaining -= dt;
       const currentCeil = Math.ceil(this.countdownRemaining);
@@ -3058,7 +3137,6 @@ class TrafficRGame {
         this.triggerCountdownTick(currentCeil);
       }
 
-      // Smooth inner SVG progress ring sweep
       const sweepEl = document.getElementById('countdown-sweep-circle');
       if (sweepEl) {
         const progress = Math.max(0, Math.min(1, (3.0 - this.countdownRemaining) / 3.0));
@@ -3076,7 +3154,6 @@ class TrafficRGame {
       return;
     }
 
-    // 1. Update 3D Voxel Explosion Shards
     for (let i = this.voxelParticles.length - 1; i >= 0; i--) {
       const v = this.voxelParticles[i];
       const u = v.userData;
@@ -3101,8 +3178,7 @@ class TrafficRGame {
       }
     }
 
-    // 2. Ambient Weather Particles
-    if (this.weatherParticles) {
+    if (this.weatherParticles && this.weatherParticles.visible) {
       const posAttr = this.weatherParticles.geometry.attributes.position;
       const isUnderwater = this.currentGeotype === 'underwater';
       for (let i = 0; i < posAttr.count; i++) {
@@ -3121,7 +3197,11 @@ class TrafficRGame {
       posAttr.needsUpdate = true;
     }
 
-    // 3. Background Showcase Camera Orbit when in Menus
+    if (this.playerShieldMesh && this.playerShieldMesh.visible) {
+      this.playerShieldMesh.rotation.y += dt * 2.2;
+      this.playerShieldMesh.rotation.x += dt * 1.4;
+    }
+
     if (this.state !== 'PLAYING') {
       this.carModel.visible = this.gameMode === 'car';
       this.balloonModel.visible = this.gameMode === 'balloon';
@@ -3136,31 +3216,25 @@ class TrafficRGame {
       return;
     }
 
-    // =================================================================
-    // ACTIVE GAMEPLAY LOGIC (Exponential Frame-Rate-Independent Damping)
-    // =================================================================
     const damp = (a, b, lambda) => THREE.MathUtils.lerp(a, b, 1 - Math.exp(-lambda * dt));
 
-    // A. Acceleration & Deceleration
-    const throttleStateEl = document.getElementById('hud-throttle-state');
     if (this.keys.up) {
       this.currentSpeed = damp(this.currentSpeed, this.maxSpeed, 3.6);
-      throttleStateEl.textContent = 'BOOST ↑';
-      throttleStateEl.className = 'text-[8px] sm:text-[10px] font-extrabold px-1.5 py-0.5 rounded-md bg-pink-500/20 text-pink-500 border border-pink-400/40';
+      document.getElementById('hud-throttle-state').textContent = 'BOOST ↑';
+      document.getElementById('hud-throttle-state').className = 'hud-badge-pill font-extrabold rounded-md bg-pink-500/20 text-pink-500 border border-pink-400/40';
     } else if (this.keys.down) {
       this.currentSpeed = damp(this.currentSpeed, this.minSpeed, 4.2);
-      throttleStateEl.textContent = 'BRAKE ↓';
-      throttleStateEl.className = 'text-[8px] sm:text-[10px] font-extrabold px-1.5 py-0.5 rounded-md bg-amber-500/20 text-amber-500 border border-amber-400/40';
+      document.getElementById('hud-throttle-state').textContent = 'BRAKE ↓';
+      document.getElementById('hud-throttle-state').className = 'hud-badge-pill font-extrabold rounded-md bg-amber-500/20 text-amber-500 border border-amber-400/40';
     } else {
       this.currentSpeed = damp(this.currentSpeed, this.baseSpeed, 2.4);
-      throttleStateEl.textContent = 'CRUISE';
-      throttleStateEl.className = 'text-[8px] sm:text-[10px] font-extrabold px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-500 border border-emerald-400/40';
+      document.getElementById('hud-throttle-state').textContent = 'CRUISE';
+      document.getElementById('hud-throttle-state').className = 'hud-badge-pill font-extrabold rounded-md bg-emerald-500/20 text-emerald-500 border border-emerald-400/40';
     }
 
     const normSpeed = (this.currentSpeed - this.minSpeed) / (this.maxSpeed - this.minSpeed);
     this.audio.updateEnginePitch(normSpeed, this.gameMode);
 
-    // Dynamic Camera FOV
     const activeCamId = CAMERA_VIEWS[this.cameraViewIndex].id;
     const baseFov = activeCamId === 'action' ? 64 : activeCamId === 'hood' ? 60 : 52;
     const targetFov = baseFov + normSpeed * 12;
@@ -3171,7 +3245,6 @@ class TrafficRGame {
     if (this.carFlames) this.carFlames.scale.set(1, 1, flameScale);
     if (this.balloonFlame) this.balloonFlame.scale.set(flameScale, flameScale, flameScale);
 
-    // B. Horizontal Steering & Continuous World Screen-Edge Wrapping
     const steerInput = (this.keys.right ? 1 : 0) - (this.keys.left ? 1 : 0);
     const steerSpeed = 29;
     this.playerVX = damp(this.playerVX, steerInput * steerSpeed, 10.5);
@@ -3198,7 +3271,6 @@ class TrafficRGame {
       this.balloonModel.rotation.y = damp(this.balloonModel.rotation.y, -steerInput * 0.15, 8.5);
     }
 
-    // C. MULTI-CAMERA PERSPECTIVES ('chase', 'hood', 'top', 'action')
     const aspect = window.innerWidth / window.innerHeight;
     const portraitPullback = aspect < 1 ? (1 - aspect) * 9.5 : 0;
     const camLerpFactor = 1 - Math.exp(-9.5 * dt);
@@ -3250,7 +3322,6 @@ class TrafficRGame {
       }
     }
 
-    // D. Scroll Highway Stripes, Straight Valley River Ripples, Terrain Props & Clouds
     this.roadStripes.forEach(stripe => {
       stripe.position.z += this.currentSpeed * dt;
       if (stripe.position.z > 25) stripe.position.z -= 340;
@@ -3280,7 +3351,6 @@ class TrafficRGame {
       }
     });
 
-    // E. Update Player Blaster Projectiles
     for (let i = this.projectiles.length - 1; i >= 0; i--) {
       const orb = this.projectiles[i];
       orb.position.z -= 115 * dt;
@@ -3293,7 +3363,43 @@ class TrafficRGame {
       }
     }
 
-    // F. Update Obstacles & Check Collisions
+    for (let i = this.collectibles.length - 1; i >= 0; i--) {
+      const item = this.collectibles[i];
+      item.position.z += this.currentSpeed * dt;
+      item.rotation.y += dt * 3.5;
+
+      const distZ = Math.abs(item.position.z - 0);
+      const distX = Math.abs(item.position.x - this.playerX);
+
+      if (distZ < 2.2 && distX < 1.8) {
+        if (item.userData.type === 'shield') {
+          this.shields = Math.min(this.maxShields, this.shields + 1);
+          this.audio.playShieldPowerup();
+          this.showToast('🛡️ AEGIS SHIELD ACQUIRED! ACCIDENT PROTECTED.');
+        } else {
+          this.credits += 1;
+          this.totalCredits += 1;
+          this.score += 50;
+          this.audio.playCreditChime();
+          this.showToast('💎 CREDIT ORB COLLECTED (+50 PTS)!');
+        }
+
+        this.updateShieldVisuals();
+        this.updateRecordDisplays();
+
+        this.scene.remove(item);
+        this.collectibles.splice(i, 1);
+        this.createCollectible(-210 - Math.random() * 40);
+        continue;
+      }
+
+      if (item.position.z > 24) {
+        this.scene.remove(item);
+        this.collectibles.splice(i, 1);
+        this.createCollectible(-210 - Math.random() * 40);
+      }
+    }
+
     const playerCenterY = this.gameMode === 'car' ? 1.0 : 7.0;
 
     for (let i = this.obstacles.length - 1; i >= 0; i--) {
@@ -3314,7 +3420,6 @@ class TrafficRGame {
         obs.position.y = u.baseY + Math.sin(u.flapPhase * 0.5) * 0.55;
       }
 
-      // 1. Check Projectile Hit vs Obstacle
       let destroyedByBlaster = false;
       for (let j = this.projectiles.length - 1; j >= 0; j--) {
         const proj = this.projectiles[j];
@@ -3346,16 +3451,33 @@ class TrafficRGame {
       }
       if (destroyedByBlaster) continue;
 
-      // 2. Check Player Collision vs Obstacle
       const distZ = Math.abs(obs.position.z - 0);
       const distX = Math.abs(obs.position.x - this.playerX);
       if (distZ < u.hitRadius + 1.15 && distX < u.hitRadius + 0.72) {
-        const impactPos = new THREE.Vector3(this.playerX, playerCenterY, 0);
-        this.triggerGameOver(impactPos, u.color);
-        return;
+        if (this.shields > 0) {
+          this.shields--;
+          this.updateShieldVisuals();
+          this.audio.playShieldDeflect();
+          this.spawnVoxelExplosion(obs.position.clone(), 0x34d399, 24);
+
+          this.scene.remove(obs);
+          this.obstacles.splice(i, 1);
+          const nextZ = -310 - Math.random() * 50;
+          if (this.gameMode === 'car') {
+            this.createTrafficObstacle(nextZ);
+          } else {
+            this.createBirdObstacle(nextZ);
+          }
+
+          this.showToast('🛡️ AEGIS SHIELD DEFLECTED ACCIDENT!');
+          continue;
+        } else {
+          const impactPos = new THREE.Vector3(this.playerX, playerCenterY, 0);
+          this.triggerGameOver(impactPos, u.color);
+          return;
+        }
       }
 
-      // 3. Recycle Obstacle when it passes behind the camera
       if (obs.position.z > 24) {
         this.scene.remove(obs);
         this.obstacles.splice(i, 1);
@@ -3368,13 +3490,14 @@ class TrafficRGame {
       }
     }
 
-    // G. Update HUD Telemetry
     this.survivalTime += dt;
     this.score += this.currentSpeed * dt * 0.45;
 
     document.getElementById('hud-score').textContent = Math.floor(this.score);
     document.getElementById('hud-time').textContent = this.formatTime(this.survivalTime);
     document.getElementById('hud-blasts').textContent = `${this.blasts} 💥`;
+    const credEl = document.getElementById('hud-credits');
+    if (credEl) credEl.textContent = `${this.credits} 💎`;
 
     if (Math.floor(this.score) > this.highScore) {
       this.highScore = Math.floor(this.score);
@@ -3408,6 +3531,4 @@ class TrafficRGame {
   }
 }
 
-// Instantiate immediately so window.gameApp is available as soon as the UI renders
 window.gameApp = new TrafficRGame();
-
