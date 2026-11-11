@@ -28,16 +28,16 @@
   <!-- =================================================================== -->
   <!-- UNIFIED NON-OVERLAPPING FLEX VIEWPORT HUD (Top Bar + Telemetry)     -->
   <!-- =================================================================== -->
-  <div class="fixed inset-0 z-30 pointer-events-none flex flex-col justify-between hud-safe-container sm:p-4 md:p-5">
+  <div id="hud-viewport-root" class="fixed inset-0 z-30 pointer-events-none flex flex-col justify-between hud-safe-container">
 
     <!-- TOP STACK: Header Controls Row + Centralized Unhide Row + Telemetry Row -->
-    <div class="w-full max-w-6xl mx-auto flex flex-col gap-2 sm:gap-2.5">
+    <div id="hud-top-stack" class="w-full max-w-7xl mx-auto flex flex-col hud-stack-gap">
 
       <!-- ROW 1: Refined Dual-Mode Brand Pill + Geotype & Utility Bar -->
-      <header class="w-full flex flex-wrap items-center justify-between gap-2 sm:gap-3">
+      <header id="hud-header-bar" class="w-full flex flex-wrap items-center justify-between hud-row-gap">
         <!-- Brand & Signature Pill with Luxury Dual-Odyssey Crest + Individual Hide Button -->
-        <div id="hud-panel-brand" class="ui-hideable pointer-events-auto spatial-pill rounded-full pl-2 pr-2.5 py-1 sm:px-3 sm:py-1.5 flex items-center gap-2.5 shrink-0">
-          <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-950 flex items-center justify-center shadow-lg overflow-hidden ring-1 ring-white/40 shrink-0">
+        <div id="hud-panel-brand" class="ui-hideable pointer-events-auto spatial-pill hud-brand-pill rounded-full flex items-center shrink-0">
+          <div class="hud-crest-icon rounded-xl bg-slate-950 flex items-center justify-center shadow-lg overflow-hidden ring-1 ring-white/40 shrink-0">
             <!-- Luxury Velozaar Crest (Miniaturized High-Contrast Vector Marque) -->
             <svg viewBox="0 0 120 120" class="w-full h-full">
               <defs>
@@ -84,154 +84,182 @@
             </svg>
           </div>
           <div class="flex flex-col leading-none">
-            <div class="flex items-center gap-1.5">
-              <span class="font-black hud-text-primary text-xs sm:text-sm tracking-tight">Velozaar</span>
-              <i id="hud-mode-icon" class="fa-solid fa-car-side text-[10px] text-pink-500"></i>
+            <div class="flex items-center gap-1">
+              <span class="font-black hud-text-primary hud-brand-title tracking-tight">Velozaar</span>
+              <i id="hud-mode-icon" class="fa-solid fa-car-side hud-mini-icon text-pink-500"></i>
             </div>
-            <span class="text-[8px] sm:text-[9px] font-extrabold tracking-widest text-purple-400 uppercase mt-0.5">"MADE BY SOU."</span>
+            <span class="hud-brand-sub font-extrabold tracking-widest text-purple-400 uppercase mt-0.5">"MADE BY SOU."</span>
           </div>
           <button onclick="window.gameApp.hideUIElement('brand')" class="ui-hide-chip ml-0.5" title="Hide Brand Pill">
-            <i class="fa-solid fa-eye-slash text-[10px]"></i>
+            <i class="fa-solid fa-eye-slash hud-hide-icon"></i>
           </button>
         </div>
 
-        <!-- Right Controls Cluster: Biomes, UI Theme, Sky Time, Camera, Device, Audio, Pause, Studio + Individual Hide -->
-        <div id="hud-panel-controls" class="ui-hideable pointer-events-auto flex items-center gap-1.5 sm:gap-2 flex-wrap justify-end">
-          <!-- Geotype Selector Capsule (Equally Distanced Buttons) -->
-          <div class="spatial-pill rounded-full p-1 flex items-center gap-1.5">
-            <button onclick="window.gameApp.setGeotype('meadow')" id="hud-geo-meadow" class="geo-pill px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-bold transition-all flex items-center gap-1.5 bg-pink-500/20 text-pink-500 shadow-sm" title="Pastel Meadow (Key B)">
+        <!-- Right Controls Cluster: Biomes, Graphics Def, UI Theme, Sky Time, Camera, Device, Audio, Pause, Studio + Individual Hide -->
+        <div id="hud-panel-controls" class="ui-hideable pointer-events-auto flex items-center hud-ctrl-gap flex-wrap justify-end">
+          <!-- Geotype Selector Capsule (Fluidly Scaled) -->
+          <div class="spatial-pill rounded-full hud-geo-capsule flex items-center">
+            <button onclick="window.gameApp.setGeotype('meadow')" id="hud-geo-meadow" class="geo-pill hud-geo-btn rounded-full font-bold transition-all flex items-center bg-pink-500/20 text-pink-500 shadow-sm" title="Pastel Meadow (Key B)">
               <span>🌸</span><span class="hidden lg:inline">Meadow</span>
             </button>
-            <button onclick="window.gameApp.setGeotype('snow')" id="hud-geo-snow" class="geo-pill px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-semibold transition-all flex items-center gap-1.5 hud-text-secondary hover:bg-white/20" title="Snow Wonderland (Key B)">
+            <button onclick="window.gameApp.setGeotype('snow')" id="hud-geo-snow" class="geo-pill hud-geo-btn rounded-full font-semibold transition-all flex items-center hud-text-secondary hover:bg-white/20" title="Snow Wonderland (Key B)">
               <span>❄️</span><span class="hidden lg:inline">Snow</span>
             </button>
-            <button onclick="window.gameApp.setGeotype('underwater')" id="hud-geo-underwater" class="geo-pill px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-semibold transition-all flex items-center gap-1.5 hud-text-secondary hover:bg-white/20" title="Underwater Reef (Key B)">
+            <button onclick="window.gameApp.setGeotype('underwater')" id="hud-geo-underwater" class="geo-pill hud-geo-btn rounded-full font-semibold transition-all flex items-center hud-text-secondary hover:bg-white/20" title="Underwater Reef (Key B)">
               <span>🫧</span><span class="hidden lg:inline">Underwater</span>
             </button>
-            <button onclick="window.gameApp.setGeotype('canyon')" id="hud-geo-canyon" class="geo-pill px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-semibold transition-all flex items-center gap-1.5 hud-text-secondary hover:bg-white/20" title="Sunset Canyon (Key B)">
+            <button onclick="window.gameApp.setGeotype('canyon')" id="hud-geo-canyon" class="geo-pill hud-geo-btn rounded-full font-semibold transition-all flex items-center hud-text-secondary hover:bg-white/20" title="Sunset Canyon (Key B)">
               <span>🏜️</span><span class="hidden lg:inline">Canyon</span>
             </button>
           </div>
 
+          <!-- High / Low Def Graphics Quality Quick Toggle Button -->
+          <button onclick="window.gameApp.toggleGraphicsQuality()" id="hud-gfx-btn" class="spatial-pill hud-ctrl-pill rounded-full font-bold hud-text-primary hover:scale-105 active:scale-95 transition flex items-center" title="Switch High Def / Low Def (2GB RAM Smooth Mode) (Key G)">
+            <i id="hud-gfx-icon" class="fa-solid fa-microchip text-emerald-400"></i>
+            <span id="hud-gfx-label" class="hidden md:inline">HD</span>
+          </button>
+
           <!-- White / Dark UI Theme Mode Button -->
-          <button onclick="window.gameApp.toggleUITheme()" id="hud-theme-btn" class="spatial-pill rounded-full px-3 py-1.5 text-[11px] sm:text-xs font-bold hud-text-primary hover:scale-105 active:scale-95 transition flex items-center gap-1.5" title="Switch White / Dark Glass UI (Key T)">
+          <button onclick="window.gameApp.toggleUITheme()" id="hud-theme-btn" class="spatial-pill hud-ctrl-pill rounded-full font-bold hud-text-primary hover:scale-105 active:scale-95 transition flex items-center" title="Switch White / Dark Glass UI (Key T)">
             <i id="hud-theme-icon" class="fa-solid fa-circle-half-stroke text-purple-400"></i>
             <span id="hud-theme-label" class="hidden sm:inline">White UI</span>
           </button>
 
           <!-- Day / Night 3D Sky Mode Switcher Button -->
-          <button onclick="window.gameApp.toggleSkyTimeMode()" id="hud-sky-btn" class="spatial-pill rounded-full px-3 py-1.5 text-[11px] sm:text-xs font-bold hud-text-primary hover:scale-105 active:scale-95 transition flex items-center gap-1.5" title="Switch Day / Night Sky (Key N)">
+          <button onclick="window.gameApp.toggleSkyTimeMode()" id="hud-sky-btn" class="spatial-pill hud-ctrl-pill rounded-full font-bold hud-text-primary hover:scale-105 active:scale-95 transition flex items-center" title="Switch Day / Night Sky (Key N)">
             <i id="hud-sky-icon" class="fa-solid fa-sun text-amber-400"></i>
             <span id="hud-sky-label" class="hidden sm:inline">Day</span>
           </button>
 
           <!-- Camera Perspective Switcher Button -->
-          <button onclick="window.gameApp.cycleCameraView()" id="hud-cam-btn" class="spatial-pill rounded-full px-3 py-1.5 text-[11px] sm:text-xs font-bold hud-text-primary hover:scale-105 active:scale-95 transition flex items-center gap-1.5" title="Switch Camera Angle (Key C)">
+          <button onclick="window.gameApp.cycleCameraView()" id="hud-cam-btn" class="spatial-pill hud-ctrl-pill rounded-full font-bold hud-text-primary hover:scale-105 active:scale-95 transition flex items-center" title="Switch Camera Angle (Key C)">
             <i class="fa-solid fa-video text-cyan-400"></i>
             <span id="hud-cam-label" class="hidden md:inline">Chase Cam</span>
           </button>
 
           <!-- Device Mode Switcher Button -->
-          <button onclick="window.gameApp.toggleDeviceType()" id="hud-device-btn" class="spatial-pill rounded-full px-3 py-1.5 text-[11px] sm:text-xs font-bold hud-text-primary hover:scale-105 active:scale-95 transition flex items-center gap-1.5" title="Switch Input Device">
+          <button onclick="window.gameApp.toggleDeviceType()" id="hud-device-btn" class="spatial-pill hud-ctrl-pill rounded-full font-bold hud-text-primary hover:scale-105 active:scale-95 transition flex items-center" title="Switch Input Device">
             <i id="hud-device-icon" class="fa-solid fa-laptop text-purple-400"></i>
             <span id="hud-device-label" class="hidden xl:inline">PC / Keys</span>
           </button>
 
           <!-- Sound Toggle Button -->
-          <button onclick="window.gameApp.toggleAudio()" id="hud-audio-btn" class="spatial-pill w-8 h-8 rounded-full flex items-center justify-center hud-text-primary hover:scale-105 active:scale-95 transition" title="Toggle Audio Synthesizer (Key M)">
-            <i id="hud-audio-icon" class="fa-solid fa-volume-high text-[11px] text-pink-400"></i>
+          <button onclick="window.gameApp.toggleAudio()" id="hud-audio-btn" class="spatial-pill hud-icon-btn rounded-full flex items-center justify-center hud-text-primary hover:scale-105 active:scale-95 transition" title="Toggle Audio Synthesizer (Key M)">
+            <i id="hud-audio-icon" class="fa-solid fa-volume-high text-pink-400"></i>
           </button>
 
           <!-- Pause / Resume Button (Visible during gameplay) -->
-          <button onclick="window.gameApp.togglePause()" id="hud-pause-btn" class="hidden spatial-pill rounded-full px-3 py-1.5 text-[11px] sm:text-xs font-bold hud-text-primary hover:scale-105 active:scale-95 transition items-center gap-1.5" title="Pause / Resume Game (Key P or ESC)">
+          <button onclick="window.gameApp.togglePause()" id="hud-pause-btn" class="hidden spatial-pill hud-ctrl-pill rounded-full font-bold hud-text-primary hover:scale-105 active:scale-95 transition items-center" title="Pause / Resume Game (Key P or ESC)">
             <i id="hud-pause-icon" class="fa-solid fa-pause text-amber-400"></i>
             <span id="hud-pause-label" class="hidden sm:inline">Pause</span>
           </button>
 
           <!-- Studio / Menu Button (Visible during gameplay) -->
-          <button onclick="window.gameApp.openGarageScreen()" id="hud-menu-btn" class="hidden spatial-pill rounded-full px-3 py-1.5 text-[11px] sm:text-xs font-bold hud-text-primary hover:scale-105 active:scale-95 transition items-center gap-1.5">
+          <button onclick="window.gameApp.openGarageScreen()" id="hud-menu-btn" class="hidden spatial-pill hud-ctrl-pill rounded-full font-bold hud-text-primary hover:scale-105 active:scale-95 transition items-center">
             <i class="fa-solid fa-sliders text-pink-400"></i>
             <span class="hidden sm:inline">Studio</span>
           </button>
 
           <!-- Hide Top Controls Cluster Button -->
-          <button onclick="window.gameApp.hideUIElement('controls')" class="spatial-pill w-8 h-8 rounded-full flex items-center justify-center hud-text-secondary hover:text-pink-500 hover:scale-105 active:scale-95 transition" title="Hide Top Controls Bar">
-            <i class="fa-solid fa-eye-slash text-[11px]"></i>
+          <button onclick="window.gameApp.hideUIElement('controls')" class="spatial-pill hud-icon-btn rounded-full flex items-center justify-center hud-text-secondary hover:text-pink-500 hover:scale-105 active:scale-95 transition" title="Hide Top Controls Bar">
+            <i class="fa-solid fa-eye-slash"></i>
           </button>
         </div>
       </header>
 
-      <!-- CENTRALIZED UNHIDE ALL UI BUTTON ROW (Strictly Non-Overlapping & Centered) -->
-      <div class="w-full flex justify-center items-center pointer-events-none">
-        <button id="hud-unhide-all-btn" onclick="window.gameApp.unhideAllUI()" class="ui-hideable ui-unhide-hidden pointer-events-auto spatial-pill rounded-full px-4 py-1.5 text-xs font-black hud-text-primary shadow-lg hover:scale-105 active:scale-95 transition flex items-center gap-2 border border-pink-400/50">
+      <!-- CENTRALIZED UNHIDE ALL UI BUTTON ROW (Collapses to 0px height when inactive so it NEVER pushes HUD down) -->
+      <div id="hud-unhide-row" class="w-full flex justify-center items-center pointer-events-none hud-unhide-row-collapsed">
+        <button id="hud-unhide-all-btn" onclick="window.gameApp.unhideAllUI()" class="ui-hideable ui-unhide-hidden pointer-events-auto spatial-pill hud-ctrl-pill rounded-full font-black hud-text-primary shadow-lg hover:scale-105 active:scale-95 transition flex items-center gap-1.5 border border-pink-400/50">
           <i class="fa-solid fa-eye text-pink-500"></i>
           <span>Unhide All UI</span>
-          <span id="hud-unhide-count" class="px-2 py-0.5 rounded-full text-[10px] font-black bg-pink-500 text-white leading-none">1</span>
+          <span id="hud-unhide-count" class="px-1.5 py-0.5 rounded-full text-[9px] font-black bg-pink-500 text-white leading-none">1</span>
         </button>
       </div>
 
-      <!-- ROW 2: IN-GAME TELEMETRY HUD (Score, Stopwatch, Best, Speedometer) -->
-      <div id="gameplay-hud" class="hidden w-full flex flex-col items-center gap-2">
-        <div class="w-full flex items-stretch justify-between gap-2 sm:gap-3">
+      <!-- ROW 2: IN-GAME TELEMETRY HUD (Score, Stopwatch, Blasted, Diamonds, Shield, Best, Speedometer) -->
+      <div id="gameplay-hud" class="hidden w-full flex flex-col items-center hud-stack-gap">
+        <div class="w-full flex items-stretch justify-between hud-row-gap">
 
-          <!-- Left Telemetry Capsule: Score, Survival Stopwatch, Blasts & High Score + Individual Hide -->
-          <div id="hud-panel-telemetry-left" class="ui-hideable pointer-events-auto spatial-pill rounded-2xl sm:rounded-3xl px-3 py-1.5 sm:px-4 sm:py-2 flex items-center gap-3 sm:gap-4 flex-wrap">
-            <div>
-              <div class="text-[8px] sm:text-[10px] font-extrabold uppercase tracking-wider hud-text-secondary">Score</div>
-              <div id="hud-score" class="text-sm sm:text-xl font-black hud-text-primary tabular-nums leading-tight">0</div>
+          <!-- Left Telemetry Capsule: Score, Survival Stopwatch, Blasts, Diamonds, Shield & High Score + Individual Hide -->
+          <div id="hud-panel-telemetry-left" class="ui-hideable pointer-events-auto spatial-pill hud-telemetry-card flex items-center flex-wrap">
+            <div class="hud-stat-block">
+              <div class="hud-stat-label font-extrabold uppercase tracking-wider hud-text-secondary">Score</div>
+              <div id="hud-score" class="hud-stat-val-lg font-black hud-text-primary tabular-nums leading-tight">0</div>
             </div>
 
-            <div class="h-6 w-[1px] hud-divider"></div>
+            <div class="hud-stat-divider hud-divider"></div>
 
-            <div>
-              <div class="text-[8px] sm:text-[10px] font-extrabold uppercase tracking-wider hud-text-secondary flex items-center gap-1">
-                <i class="fa-regular fa-clock text-cyan-400 text-[9px]"></i>
+            <div class="hud-stat-block">
+              <div class="hud-stat-label font-extrabold uppercase tracking-wider hud-text-secondary flex items-center gap-0.5">
+                <i class="fa-regular fa-clock text-cyan-400"></i>
                 <span>Time</span>
               </div>
-              <div id="hud-time" class="text-xs sm:text-base font-black text-cyan-500 tabular-nums leading-tight">0.0s</div>
+              <div id="hud-time" class="hud-stat-val font-black text-cyan-500 tabular-nums leading-tight">0.0s</div>
             </div>
 
-            <div class="h-6 w-[1px] hud-divider"></div>
+            <div class="hud-stat-divider hud-divider"></div>
 
-            <div>
-              <div class="text-[8px] sm:text-[10px] font-extrabold uppercase tracking-wider hud-text-secondary">Blasted</div>
-              <div id="hud-blasts" class="text-xs sm:text-base font-extrabold text-pink-400 tabular-nums leading-tight">0 💥</div>
+            <div class="hud-stat-block">
+              <div class="hud-stat-label font-extrabold uppercase tracking-wider hud-text-secondary">Blasted</div>
+              <div id="hud-blasts" class="hud-stat-val font-extrabold text-pink-400 tabular-nums leading-tight">0 💥</div>
             </div>
 
-            <div class="hidden md:block h-6 w-[1px] hud-divider"></div>
+            <div class="hud-stat-divider hud-divider"></div>
 
-            <div class="hidden md:block">
-              <div class="text-[9px] font-extrabold uppercase tracking-wider hud-text-secondary">Best Run</div>
-              <div class="text-xs sm:text-sm font-extrabold text-purple-400 tabular-nums leading-tight">
+            <!-- Credit Orbs / Diamonds Counter -->
+            <div class="hud-stat-block" title="Collected Credit Diamonds / Orbs">
+              <div class="hud-stat-label font-extrabold uppercase tracking-wider text-sky-400 flex items-center gap-0.5">
+                <i class="fa-solid fa-gem text-sky-400"></i>
+                <span>Orbs</span>
+              </div>
+              <div id="hud-credits" class="hud-stat-val font-black text-sky-400 tabular-nums leading-tight">0 💎</div>
+            </div>
+
+            <div class="hud-stat-divider hud-divider"></div>
+
+            <!-- Accident-Prevention Shield Status -->
+            <div class="hud-stat-block" title="Special Aegis Shield (Prevents Accidents)">
+              <div class="hud-stat-label font-extrabold uppercase tracking-wider text-emerald-400 flex items-center gap-0.5">
+                <i class="fa-solid fa-shield-halved text-emerald-400"></i>
+                <span>Shield</span>
+              </div>
+              <div id="hud-shield" class="hud-stat-val font-black text-slate-400 tabular-nums leading-tight">0 🛡️</div>
+            </div>
+
+            <div class="hidden lg:block hud-stat-divider hud-divider"></div>
+
+            <div class="hidden lg:block hud-stat-block">
+              <div class="hud-stat-label font-extrabold uppercase tracking-wider hud-text-secondary">Best Run</div>
+              <div class="hud-stat-val font-extrabold text-purple-400 tabular-nums leading-tight">
                 <span id="hud-high-score">0</span> <span class="hud-text-muted font-semibold mx-0.5">•</span> <span id="hud-best-time" class="text-cyan-400">0.0s</span>
               </div>
             </div>
 
             <button onclick="window.gameApp.hideUIElement('telemetryLeft')" class="ui-hide-chip" title="Hide Telemetry Panel">
-              <i class="fa-solid fa-eye-slash text-[10px]"></i>
+              <i class="fa-solid fa-eye-slash hud-hide-icon"></i>
             </button>
           </div>
 
           <!-- Right Telemetry Capsule: Speedometer & Throttle Gauge + Individual Hide -->
-          <div id="hud-panel-telemetry-right" class="ui-hideable pointer-events-auto spatial-pill rounded-2xl sm:rounded-3xl px-3 py-1.5 sm:px-4 sm:py-2 flex items-center gap-3 shrink-0">
+          <div id="hud-panel-telemetry-right" class="ui-hideable pointer-events-auto spatial-pill hud-telemetry-card flex items-center shrink-0">
             <div class="text-right">
-              <div class="text-[8px] sm:text-[10px] font-extrabold uppercase tracking-wider hud-text-secondary" id="hud-speed-unit">SPEED (KM/H)</div>
-              <div class="flex items-baseline justify-end gap-1.5">
-                <span id="hud-speed" class="text-sm sm:text-xl font-black hud-text-primary tabular-nums leading-tight">120</span>
-                <span id="hud-throttle-state" class="text-[8px] sm:text-[10px] font-extrabold px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-500 border border-emerald-400/40">CRUISE</span>
+              <div class="hud-stat-label font-extrabold uppercase tracking-wider hud-text-secondary" id="hud-speed-unit">SPEED (KM/H)</div>
+              <div class="flex items-baseline justify-end gap-1">
+                <span id="hud-speed" class="hud-stat-val-lg font-black hud-text-primary tabular-nums leading-tight">120</span>
+                <span id="hud-throttle-state" class="hud-badge-pill font-extrabold rounded-md bg-emerald-500/20 text-emerald-500 border border-emerald-400/40">CRUISE</span>
               </div>
             </div>
-            <div class="w-2 sm:w-2.5 h-7 sm:h-9 bg-slate-300/40 rounded-full overflow-hidden p-0.5 flex items-end">
+            <div class="hud-speed-meter bg-slate-300/40 rounded-full overflow-hidden p-0.5 flex items-end">
               <div id="hud-speed-bar" class="w-full bg-gradient-to-t from-cyan-400 via-purple-400 to-pink-400 rounded-full transition-all duration-150" style="height: 50%;"></div>
             </div>
             <button onclick="window.gameApp.hideUIElement('telemetryRight')" class="ui-hide-chip" title="Hide Speedometer Panel">
-              <i class="fa-solid fa-eye-slash text-[10px]"></i>
+              <i class="fa-solid fa-eye-slash hud-hide-icon"></i>
             </button>
           </div>
         </div>
 
         <!-- Dynamic Toast Pill -->
-        <div id="hud-toast" class="opacity-0 transform -translate-y-2 transition-all duration-300 spatial-pill rounded-full px-3.5 py-1 text-[10px] sm:text-xs font-extrabold hud-text-primary flex items-center gap-1.5 shadow-sm">
+        <div id="hud-toast" class="opacity-0 transform -translate-y-2 transition-all duration-300 spatial-pill rounded-full hud-toast-pill font-extrabold hud-text-primary flex items-center gap-1.5 shadow-sm pointer-events-none">
           <i class="fa-solid fa-wand-magic-sparkles text-pink-400"></i>
           <span id="hud-toast-text">CONTINUOUS WORLD WRAPPED • TERRAIN RANDOMIZED!</span>
         </div>
@@ -239,64 +267,66 @@
     </div>
 
     <!-- BOTTOM STACK: Touch Controls OR PC Keyboard Hint Bar -->
-    <div class="w-full max-w-6xl mx-auto">
+    <div class="w-full max-w-7xl mx-auto">
 
       <!-- KEYBOARD CONTROLS HINT PILL (Laptop Mode Only — Equally Distanced Wordings + Individual Hide) -->
-      <div id="pc-controls-hint" class="hidden w-full flex justify-center pb-1">
-        <div id="hud-panel-pc-hint" class="ui-hideable pointer-events-auto spatial-pill rounded-full px-4 py-1.5 flex flex-wrap items-center justify-center gap-3 text-[11px] font-semibold hud-text-primary">
-          <span class="flex items-center gap-1.5"><span class="keycap">←</span><span class="keycap">→</span><span>Steer</span></span>
+      <div id="pc-controls-hint" class="hidden w-full flex justify-center pb-0.5">
+        <div id="hud-panel-pc-hint" class="ui-hideable pointer-events-auto spatial-pill rounded-full hud-pc-bar flex flex-wrap items-center justify-center hud-text-primary font-semibold">
+          <span class="flex items-center gap-1"><span class="keycap">←</span><span class="keycap">→</span><span>Steer</span></span>
           <span class="hud-text-muted">•</span>
-          <span class="flex items-center gap-1.5"><span class="keycap">↑</span><span class="keycap">↓</span><span>Throttle</span></span>
+          <span class="flex items-center gap-1"><span class="keycap">↑</span><span class="keycap">↓</span><span>Throttle</span></span>
           <span class="hud-text-muted">•</span>
-          <span class="flex items-center gap-1.5"><span class="keycap">SPACE</span><span>Blast</span></span>
+          <span class="flex items-center gap-1"><span class="keycap">SPACE</span><span>Blast</span></span>
           <span class="hud-text-muted">•</span>
-          <span class="flex items-center gap-1.5"><span class="keycap">C</span><span>Cam</span></span>
+          <span class="flex items-center gap-1"><span class="keycap">C</span><span>Cam</span></span>
           <span class="hud-text-muted">•</span>
-          <span class="flex items-center gap-1.5"><span class="keycap">B</span><span>Biome</span></span>
+          <span class="flex items-center gap-1"><span class="keycap">B</span><span>Biome</span></span>
           <span class="hud-text-muted hidden sm:inline">•</span>
-          <span class="hidden sm:flex items-center gap-1.5"><span class="keycap">N</span><span>Sky</span></span>
+          <span class="hidden sm:flex items-center gap-1"><span class="keycap">N</span><span>Sky</span></span>
           <span class="hud-text-muted hidden md:inline">•</span>
-          <span class="hidden md:flex items-center gap-1.5"><span class="keycap">T</span><span>Theme</span></span>
+          <span class="hidden md:flex items-center gap-1"><span class="keycap">T</span><span>Theme</span></span>
           <span class="hud-text-muted hidden md:inline">•</span>
-          <span class="hidden md:flex items-center gap-1.5"><span class="keycap">P</span><span>Pause</span></span>
+          <span class="hidden md:flex items-center gap-1"><span class="keycap">G</span><span>HD/LD</span></span>
+          <span class="hud-text-muted hidden md:inline">•</span>
+          <span class="hidden md:flex items-center gap-1"><span class="keycap">P</span><span>Pause</span></span>
           <span class="hud-text-muted">•</span>
           <button onclick="window.gameApp.hideUIElement('pcHint')" class="ui-hide-chip" title="Hide Keyboard Controls Bar">
-            <i class="fa-solid fa-eye-slash text-[10px]"></i>
+            <i class="fa-solid fa-eye-slash hud-hide-icon"></i>
           </button>
         </div>
       </div>
 
-      <!-- TOUCH CONTROLS OVERLAY (Mobile Mode — Permanently Visible, Cannot Be Hidden) -->
-      <div id="touch-controls-overlay" class="hidden w-full flex items-end justify-between gap-2 pt-2">
-        <div class="pointer-events-auto flex items-end gap-1.5 sm:gap-2.5">
-          <button id="touch-left" class="spatial-btn-touch w-14 h-14 sm:w-20 sm:h-20 rounded-[22px] sm:rounded-3xl flex flex-col items-center justify-center" aria-label="Steer Left">
-            <i class="fa-solid fa-chevron-left text-lg sm:text-2xl text-purple-400"></i>
-            <span class="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider mt-0.5 hud-text-secondary">Left</span>
+      <!-- TOUCH CONTROLS OVERLAY (Mobile Mode — Fluidly Scaled to Screen Size, Permanently Visible) -->
+      <div id="touch-controls-overlay" class="hidden w-full flex items-end justify-between gap-2 pt-1">
+        <div class="pointer-events-auto flex items-end hud-touch-cluster">
+          <button id="touch-left" class="spatial-btn-touch hud-touch-steer flex flex-col items-center justify-center" aria-label="Steer Left">
+            <i class="fa-solid fa-chevron-left hud-touch-icon text-purple-400"></i>
+            <span class="hud-touch-label font-extrabold uppercase tracking-wider mt-0.5 hud-text-secondary">Left</span>
           </button>
-          <button id="touch-right" class="spatial-btn-touch w-14 h-14 sm:w-20 sm:h-20 rounded-[22px] sm:rounded-3xl flex flex-col items-center justify-center" aria-label="Steer Right">
-            <i class="fa-solid fa-chevron-right text-lg sm:text-2xl text-purple-400"></i>
-            <span class="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider mt-0.5 hud-text-secondary">Right</span>
+          <button id="touch-right" class="spatial-btn-touch hud-touch-steer flex flex-col items-center justify-center" aria-label="Steer Right">
+            <i class="fa-solid fa-chevron-right hud-touch-icon text-purple-400"></i>
+            <span class="hud-touch-label font-extrabold uppercase tracking-wider mt-0.5 hud-text-secondary">Right</span>
           </button>
-          <button id="touch-cam" class="spatial-btn-touch w-12 h-12 sm:w-16 sm:h-16 rounded-2xl flex flex-col items-center justify-center border-cyan-300/60" aria-label="Switch Camera View">
-            <i class="fa-solid fa-video text-sm sm:text-lg text-cyan-400"></i>
-            <span class="text-[8px] sm:text-[9px] font-extrabold uppercase tracking-wider mt-0.5 hud-text-secondary">Cam</span>
+          <button id="touch-cam" class="spatial-btn-touch hud-touch-aux flex flex-col items-center justify-center border-cyan-300/60" aria-label="Switch Camera View">
+            <i class="fa-solid fa-video hud-touch-icon-sm text-cyan-400"></i>
+            <span class="hud-touch-label font-extrabold uppercase tracking-wider mt-0.5 hud-text-secondary">Cam</span>
           </button>
         </div>
 
-        <div class="pointer-events-auto flex items-end gap-1.5 sm:gap-2.5">
-          <button id="touch-fire" class="spatial-btn-touch w-14 h-14 sm:w-20 sm:h-20 rounded-full !bg-gradient-to-tr !from-pink-400/90 !to-purple-500/90 !text-white !border-white/80 flex flex-col items-center justify-center shadow-xl" aria-label="Fire Blaster">
-            <i class="fa-solid fa-crosshairs text-base sm:text-xl"></i>
-            <span class="text-[8px] sm:text-[10px] font-extrabold uppercase tracking-wider mt-0.5">Blast</span>
+        <div class="pointer-events-auto flex items-end hud-touch-cluster">
+          <button id="touch-fire" class="spatial-btn-touch hud-touch-fire rounded-full !bg-gradient-to-tr !from-pink-400/90 !to-purple-500/90 !text-white !border-white/80 flex flex-col items-center justify-center shadow-xl" aria-label="Fire Blaster">
+            <i class="fa-solid fa-crosshairs hud-touch-icon"></i>
+            <span class="hud-touch-label font-extrabold uppercase tracking-wider mt-0.5">Blast</span>
           </button>
 
-          <div class="flex flex-col gap-1.5 sm:gap-2">
-            <button id="touch-up" class="spatial-btn-touch w-14 h-12 sm:w-20 sm:h-16 rounded-2xl flex flex-col items-center justify-center" aria-label="Accelerate">
-              <i class="fa-solid fa-angles-up text-sm sm:text-lg text-emerald-400"></i>
-              <span class="text-[8px] sm:text-[9px] font-extrabold uppercase tracking-wider hud-text-secondary">Accel</span>
+          <div class="flex flex-col hud-touch-pedal-stack">
+            <button id="touch-up" class="spatial-btn-touch hud-touch-pedal flex flex-col items-center justify-center" aria-label="Accelerate">
+              <i class="fa-solid fa-angles-up hud-touch-icon-sm text-emerald-400"></i>
+              <span class="hud-touch-label font-extrabold uppercase tracking-wider hud-text-secondary">Accel</span>
             </button>
-            <button id="touch-down" class="spatial-btn-touch w-14 h-12 sm:w-20 sm:h-16 rounded-2xl flex flex-col items-center justify-center" aria-label="Decelerate">
-              <i class="fa-solid fa-angles-down text-sm sm:text-lg text-rose-400"></i>
-              <span class="text-[8px] sm:text-[9px] font-extrabold uppercase tracking-wider hud-text-secondary">Brake</span>
+            <button id="touch-down" class="spatial-btn-touch hud-touch-pedal flex flex-col items-center justify-center" aria-label="Decelerate">
+              <i class="fa-solid fa-angles-down hud-touch-icon-sm text-rose-400"></i>
+              <span class="hud-touch-label font-extrabold uppercase tracking-wider hud-text-secondary">Brake</span>
             </button>
           </div>
         </div>
@@ -306,26 +336,26 @@
   </div>
 
   <!-- =================================================================== -->
-  <!-- PART 1 OF 3: INITIATION, LUXURY CREST, THEME & DEVICE SELECTION     -->
+  <!-- PART 1 OF 3: INITIATION, LUXURY CREST, GRAPHICS, THEME & DEVICE     -->
   <!-- =================================================================== -->
-  <section id="screen-device" class="fixed inset-0 z-40 flex items-center justify-center p-3 sm:p-4 pt-14">
-    <div class="spatial-glass modal-smooth-enter w-full max-w-lg rounded-[38px]">
-      <div class="modal-scroll max-h-[86vh] overflow-y-auto p-6 sm:p-8 text-center">
+  <section id="screen-device" class="fixed inset-0 z-40 flex items-center justify-center modal-safe-Overlay">
+    <div class="spatial-glass modal-smooth-enter w-full max-w-lg modal-card-radius">
+      <div class="modal-scroll modal-body-scroll p-4 sm:p-7 text-center">
 
         <!-- Step Badge & Signature -->
-        <div class="flex items-center justify-center gap-2 mb-3">
-          <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-pink-500/15 text-pink-500 border border-pink-400/30">
+        <div class="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mb-2.5">
+          <span class="px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-widest bg-pink-500/15 text-pink-500 border border-pink-400/30">
             Part 1 of 3 • Initiation
           </span>
-          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full sou-badge text-[10px] font-extrabold hud-text-primary">
-            <span class="w-2 h-2 rounded-full bg-pink-500 animate-ping"></span>
+          <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full sou-badge text-[9px] sm:text-[10px] font-extrabold hud-text-primary">
+            <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-pink-500 animate-ping"></span>
             <span>"MADE BY SOU."</span>
           </div>
         </div>
 
         <!-- Luxury Bespoke Dual-Odyssey Crest Emblem -->
-        <div class="relative w-24 h-24 sm:w-28 sm:h-28 mx-auto mb-3 rounded-[28px] p-1 bg-gradient-to-tr from-pink-400 via-slate-100 to-sky-400 shadow-2xl">
-          <svg viewBox="0 0 160 160" class="w-full h-full rounded-[24px]">
+        <div class="relative w-16 h-16 sm:w-24 sm:h-24 mx-auto mb-2 rounded-[22px] sm:rounded-[28px] p-1 bg-gradient-to-tr from-pink-400 via-slate-100 to-sky-400 shadow-2xl">
+          <svg viewBox="0 0 160 160" class="w-full h-full rounded-[18px] sm:rounded-[24px]">
             <defs>
               <linearGradient id="crestBg" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stop-color="#070a14"/>
@@ -366,71 +396,102 @@
         </div>
 
         <!-- Solid Black (White Mode) / Solid White (Dark Mode) Title -->
-        <h1 class="text-4xl sm:text-5xl font-black tracking-tight title-gradient mb-1.5">Velozaar</h1>
-        <p class="hud-text-secondary text-xs sm:text-sm font-semibold max-w-md mx-auto mb-5">
+        <h1 class="text-2xl sm:text-4xl font-black tracking-tight title-gradient mb-1">Velozaar</h1>
+        <p class="hud-text-secondary text-[11px] sm:text-xs font-semibold max-w-md mx-auto mb-3.5">
           Dual-Odyssey 3D World • <span class="text-pink-500 font-extrabold">The Endless Highway</span> & <span class="text-sky-500 font-extrabold">Beyond the Fearless Sky</span>
         </p>
 
-        <!-- Interface Appearance (White Mode vs Dark Mode) -->
-        <div class="spatial-subcard rounded-3xl p-4 mb-4 text-left">
-          <div class="flex items-center justify-between mb-2.5">
+        <!-- 1. Graphics Definition & RAM Optimizer (High Def vs Low Def 2GB RAM Smooth Mode) -->
+        <div class="spatial-subcard rounded-2xl sm:rounded-3xl p-3 sm:p-3.5 mb-3 text-left">
+          <div class="flex items-center justify-between mb-2">
             <div>
-              <div class="text-[10px] font-extrabold uppercase tracking-widest text-purple-500">Interface Appearance</div>
-              <div class="text-xs sm:text-sm font-extrabold hud-text-primary">Choose Translucent Glass Theme</div>
+              <div class="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-widest text-emerald-500">1. Graphics Definition & RAM Mode</div>
+              <div class="text-[11px] sm:text-xs font-extrabold hud-text-primary">Choose Visual Fidelity vs 2GB RAM Ultra-Smoothness</div>
             </div>
-            <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-purple-500/15 text-purple-400">Live Switch</span>
+            <span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-500 shrink-0">60+ FPS Engine</span>
           </div>
-          <div class="grid grid-cols-2 gap-2.5">
-            <button onclick="window.gameApp.setUITheme('light')" id="init-theme-light" class="spatial-subcard active-selection-ring rounded-2xl p-3 flex items-center gap-2.5 text-left transition">
-              <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-200 to-pink-200 text-slate-800 flex items-center justify-center shadow-sm shrink-0">
-                <i class="fa-solid fa-sun"></i>
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="window.gameApp.setGraphicsQuality('hd')" id="init-gfx-hd" class="spatial-subcard active-selection-ring rounded-xl sm:rounded-2xl p-2.5 flex items-center gap-2 text-left transition">
+              <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-500 text-white flex items-center justify-center shadow-sm shrink-0">
+                <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
               </div>
-              <div>
-                <div class="font-extrabold text-xs sm:text-sm hud-text-primary">White Mode</div>
-                <div class="text-[10px] hud-text-secondary">Pearl Frosted Glass</div>
+              <div class="min-w-0">
+                <div class="font-extrabold text-[11px] sm:text-xs hud-text-primary truncate">High Def (HD)</div>
+                <div class="text-[9px] sm:text-[10px] hud-text-secondary truncate">Shadows & Full FX</div>
               </div>
             </button>
-            <button onclick="window.gameApp.setUITheme('dark')" id="init-theme-dark" class="spatial-subcard rounded-2xl p-3 flex items-center gap-2.5 text-left transition">
-              <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-slate-800 to-indigo-950 text-indigo-300 flex items-center justify-center shadow-sm shrink-0">
-                <i class="fa-solid fa-moon"></i>
+            <button onclick="window.gameApp.setGraphicsQuality('ld')" id="init-gfx-ld" class="spatial-subcard rounded-xl sm:rounded-2xl p-2.5 flex items-center gap-2 text-left transition">
+              <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 text-white flex items-center justify-center shadow-sm shrink-0">
+                <i class="fa-solid fa-bolt text-xs"></i>
               </div>
-              <div>
-                <div class="font-extrabold text-xs sm:text-sm hud-text-primary">Dark Mode</div>
-                <div class="text-[10px] hud-text-secondary">Obsidian Smoke Glass</div>
+              <div class="min-w-0">
+                <div class="font-extrabold text-[11px] sm:text-xs hud-text-primary truncate">Low Def (LD)</div>
+                <div class="text-[9px] sm:text-[10px] hud-text-secondary truncate">2GB RAM Ultra-Smooth</div>
               </div>
             </button>
           </div>
         </div>
 
-        <!-- Control Device Selection -->
-        <div class="spatial-subcard rounded-3xl p-4 text-left">
-          <div class="text-[10px] font-extrabold uppercase tracking-widest text-pink-500 mb-0.5">Select Control Device</div>
-          <h2 class="text-sm sm:text-base font-extrabold hud-text-primary mb-3">How are you initiating Velozaar today?</h2>
+        <!-- 2. Interface Appearance (White Mode vs Dark Mode) -->
+        <div class="spatial-subcard rounded-2xl sm:rounded-3xl p-3 sm:p-3.5 mb-3 text-left">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <div class="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-widest text-purple-500">2. Interface Appearance</div>
+              <div class="text-[11px] sm:text-xs font-extrabold hud-text-primary">Choose Translucent Glass Theme</div>
+            </div>
+            <span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-purple-500/15 text-purple-400 shrink-0">Live Switch</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="window.gameApp.setUITheme('light')" id="init-theme-light" class="spatial-subcard active-selection-ring rounded-xl sm:rounded-2xl p-2.5 flex items-center gap-2 text-left transition">
+              <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-200 to-pink-200 text-slate-800 flex items-center justify-center shadow-sm shrink-0">
+                <i class="fa-solid fa-sun text-xs"></i>
+              </div>
+              <div class="min-w-0">
+                <div class="font-extrabold text-[11px] sm:text-xs hud-text-primary truncate">White Mode</div>
+                <div class="text-[9px] sm:text-[10px] hud-text-secondary truncate">Pearl Frosted Glass</div>
+              </div>
+            </button>
+            <button onclick="window.gameApp.setUITheme('dark')" id="init-theme-dark" class="spatial-subcard rounded-xl sm:rounded-2xl p-2.5 flex items-center gap-2 text-left transition">
+              <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-slate-800 to-indigo-950 text-indigo-300 flex items-center justify-center shadow-sm shrink-0">
+                <i class="fa-solid fa-moon text-xs"></i>
+              </div>
+              <div class="min-w-0">
+                <div class="font-extrabold text-[11px] sm:text-xs hud-text-primary truncate">Dark Mode</div>
+                <div class="text-[9px] sm:text-[10px] hud-text-secondary truncate">Obsidian Smoke Glass</div>
+              </div>
+            </button>
+          </div>
+        </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <button onclick="window.gameApp.selectDeviceAndGoToStep2('touch')" class="spatial-subcard spatial-card-hover group text-left rounded-2xl p-4 flex flex-col justify-between">
-              <div class="flex items-center justify-between mb-2.5">
-                <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-pink-400 to-rose-500 text-white flex items-center justify-center text-base shadow-md">
+        <!-- 3. Control Device Selection -->
+        <div class="spatial-subcard rounded-2xl sm:rounded-3xl p-3 sm:p-3.5 text-left">
+          <div class="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-widest text-pink-500 mb-0.5">3. Select Control Device</div>
+          <h2 class="text-xs sm:text-sm font-extrabold hud-text-primary mb-2.5">How are you initiating Velozaar today?</h2>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <button onclick="window.gameApp.selectDeviceAndGoToStep2('touch')" class="spatial-subcard spatial-card-hover group text-left rounded-xl sm:rounded-2xl p-3 flex flex-col justify-between">
+              <div class="flex items-center justify-between mb-1.5">
+                <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-pink-400 to-rose-500 text-white flex items-center justify-center text-sm shadow-md">
                   <i class="fa-solid fa-mobile-screen-button"></i>
                 </div>
-                <span class="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-pink-500/15 text-pink-500">Touch UI</span>
+                <span class="text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-pink-500/15 text-pink-500">Touch UI</span>
               </div>
               <div>
-                <div class="font-extrabold hud-text-primary text-sm">Smartphone / Tablet</div>
-                <p class="text-[11px] hud-text-secondary mt-0.5">On-screen steering, throttle pedals, blaster & camera toggle.</p>
+                <div class="font-extrabold hud-text-primary text-xs sm:text-sm">Smartphone / Tablet</div>
+                <p class="text-[10px] sm:text-[11px] hud-text-secondary mt-0.5">On-screen steering, throttle pedals, blaster & camera toggle.</p>
               </div>
             </button>
 
-            <button onclick="window.gameApp.selectDeviceAndGoToStep2('keyboard')" class="spatial-subcard spatial-card-hover group text-left rounded-2xl p-4 flex flex-col justify-between">
-              <div class="flex items-center justify-between mb-2.5">
-                <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-purple-500 to-cyan-500 text-white flex items-center justify-center text-base shadow-md">
+            <button onclick="window.gameApp.selectDeviceAndGoToStep2('keyboard')" class="spatial-subcard spatial-card-hover group text-left rounded-xl sm:rounded-2xl p-3 flex flex-col justify-between">
+              <div class="flex items-center justify-between mb-1.5">
+                <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-purple-500 to-cyan-500 text-white flex items-center justify-center text-sm shadow-md">
                   <i class="fa-solid fa-laptop"></i>
                 </div>
-                <span class="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-purple-500/15 text-purple-400">Keyboard UI</span>
+                <span class="text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-purple-500/15 text-purple-400">Keyboard UI</span>
               </div>
               <div>
-                <div class="font-extrabold hud-text-primary text-sm">Laptop / Desktop PC</div>
-                <p class="text-[11px] hud-text-secondary mt-0.5">Arrow/WASD steering, Space blaster, 'C' Cam & 'P' Pause.</p>
+                <div class="font-extrabold hud-text-primary text-xs sm:text-sm">Laptop / Desktop PC</div>
+                <p class="text-[10px] sm:text-[11px] hud-text-secondary mt-0.5">Arrow/WASD steering, Space blaster, 'C' Cam & 'P' Pause.</p>
               </div>
             </button>
           </div>
@@ -443,98 +504,98 @@
   <!-- =================================================================== -->
   <!-- PART 2 OF 3: CHOOSE ODYSSEY MODE & WORLD BIOME                      -->
   <!-- =================================================================== -->
-  <section id="screen-mode" class="hidden fixed inset-0 z-40 flex items-center justify-center p-3 sm:p-4 pt-14">
-    <div class="spatial-glass modal-smooth-enter w-full max-w-3xl rounded-[38px]">
-      <div class="modal-scroll max-h-[86vh] overflow-y-auto p-5 sm:p-7">
+  <section id="screen-mode" class="hidden fixed inset-0 z-40 flex items-center justify-center modal-safe-Overlay">
+    <div class="spatial-glass modal-smooth-enter w-full max-w-3xl modal-card-radius">
+      <div class="modal-scroll modal-body-scroll p-4 sm:p-6">
 
         <!-- Header Row -->
-        <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
-          <div class="flex items-center gap-2.5">
-            <button onclick="window.gameApp.goToStep1()" class="spatial-pill w-9 h-9 rounded-full flex items-center justify-center hud-text-primary hover:scale-105 active:scale-95 transition" title="Back to Step 1">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-3.5">
+          <div class="flex items-center gap-2">
+            <button onclick="window.gameApp.goToStep1()" class="spatial-pill w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center hud-text-primary hover:scale-105 active:scale-95 transition" title="Back to Step 1">
               <i class="fa-solid fa-arrow-left text-xs"></i>
             </button>
             <div>
-              <div class="text-[10px] font-black uppercase tracking-widest text-pink-500">Part 2 of 3 • Choose Your Odyssey</div>
-              <h2 class="text-xl sm:text-2xl font-black title-gradient">Select Game Mode & Biome</h2>
+              <div class="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-pink-500">Part 2 of 3 • Choose Your Odyssey</div>
+              <h2 class="text-lg sm:text-2xl font-black title-gradient">Select Game Mode & Biome</h2>
             </div>
           </div>
 
-          <div class="spatial-pill rounded-2xl px-3.5 py-1.5 text-center">
-            <div class="text-[9px] font-extrabold uppercase tracking-wider hud-text-muted">Personal Best</div>
-            <div class="text-xs font-black hud-text-primary">
-              🏆 <span id="menu-best-score">0</span> pts • ⏱️ <span id="menu-best-time" class="text-cyan-400">0.0s</span>
+          <div class="spatial-pill rounded-2xl px-3 py-1.5 text-center">
+            <div class="text-[8px] sm:text-[9px] font-extrabold uppercase tracking-wider hud-text-muted">Personal Best & Vault</div>
+            <div class="text-[11px] sm:text-xs font-black hud-text-primary">
+              🏆 <span id="menu-best-score">0</span> pts • ⏱️ <span id="menu-best-time" class="text-cyan-400">0.0s</span> • 💎 <span id="menu-total-credits" class="text-sky-400">0</span>
             </div>
           </div>
         </div>
 
         <!-- Saved Gameplay Session Banner (Shown when user pauses & leaves a run) -->
-        <div id="saved-session-banner-mode" class="hidden spatial-subcard active-selection-ring rounded-3xl p-3.5 mb-4 flex flex-wrap items-center justify-between gap-3">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-400 to-teal-500 text-white flex items-center justify-center text-base shadow-md shrink-0">
+        <div id="saved-session-banner-mode" class="hidden spatial-subcard active-selection-ring rounded-2xl sm:rounded-3xl p-3 mb-3.5 flex flex-wrap items-center justify-between gap-2.5">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-emerald-400 to-teal-500 text-white flex items-center justify-center text-sm shadow-md shrink-0">
               <i class="fa-solid fa-bookmark"></i>
             </div>
             <div>
               <div class="flex items-center gap-2">
-                <span class="text-[10px] font-black uppercase tracking-wider text-emerald-500">Saved Gameplay Progress</span>
+                <span class="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-emerald-500">Saved Gameplay Progress</span>
                 <span id="saved-session-mode-tag" class="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-pink-500/15 text-pink-500">The Endless Highway</span>
               </div>
-              <div class="text-xs sm:text-sm font-black hud-text-primary mt-0.5">
-                Score: <span id="saved-session-score" class="text-pink-500">0</span> pts • Time: <span id="saved-session-time" class="text-cyan-400">0.0s</span> • Blasted: <span id="saved-session-blasts" class="text-purple-400">0 💥</span>
+              <div class="text-[11px] sm:text-xs font-black hud-text-primary mt-0.5">
+                Score: <span id="saved-session-score" class="text-pink-500">0</span> pts • Time: <span id="saved-session-time" class="text-cyan-400">0.0s</span> • Blasted: <span id="saved-session-blasts" class="text-purple-400">0 💥</span> • Orbs: <span id="saved-session-credits" class="text-sky-400">0 💎</span>
               </div>
             </div>
           </div>
           <div class="flex items-center gap-2">
-            <button onclick="window.gameApp.resumeSavedSession()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 text-white font-black text-xs shadow-md hover:opacity-95 active:scale-95 transition flex items-center gap-1.5">
+            <button onclick="window.gameApp.resumeSavedSession()" class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 text-white font-black text-xs shadow-md hover:opacity-95 active:scale-95 transition flex items-center gap-1.5">
               <i class="fa-solid fa-play"></i>
               <span>Resume Saved Run</span>
             </button>
-            <button onclick="window.gameApp.clearSavedSession()" class="spatial-pill px-2.5 py-2 rounded-xl text-xs font-bold hud-text-secondary hover:text-rose-500 transition" title="Dismiss Saved Run">
+            <button onclick="window.gameApp.clearSavedSession()" class="spatial-pill px-2.5 py-1.5 rounded-xl text-xs font-bold hud-text-secondary hover:text-rose-500 transition" title="Dismiss Saved Run">
               <i class="fa-solid fa-xmark"></i>
             </button>
           </div>
         </div>
 
         <!-- Two Odyssey Mode Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mb-3.5">
           <!-- Mode 1: The Endless Highway -->
-          <button onclick="window.gameApp.selectModeAndGoToStep3('car')" class="spatial-subcard spatial-card-hover group text-left rounded-3xl p-5 flex flex-col justify-between">
+          <button onclick="window.gameApp.selectModeAndGoToStep3('car')" class="spatial-subcard spatial-card-hover group text-left rounded-2xl sm:rounded-3xl p-4 sm:p-5 flex flex-col justify-between">
             <div>
-              <div class="flex items-center justify-between mb-3">
-                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-rose-500 to-pink-400 text-white shadow-lg flex items-center justify-center text-xl">
+              <div class="flex items-center justify-between mb-2.5">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr from-rose-500 to-pink-400 text-white shadow-lg flex items-center justify-center text-lg sm:text-xl">
                   <i class="fa-solid fa-road"></i>
                 </div>
-                <span class="px-3 py-1 rounded-full bg-pink-500 text-white font-black text-[10px] tracking-wider shadow-sm">
+                <span class="px-2.5 py-1 rounded-full bg-pink-500 text-white font-black text-[9px] sm:text-[10px] tracking-wider shadow-sm">
                   PLAY CAR MODE
                 </span>
               </div>
-              <h3 class="text-lg sm:text-xl font-black hud-text-primary group-hover:text-pink-500 transition">The Endless Highway</h3>
-              <p class="text-xs hud-text-secondary mt-1 leading-relaxed">
-                Tear down the high-contrast ash asphalt in a custom Sports Coupe, Muscle GT, Cyber SUV, or Formula Apex against multi-lane highway traffic.
+              <h3 class="text-base sm:text-xl font-black hud-text-primary group-hover:text-pink-500 transition">The Endless Highway</h3>
+              <p class="text-[11px] sm:text-xs hud-text-secondary mt-1 leading-relaxed">
+                Tear down the high-contrast ash asphalt in a custom Sports Coupe, Muscle GT, Cyber SUV, or Formula Apex while collecting Credit Diamonds 💎 and Aegis Shields 🛡️.
               </p>
             </div>
-            <div class="mt-4 pt-3 border-t border-slate-400/20 flex items-center justify-between text-xs font-extrabold text-pink-500">
+            <div class="mt-3 pt-2.5 border-t border-slate-400/20 flex items-center justify-between text-xs font-extrabold text-pink-500">
               <span>Customize Highway Machine</span>
               <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition"></i>
             </div>
           </button>
 
           <!-- Mode 2: Beyond the Fearless Sky -->
-          <button onclick="window.gameApp.selectModeAndGoToStep3('balloon')" class="spatial-subcard spatial-card-hover group text-left rounded-3xl p-5 flex flex-col justify-between">
+          <button onclick="window.gameApp.selectModeAndGoToStep3('balloon')" class="spatial-subcard spatial-card-hover group text-left rounded-2xl sm:rounded-3xl p-4 sm:p-5 flex flex-col justify-between">
             <div>
-              <div class="flex items-center justify-between mb-3">
-                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-sky-400 to-indigo-500 text-white shadow-lg flex items-center justify-center text-xl">
+              <div class="flex items-center justify-between mb-2.5">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr from-sky-400 to-indigo-500 text-white shadow-lg flex items-center justify-center text-lg sm:text-xl">
                   <i class="fa-solid fa-cloud-sun"></i>
                 </div>
-                <span class="px-3 py-1 rounded-full bg-sky-500 text-white font-black text-[10px] tracking-wider shadow-sm">
+                <span class="px-2.5 py-1 rounded-full bg-sky-500 text-white font-black text-[9px] sm:text-[10px] tracking-wider shadow-sm">
                   PLAY SKY MODE
                 </span>
               </div>
-              <h3 class="text-lg sm:text-xl font-black hud-text-primary group-hover:text-sky-400 transition">Beyond the Fearless Sky</h3>
-              <p class="text-xs hud-text-secondary mt-1 leading-relaxed">
-                Soar above a crystal valley river between twin mountain ridges in a Hot Air Balloon, Aero Blimp, Mini Aircraft, or Paper Plane.
+              <h3 class="text-base sm:text-xl font-black hud-text-primary group-hover:text-sky-400 transition">Beyond the Fearless Sky</h3>
+              <p class="text-[11px] sm:text-xs hud-text-secondary mt-1 leading-relaxed">
+                Soar above a crystal valley river between twin mountain ridges in a Hot Air Balloon, Aero Blimp, Mini Aircraft, or Paper Plane with Sky Orbs 💎 & Shields 🛡️.
               </p>
             </div>
-            <div class="mt-4 pt-3 border-t border-slate-400/20 flex items-center justify-between text-xs font-extrabold text-sky-400">
+            <div class="mt-3 pt-2.5 border-t border-slate-400/20 flex items-center justify-between text-xs font-extrabold text-sky-400">
               <span>Customize Sky Craft</span>
               <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition"></i>
             </div>
@@ -542,38 +603,38 @@
         </div>
 
         <!-- World Geotype (Biome) Selector -->
-        <div class="spatial-subcard rounded-3xl p-4">
-          <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
+        <div class="spatial-subcard rounded-2xl sm:rounded-3xl p-3.5">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
             <div>
-              <div class="text-[10px] font-extrabold uppercase tracking-wider text-purple-400">World Geotype (Biome)</div>
-              <div class="text-xs hud-text-secondary">Choose your starting environment</div>
+              <div class="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-purple-400">World Geotype (Biome)</div>
+              <div class="text-[11px] sm:text-xs hud-text-secondary">Choose your starting environment</div>
             </div>
-            <label class="inline-flex items-center gap-2 cursor-pointer spatial-pill px-3 py-1 rounded-full text-[11px] font-bold hud-text-primary">
+            <label class="inline-flex items-center gap-1.5 cursor-pointer spatial-pill px-2.5 py-1 rounded-full text-[10px] sm:text-[11px] font-bold hud-text-primary">
               <input type="checkbox" id="toggle-random-geotype" checked onchange="window.gameApp.toggleRandomizeGeotype(this.checked)" class="rounded text-pink-500 focus:ring-0" />
               <span>Randomize Terrain on Respawn/Wrap</span>
             </label>
           </div>
 
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-            <button onclick="window.gameApp.setGeotype('meadow')" id="menu-geo-meadow" class="spatial-subcard active-selection-ring rounded-2xl p-2.5 text-left transition">
-              <div class="text-base mb-0.5">🌸</div>
-              <div class="font-extrabold text-xs hud-text-primary">Pastel Meadow</div>
-              <div class="text-[10px] hud-text-secondary">Deep Valley & Sakura</div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <button onclick="window.gameApp.setGeotype('meadow')" id="menu-geo-meadow" class="spatial-subcard active-selection-ring rounded-xl sm:rounded-2xl p-2.5 text-left transition">
+              <div class="text-sm sm:text-base mb-0.5">🌸</div>
+              <div class="font-extrabold text-[11px] sm:text-xs hud-text-primary">Pastel Meadow</div>
+              <div class="text-[9px] sm:text-[10px] hud-text-secondary">Deep Valley & Sakura</div>
             </button>
-            <button onclick="window.gameApp.setGeotype('snow')" id="menu-geo-snow" class="spatial-subcard rounded-2xl p-2.5 text-left transition">
-              <div class="text-base mb-0.5">❄️</div>
-              <div class="font-extrabold text-xs hud-text-primary">Snow Glacier</div>
-              <div class="text-[10px] hud-text-secondary">Alpine Slate & Ice</div>
+            <button onclick="window.gameApp.setGeotype('snow')" id="menu-geo-snow" class="spatial-subcard rounded-xl sm:rounded-2xl p-2.5 text-left transition">
+              <div class="text-sm sm:text-base mb-0.5">❄️</div>
+              <div class="font-extrabold text-[11px] sm:text-xs hud-text-primary">Snow Glacier</div>
+              <div class="text-[9px] sm:text-[10px] hud-text-secondary">Alpine Slate & Ice</div>
             </button>
-            <button onclick="window.gameApp.setGeotype('underwater')" id="menu-geo-underwater" class="spatial-subcard rounded-2xl p-2.5 text-left transition">
-              <div class="text-base mb-0.5">🫧</div>
-              <div class="font-extrabold text-xs hud-text-primary">Underwater</div>
-              <div class="text-[10px] hud-text-secondary">Abyssal Reef & Coral</div>
+            <button onclick="window.gameApp.setGeotype('underwater')" id="menu-geo-underwater" class="spatial-subcard rounded-xl sm:rounded-2xl p-2.5 text-left transition">
+              <div class="text-sm sm:text-base mb-0.5">🫧</div>
+              <div class="font-extrabold text-[11px] sm:text-xs hud-text-primary">Underwater</div>
+              <div class="text-[9px] sm:text-[10px] hud-text-secondary">Abyssal Reef & Coral</div>
             </button>
-            <button onclick="window.gameApp.setGeotype('canyon')" id="menu-geo-canyon" class="spatial-subcard rounded-2xl p-2.5 text-left transition">
-              <div class="text-base mb-0.5">🏜️</div>
-              <div class="font-extrabold text-xs hud-text-primary">Sunset Canyon</div>
-              <div class="text-[10px] hud-text-secondary">Terracotta Mesas</div>
+            <button onclick="window.gameApp.setGeotype('canyon')" id="menu-geo-canyon" class="spatial-subcard rounded-xl sm:rounded-2xl p-2.5 text-left transition">
+              <div class="text-sm sm:text-base mb-0.5">🏜️</div>
+              <div class="font-extrabold text-[11px] sm:text-xs hud-text-primary">Sunset Canyon</div>
+              <div class="text-[9px] sm:text-[10px] hud-text-secondary">Terracotta Mesas</div>
             </button>
           </div>
         </div>
@@ -585,49 +646,50 @@
   <!-- =================================================================== -->
   <!-- PART 3 OF 3: BESPOKE GARAGE, 360° LIVE PREVIEW, SPECS & PASTEL LAB  -->
   <!-- =================================================================== -->
-  <section id="screen-garage" class="hidden fixed inset-0 z-40 flex items-center justify-center p-2.5 sm:p-4 pt-14">
-    <div class="spatial-glass modal-smooth-enter w-full max-w-5xl rounded-[36px]">
-      <div class="modal-scroll max-h-[86vh] overflow-y-auto p-4 sm:p-6">
+  <section id="screen-garage" class="hidden fixed inset-0 z-40 flex items-center justify-center modal-safe-Overlay">
+    <div class="spatial-glass modal-smooth-enter w-full max-w-5xl modal-card-radius">
+      <div class="modal-scroll modal-body-scroll p-3.5 sm:p-6">
 
         <!-- Studio Top Bar -->
-        <div class="flex flex-wrap items-center justify-between gap-2 mb-3.5">
-          <div class="flex items-center gap-2.5">
-            <button onclick="window.gameApp.goToStep2()" class="spatial-pill w-9 h-9 rounded-full flex items-center justify-center hud-text-primary hover:scale-105 active:scale-95 transition" title="Back to Mode Select">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+          <div class="flex items-center gap-2">
+            <button onclick="window.gameApp.goToStep2()" class="spatial-pill w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center hud-text-primary hover:scale-105 active:scale-95 transition" title="Back to Mode Select">
               <i class="fa-solid fa-arrow-left text-xs"></i>
             </button>
             <div>
-              <div class="flex items-center gap-2">
-                <span class="text-[10px] font-black uppercase tracking-widest text-pink-500">Part 3 of 3 • Bespoke Studio</span>
-                <span id="studio-mode-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-pink-500/15 text-pink-500">The Endless Highway</span>
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-pink-500">Part 3 of 3 • Bespoke Studio</span>
+                <span id="studio-mode-badge" class="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-extrabold bg-pink-500/15 text-pink-500">The Endless Highway</span>
+                <span class="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-extrabold bg-sky-500/15 text-sky-400">💎 <span id="studio-total-credits">0</span> Orbs</span>
               </div>
-              <h2 class="text-lg sm:text-2xl font-black title-gradient">Customize Vehicle, Pastel Palette & Camera</h2>
+              <h2 class="text-base sm:text-2xl font-black title-gradient">Customize Vehicle, Pastel Palette & Camera</h2>
             </div>
           </div>
 
           <!-- Quick Mode Switcher Tabs inside Studio -->
           <div class="spatial-pill rounded-full p-1 flex items-center gap-1">
-            <button onclick="window.gameApp.switchStudioMode('car')" id="studio-tab-car" class="px-3 py-1 rounded-full text-xs font-extrabold transition bg-pink-500 text-white shadow-sm">
+            <button onclick="window.gameApp.switchStudioMode('car')" id="studio-tab-car" class="px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-extrabold transition bg-pink-500 text-white shadow-sm">
               <i class="fa-solid fa-car-side mr-1"></i>Highway
             </button>
-            <button onclick="window.gameApp.switchStudioMode('balloon')" id="studio-tab-sky" class="px-3 py-1 rounded-full text-xs font-extrabold transition hud-text-secondary">
+            <button onclick="window.gameApp.switchStudioMode('balloon')" id="studio-tab-sky" class="px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-extrabold transition hud-text-secondary">
               <i class="fa-solid fa-cloud-sun mr-1"></i>Sky Valley
             </button>
           </div>
         </div>
 
         <!-- Saved Gameplay Session Banner inside Studio -->
-        <div id="saved-session-banner-garage" class="hidden spatial-subcard active-selection-ring rounded-2xl p-3 mb-3 flex flex-wrap items-center justify-between gap-2.5">
-          <div class="flex items-center gap-2.5">
+        <div id="saved-session-banner-garage" class="hidden spatial-subcard active-selection-ring rounded-2xl p-2.5 sm:p-3 mb-3 flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
             <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm shrink-0">
               <i class="fa-solid fa-floppy-disk"></i>
             </div>
-            <div class="text-xs font-extrabold hud-text-primary">
-              Saved Score on Pause: <span id="garage-saved-score" class="text-pink-500 font-black">0</span> pts • <span id="garage-saved-time" class="text-cyan-400 font-black">0.0s</span> • <span id="garage-saved-blasts" class="text-purple-400 font-black">0 💥</span>
+            <div class="text-[11px] sm:text-xs font-extrabold hud-text-primary">
+              Saved Score on Pause: <span id="garage-saved-score" class="text-pink-500 font-black">0</span> pts • <span id="garage-saved-time" class="text-cyan-400 font-black">0.0s</span> • <span id="garage-saved-blasts" class="text-purple-400 font-black">0 💥</span> • <span id="garage-saved-credits" class="text-sky-400 font-black">0 💎</span>
               <span class="text-[10px] hud-text-secondary block sm:inline sm:ml-1">— Recorded when you paused & left gameplay.</span>
             </div>
           </div>
           <div class="flex items-center gap-2">
-            <button onclick="window.gameApp.resumeSavedSession()" class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 text-white font-black text-xs shadow-md hover:opacity-95 active:scale-95 transition flex items-center gap-1.5">
+            <button onclick="window.gameApp.resumeSavedSession()" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 text-white font-black text-[11px] sm:text-xs shadow-md hover:opacity-95 active:scale-95 transition flex items-center gap-1.5">
               <i class="fa-solid fa-play text-[10px]"></i>
               <span>Resume From Saved Score</span>
             </button>
@@ -638,174 +700,174 @@
         </div>
 
         <!-- 2-Column Bespoke Studio Grid: Left = 360° 3D Showroom + Specs | Right = Craft, Pastel Palette & Camera -->
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-3.5 mb-4">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-3 mb-3.5">
 
           <!-- LEFT COLUMN (5 cols): Interactive 360° 3D Showroom + Specifications -->
-          <div class="md:col-span-5 flex flex-col gap-3">
+          <div class="md:col-span-5 flex flex-col gap-2.5">
             <!-- Dark High-Contrast 3D Showroom Viewport -->
-            <div id="preview-canvas-container" class="showroom-viewport relative w-full h-48 sm:h-56 rounded-3xl overflow-hidden cursor-grab active:cursor-grabbing flex items-center justify-center">
+            <div id="preview-canvas-container" class="showroom-viewport relative w-full h-40 sm:h-52 rounded-2xl sm:rounded-3xl overflow-hidden cursor-grab active:cursor-grabbing flex items-center justify-center">
               <canvas id="preview-canvas" class="w-full h-full block"></canvas>
 
               <!-- Top-Left Live 3D Badge -->
-              <div class="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full bg-slate-900/80 border border-white/20 text-[10px] font-extrabold text-white flex items-center gap-1.5 pointer-events-none">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <div class="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-slate-900/80 border border-white/20 text-[9px] sm:text-[10px] font-extrabold text-white flex items-center gap-1.5 pointer-events-none">
+                <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                 <span>360° Live 3D Preview</span>
               </div>
 
               <!-- Top-Right Drag Hint -->
-              <div class="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full bg-slate-900/75 border border-white/15 text-[10px] font-bold text-slate-300 pointer-events-none">
+              <div class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-slate-900/75 border border-white/15 text-[9px] sm:text-[10px] font-bold text-slate-300 pointer-events-none">
                 <i class="fa-solid fa-hand-pointer mr-1 text-pink-400"></i>Drag to Rotate
               </div>
 
               <!-- Bottom Camera Angle Preset Pills -->
-              <div class="absolute bottom-2.5 inset-x-2.5 flex items-center justify-between gap-1">
+              <div class="absolute bottom-2 inset-x-2 flex items-center justify-between gap-1">
                 <div class="flex items-center gap-1">
-                  <button type="button" onclick="window.gameApp.setPreviewAngle(0.65, 0.22)" class="px-2.5 py-1 rounded-lg bg-slate-900/80 hover:bg-slate-800 text-white text-[10px] font-extrabold border border-white/15 transition">3/4</button>
-                  <button type="button" onclick="window.gameApp.setPreviewAngle(0, 0.15)" class="px-2.5 py-1 rounded-lg bg-slate-900/80 hover:bg-slate-800 text-white text-[10px] font-extrabold border border-white/15 transition">Front</button>
-                  <button type="button" onclick="window.gameApp.setPreviewAngle(1.57, 0.15)" class="px-2.5 py-1 rounded-lg bg-slate-900/80 hover:bg-slate-800 text-white text-[10px] font-extrabold border border-white/15 transition">Side</button>
-                  <button type="button" onclick="window.gameApp.setPreviewAngle(0, 1.15)" class="px-2.5 py-1 rounded-lg bg-slate-900/80 hover:bg-slate-800 text-white text-[10px] font-extrabold border border-white/15 transition">Top</button>
+                  <button type="button" onclick="window.gameApp.setPreviewAngle(0.65, 0.22)" class="px-2 py-0.5 rounded-lg bg-slate-900/80 hover:bg-slate-800 text-white text-[9px] sm:text-[10px] font-extrabold border border-white/15 transition">3/4</button>
+                  <button type="button" onclick="window.gameApp.setPreviewAngle(0, 0.15)" class="px-2 py-0.5 rounded-lg bg-slate-900/80 hover:bg-slate-800 text-white text-[9px] sm:text-[10px] font-extrabold border border-white/15 transition">Front</button>
+                  <button type="button" onclick="window.gameApp.setPreviewAngle(1.57, 0.15)" class="px-2 py-0.5 rounded-lg bg-slate-900/80 hover:bg-slate-800 text-white text-[9px] sm:text-[10px] font-extrabold border border-white/15 transition">Side</button>
+                  <button type="button" onclick="window.gameApp.setPreviewAngle(0, 1.15)" class="px-2 py-0.5 rounded-lg bg-slate-900/80 hover:bg-slate-800 text-white text-[9px] sm:text-[10px] font-extrabold border border-white/15 transition">Top</button>
                 </div>
-                <button type="button" onclick="window.gameApp.togglePreviewAutoSpin()" class="px-2.5 py-1 rounded-lg bg-pink-500/85 hover:bg-pink-500 text-white text-[10px] font-extrabold transition flex items-center gap-1">
-                  <i class="fa-solid fa-sync text-[9px]"></i>
+                <button type="button" onclick="window.gameApp.togglePreviewAutoSpin()" class="px-2 py-0.5 rounded-lg bg-pink-500/85 hover:bg-pink-500 text-white text-[9px] sm:text-[10px] font-extrabold transition flex items-center gap-1">
+                  <i class="fa-solid fa-sync text-[8px]"></i>
                   <span>Spin</span>
                 </button>
               </div>
             </div>
 
             <!-- Vehicle Specifications Card -->
-            <div class="spatial-subcard rounded-3xl p-3.5 flex-1 flex flex-col justify-between">
+            <div class="spatial-subcard rounded-2xl sm:rounded-3xl p-3 flex-1 flex flex-col justify-between">
               <div>
                 <div class="flex items-center justify-between gap-2 mb-1">
-                  <span class="text-[9px] font-black uppercase tracking-widest text-pink-500">Machine Specifications</span>
-                  <span id="spec-vehicle-class" class="px-2.5 py-0.5 rounded-full text-[9px] font-extrabold bg-purple-500/15 text-purple-400">Twin-Turbo Aero GT</span>
+                  <span class="text-[8px] sm:text-[9px] font-black uppercase tracking-widest text-pink-500">Machine Specifications</span>
+                  <span id="spec-vehicle-class" class="px-2 py-0.5 rounded-full text-[8px] sm:text-[9px] font-extrabold bg-purple-500/15 text-purple-400">Twin-Turbo Aero GT</span>
                 </div>
-                <h3 id="spec-vehicle-title" class="text-base sm:text-lg font-black hud-text-primary">Sports Coupe</h3>
-                <p id="spec-vehicle-desc" class="text-[11px] hud-text-secondary mt-0.5 leading-relaxed">
+                <h3 id="spec-vehicle-title" class="text-sm sm:text-lg font-black hud-text-primary">Sports Coupe</h3>
+                <p id="spec-vehicle-desc" class="text-[10px] sm:text-[11px] hud-text-secondary mt-0.5 leading-relaxed">
                   Low-slung aerodynamic grand tourer with high-downforce rear wing and twin plasma blaster ports.
                 </p>
               </div>
 
-              <div class="grid grid-cols-3 gap-2 mt-3 pt-2.5 border-t border-slate-400/20 text-center">
+              <div class="grid grid-cols-3 gap-1.5 sm:gap-2 mt-2.5 pt-2 border-t border-slate-400/20 text-center">
                 <div class="spatial-pill rounded-xl p-1.5">
                   <div class="text-[8px] font-extrabold uppercase hud-text-muted">Top Velocity</div>
-                  <div id="spec-stat-speed" class="text-xs font-black text-pink-500 mt-0.5">250 KM/H</div>
+                  <div id="spec-stat-speed" class="text-[11px] sm:text-xs font-black text-pink-500 mt-0.5">250 KM/H</div>
                 </div>
                 <div class="spatial-pill rounded-xl p-1.5">
                   <div class="text-[8px] font-extrabold uppercase hud-text-muted">Handling</div>
-                  <div id="spec-stat-handling" class="text-xs font-black text-cyan-400 mt-0.5">9.6 / 10</div>
+                  <div id="spec-stat-handling" class="text-[11px] sm:text-xs font-black text-cyan-400 mt-0.5">9.6 / 10</div>
                 </div>
                 <div class="spatial-pill rounded-xl p-1.5">
                   <div class="text-[8px] font-extrabold uppercase hud-text-muted">Propulsion</div>
-                  <div id="spec-stat-power" class="text-xs font-black text-purple-400 mt-0.5">V8 Hybrid</div>
+                  <div id="spec-stat-power" class="text-[11px] sm:text-xs font-black text-purple-400 mt-0.5">V8 Hybrid</div>
                 </div>
               </div>
             </div>
           </div>
 
           <!-- RIGHT COLUMN (7 cols): Vehicle Selector, Multi-Pastel Studio & Camera View -->
-          <div class="md:col-span-7 flex flex-col gap-3">
+          <div class="md:col-span-7 flex flex-col gap-2.5">
 
             <!-- 1A. Highway Car Chassis Selector -->
-            <div id="garage-car-selector" class="spatial-subcard rounded-3xl p-3.5">
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-[10px] font-extrabold uppercase tracking-wider text-pink-500">1. Choose Highway Chassis</span>
-                <span class="text-[10px] hud-text-secondary">4 Bespoke Builds</span>
+            <div id="garage-car-selector" class="spatial-subcard rounded-2xl sm:rounded-3xl p-3">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-pink-500">1. Choose Highway Chassis</span>
+                <span class="text-[9px] sm:text-[10px] hud-text-secondary">4 Bespoke Builds</span>
               </div>
               <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                <button type="button" onclick="window.gameApp.setPlayerBodyType('coupe')" id="body-btn-coupe" class="spatial-subcard active-selection-ring rounded-2xl p-2.5 text-left transition">
-                  <i class="fa-solid fa-car-side text-sm text-pink-500 mb-1"></i>
-                  <div class="font-extrabold text-xs hud-text-primary">Sports Coupe</div>
+                <button type="button" onclick="window.gameApp.setPlayerBodyType('coupe')" id="body-btn-coupe" class="spatial-subcard active-selection-ring rounded-xl sm:rounded-2xl p-2 text-left transition">
+                  <i class="fa-solid fa-car-side text-xs sm:text-sm text-pink-500 mb-0.5"></i>
+                  <div class="font-extrabold text-[11px] sm:text-xs hud-text-primary">Sports Coupe</div>
                   <div class="text-[9px] hud-text-secondary">Aero GT Wing</div>
                 </button>
-                <button type="button" onclick="window.gameApp.setPlayerBodyType('muscle')" id="body-btn-muscle" class="spatial-subcard rounded-2xl p-2.5 text-left transition">
-                  <i class="fa-solid fa-car-rear text-sm text-amber-500 mb-1"></i>
-                  <div class="font-extrabold text-xs hud-text-primary">Muscle GT</div>
+                <button type="button" onclick="window.gameApp.setPlayerBodyType('muscle')" id="body-btn-muscle" class="spatial-subcard rounded-xl sm:rounded-2xl p-2 text-left transition">
+                  <i class="fa-solid fa-car-rear text-xs sm:text-sm text-amber-500 mb-0.5"></i>
+                  <div class="font-extrabold text-[11px] sm:text-xs hud-text-primary">Muscle GT</div>
                   <div class="text-[9px] hud-text-secondary">Blower Scoop</div>
                 </button>
-                <button type="button" onclick="window.gameApp.setPlayerBodyType('suv')" id="body-btn-suv" class="spatial-subcard rounded-2xl p-2.5 text-left transition">
-                  <i class="fa-solid fa-truck-monster text-sm text-emerald-500 mb-1"></i>
-                  <div class="font-extrabold text-xs hud-text-primary">Cyber SUV</div>
+                <button type="button" onclick="window.gameApp.setPlayerBodyType('suv')" id="body-btn-suv" class="spatial-subcard rounded-xl sm:rounded-2xl p-2 text-left transition">
+                  <i class="fa-solid fa-truck-monster text-xs sm:text-sm text-emerald-500 mb-0.5"></i>
+                  <div class="font-extrabold text-[11px] sm:text-xs hud-text-primary">Cyber SUV</div>
                   <div class="text-[9px] hud-text-secondary">Armored 4x4</div>
                 </button>
-                <button type="button" onclick="window.gameApp.setPlayerBodyType('formula')" id="body-btn-formula" class="spatial-subcard rounded-2xl p-2.5 text-left transition">
-                  <i class="fa-solid fa-gauge-high text-sm text-cyan-400 mb-1"></i>
-                  <div class="font-extrabold text-xs hud-text-primary">Formula Apex</div>
+                <button type="button" onclick="window.gameApp.setPlayerBodyType('formula')" id="body-btn-formula" class="spatial-subcard rounded-xl sm:rounded-2xl p-2 text-left transition">
+                  <i class="fa-solid fa-gauge-high text-xs sm:text-sm text-cyan-400 mb-0.5"></i>
+                  <div class="font-extrabold text-[11px] sm:text-xs hud-text-primary">Formula Apex</div>
                   <div class="text-[9px] hud-text-secondary">Open-Wheel</div>
                 </button>
               </div>
             </div>
 
             <!-- 1B. Sky Craft Selector (Balloon, Aero Blimp, Mini Aircraft, Paper Plane) -->
-            <div id="garage-sky-selector" class="hidden spatial-subcard rounded-3xl p-3.5">
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-[10px] font-extrabold uppercase tracking-wider text-sky-400">1. Choose Sky Craft</span>
-                <span class="text-[10px] hud-text-secondary">4 Aerial Machines</span>
+            <div id="garage-sky-selector" class="hidden spatial-subcard rounded-2xl sm:rounded-3xl p-3">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-sky-400">1. Choose Sky Craft</span>
+                <span class="text-[9px] sm:text-[10px] hud-text-secondary">4 Aerial Machines</span>
               </div>
               <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                <button type="button" onclick="window.gameApp.setSkyCraftType('balloon')" id="sky-btn-balloon" class="spatial-subcard active-selection-ring rounded-2xl p-2.5 text-left transition">
-                  <i class="fa-solid fa-parachute-box text-sm text-pink-500 mb-1"></i>
-                  <div class="font-extrabold text-xs hud-text-primary">Hot Air Balloon</div>
+                <button type="button" onclick="window.gameApp.setSkyCraftType('balloon')" id="sky-btn-balloon" class="spatial-subcard active-selection-ring rounded-xl sm:rounded-2xl p-2 text-left transition">
+                  <i class="fa-solid fa-parachute-box text-xs sm:text-sm text-pink-500 mb-0.5"></i>
+                  <div class="font-extrabold text-[11px] sm:text-xs hud-text-primary">Hot Air Balloon</div>
                   <div class="text-[9px] hud-text-secondary">Striped Envelope</div>
                 </button>
-                <button type="button" onclick="window.gameApp.setSkyCraftType('blimp')" id="sky-btn-blimp" class="spatial-subcard rounded-2xl p-2.5 text-left transition">
-                  <i class="fa-solid fa-shuttle-space text-sm text-purple-400 mb-1"></i>
-                  <div class="font-extrabold text-xs hud-text-primary">Aero Blimp</div>
+                <button type="button" onclick="window.gameApp.setSkyCraftType('blimp')" id="sky-btn-blimp" class="spatial-subcard rounded-xl sm:rounded-2xl p-2 text-left transition">
+                  <i class="fa-solid fa-shuttle-space text-xs sm:text-sm text-purple-400 mb-0.5"></i>
+                  <div class="font-extrabold text-[11px] sm:text-xs hud-text-primary">Aero Blimp</div>
                   <div class="text-[9px] hud-text-secondary">Helium Airship</div>
                 </button>
-                <button type="button" onclick="window.gameApp.setSkyCraftType('aircraft')" id="sky-btn-aircraft" class="spatial-subcard rounded-2xl p-2.5 text-left transition">
-                  <i class="fa-solid fa-plane-up text-sm text-sky-400 mb-1"></i>
-                  <div class="font-extrabold text-xs hud-text-primary">Mini Aircraft</div>
+                <button type="button" onclick="window.gameApp.setSkyCraftType('aircraft')" id="sky-btn-aircraft" class="spatial-subcard rounded-xl sm:rounded-2xl p-2 text-left transition">
+                  <i class="fa-solid fa-plane-up text-xs sm:text-sm text-sky-400 mb-0.5"></i>
+                  <div class="font-extrabold text-[11px] sm:text-xs hud-text-primary">Mini Aircraft</div>
                   <div class="text-[9px] hud-text-secondary">Turbo-Prop Plane</div>
                 </button>
-                <button type="button" onclick="window.gameApp.setSkyCraftType('paperplane')" id="sky-btn-paperplane" class="spatial-subcard rounded-2xl p-2.5 text-left transition">
-                  <i class="fa-solid fa-paper-plane text-sm text-emerald-400 mb-1"></i>
-                  <div class="font-extrabold text-xs hud-text-primary">Paper Plane</div>
+                <button type="button" onclick="window.gameApp.setSkyCraftType('paperplane')" id="sky-btn-paperplane" class="spatial-subcard rounded-xl sm:rounded-2xl p-2 text-left transition">
+                  <i class="fa-solid fa-paper-plane text-xs sm:text-sm text-emerald-400 mb-0.5"></i>
+                  <div class="font-extrabold text-[11px] sm:text-xs hud-text-primary">Paper Plane</div>
                   <div class="text-[9px] hud-text-secondary">Origami Delta</div>
                 </button>
               </div>
             </div>
 
             <!-- 2. Pastel Colour Studio (Single or Multi-Color Combinations) -->
-            <div class="spatial-subcard rounded-3xl p-3.5">
-              <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+            <div class="spatial-subcard rounded-2xl sm:rounded-3xl p-3">
+              <div class="flex flex-wrap items-center justify-between gap-1.5 mb-1.5">
                 <div>
-                  <span class="text-[10px] font-extrabold uppercase tracking-wider text-purple-400">2. Pastel Colour Studio (Single or Multi-Select)</span>
-                  <div class="text-[10px] hud-text-secondary">Tap 1 or multiple pastel shades to blend across your vehicle</div>
+                  <span class="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-purple-400">2. Pastel Colour Studio (Single or Multi-Select)</span>
+                  <div class="text-[9px] sm:text-[10px] hud-text-secondary">Tap 1 or multiple pastel shades to blend across your vehicle</div>
                 </div>
                 <div class="flex items-center gap-1.5">
-                  <button type="button" onclick="window.gameApp.selectSinglePastelPreset()" class="spatial-pill px-2.5 py-1 rounded-lg text-[10px] font-extrabold hud-text-primary hover:scale-105 transition">
+                  <button type="button" onclick="window.gameApp.selectSinglePastelPreset()" class="spatial-pill px-2 py-0.5 rounded-lg text-[9px] sm:text-[10px] font-extrabold hud-text-primary hover:scale-105 transition">
                     Single Tone
                   </button>
-                  <button type="button" onclick="window.gameApp.selectMultiPastelPreset()" class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold bg-gradient-to-r from-pink-400 via-purple-400 to-sky-400 text-white shadow-sm hover:opacity-95 transition">
+                  <button type="button" onclick="window.gameApp.selectMultiPastelPreset()" class="px-2 py-0.5 rounded-lg text-[9px] sm:text-[10px] font-extrabold bg-gradient-to-r from-pink-400 via-purple-400 to-sky-400 text-white shadow-sm hover:opacity-95 transition">
                     Multi-Pastel Mix
                   </button>
                 </div>
               </div>
-              <div id="pastel-color-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
+              <div id="pastel-color-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-1.5 sm:gap-2"></div>
             </div>
 
             <!-- 3. Camera Perspective Selector -->
-            <div class="spatial-subcard rounded-3xl p-3.5">
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-[10px] font-extrabold uppercase tracking-wider text-cyan-400">3. Initial Camera Perspective</span>
-                <span class="text-[10px] hud-text-secondary">Switchable anytime with 'C' or CAM</span>
+            <div class="spatial-subcard rounded-2xl sm:rounded-3xl p-3">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-cyan-400">3. Initial Camera Perspective</span>
+                <span class="text-[9px] sm:text-[10px] hud-text-secondary">Switchable anytime with 'C' or CAM</span>
               </div>
-              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                <button type="button" onclick="window.gameApp.selectCameraFromStudio(0)" id="studio-cam-0" class="spatial-subcard rounded-xl p-2 text-center transition">
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 sm:gap-2">
+                <button type="button" onclick="window.gameApp.selectCameraFromStudio(0)" id="studio-cam-0" class="spatial-subcard rounded-xl p-1.5 sm:p-2 text-center transition">
                   <i class="fa-solid fa-car-rear text-xs text-pink-500"></i>
-                  <div class="text-[10px] font-extrabold hud-text-primary mt-0.5">Chase Cam</div>
+                  <div class="text-[9px] sm:text-[10px] font-extrabold hud-text-primary mt-0.5">Chase Cam</div>
                 </button>
-                <button type="button" onclick="window.gameApp.selectCameraFromStudio(1)" id="studio-cam-1" class="spatial-subcard rounded-xl p-2 text-center transition">
+                <button type="button" onclick="window.gameApp.selectCameraFromStudio(1)" id="studio-cam-1" class="spatial-subcard rounded-xl p-1.5 sm:p-2 text-center transition">
                   <i class="fa-solid fa-eye text-xs text-cyan-400"></i>
-                  <div class="text-[10px] font-extrabold hud-text-primary mt-0.5">Hood / POV</div>
+                  <div class="text-[9px] sm:text-[10px] font-extrabold hud-text-primary mt-0.5">Hood / POV</div>
                 </button>
-                <button type="button" onclick="window.gameApp.selectCameraFromStudio(2)" id="studio-cam-2" class="spatial-subcard rounded-xl p-2 text-center transition">
+                <button type="button" onclick="window.gameApp.selectCameraFromStudio(2)" id="studio-cam-2" class="spatial-subcard rounded-xl p-1.5 sm:p-2 text-center transition">
                   <i class="fa-solid fa-satellite text-xs text-purple-400"></i>
-                  <div class="text-[10px] font-extrabold hud-text-primary mt-0.5">Top-Down</div>
+                  <div class="text-[9px] sm:text-[10px] font-extrabold hud-text-primary mt-0.5">Top-Down</div>
                 </button>
-                <button type="button" onclick="window.gameApp.selectCameraFromStudio(3)" id="studio-cam-3" class="spatial-subcard rounded-xl p-2 text-center transition">
+                <button type="button" onclick="window.gameApp.selectCameraFromStudio(3)" id="studio-cam-3" class="spatial-subcard rounded-xl p-1.5 sm:p-2 text-center transition">
                   <i class="fa-solid fa-film text-xs text-amber-400"></i>
-                  <div class="text-[10px] font-extrabold hud-text-primary mt-0.5">Action Wide</div>
+                  <div class="text-[9px] sm:text-[10px] font-extrabold hud-text-primary mt-0.5">Action Wide</div>
                 </button>
               </div>
             </div>
@@ -814,7 +876,7 @@
         </div>
 
         <!-- Bottom Launch / Initiate Game Button -->
-        <button onclick="window.gameApp.launchFromStudio()" class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-pink-500 via-purple-500 to-sky-500 text-white font-black text-sm sm:text-base tracking-wide shadow-xl hover:opacity-95 hover:scale-[1.008] active:scale-98 transition flex items-center justify-center gap-2.5">
+        <button onclick="window.gameApp.launchFromStudio()" class="w-full py-3 sm:py-3.5 px-6 rounded-2xl bg-gradient-to-r from-pink-500 via-purple-500 to-sky-500 text-white font-black text-xs sm:text-base tracking-wide shadow-xl hover:opacity-95 hover:scale-[1.008] active:scale-98 transition flex items-center justify-center gap-2">
           <i class="fa-solid fa-play"></i>
           <span id="studio-launch-btn-text">INITIATE THE ENDLESS HIGHWAY</span>
           <i class="fa-solid fa-arrow-right"></i>
@@ -827,172 +889,175 @@
   <!-- =================================================================== -->
   <!-- DEDICATED PAUSE & ENVIRONMENT CONTROL CENTER (#screen-pause)        -->
   <!-- =================================================================== -->
-  <section id="screen-pause" class="hidden fixed inset-0 z-40 flex items-center justify-center p-3 sm:p-4 pt-14">
-    <div class="spatial-glass modal-smooth-enter w-full max-w-2xl rounded-[38px]">
-      <div class="modal-scroll max-h-[86vh] overflow-y-auto p-5 sm:p-7">
+  <section id="screen-pause" class="hidden fixed inset-0 z-40 flex items-center justify-center modal-safe-Overlay">
+    <div class="spatial-glass modal-smooth-enter w-full max-w-2xl modal-card-radius">
+      <div class="modal-scroll modal-body-scroll p-4 sm:p-6">
 
         <!-- Pause Header -->
-        <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
-          <div class="flex items-center gap-3">
-            <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-400 via-pink-500 to-purple-500 text-white flex items-center justify-center text-lg shadow-lg">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-3.5">
+          <div class="flex items-center gap-2.5">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-400 via-pink-500 to-purple-500 text-white flex items-center justify-center text-base shadow-lg">
               <i class="fa-solid fa-pause"></i>
             </div>
             <div>
-              <div class="flex items-center gap-2">
-                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-amber-500/20 text-amber-500 border border-amber-400/30">Odyssey Paused</span>
-                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500/15 text-emerald-400 border border-emerald-400/30 flex items-center gap-1">
-                  <i class="fa-solid fa-circle-check text-[9px]"></i>
+              <div class="flex items-center gap-1.5">
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest bg-amber-500/20 text-amber-500 border border-amber-400/30">Odyssey Paused</span>
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-500/15 text-emerald-400 border border-emerald-400/30 flex items-center gap-1">
+                  <i class="fa-solid fa-circle-check text-[8px]"></i>
                   <span>Score Saved</span>
                 </span>
               </div>
-              <h2 class="text-xl sm:text-2xl font-black title-gradient">Live Environment & Control Center</h2>
+              <h2 class="text-lg sm:text-2xl font-black title-gradient">Live Environment & Control Center</h2>
             </div>
           </div>
 
           <!-- Current Paused Run Telemetry Snapshot -->
-          <div class="spatial-pill rounded-2xl px-3.5 py-1.5 flex items-center gap-3">
+          <div class="spatial-pill rounded-2xl px-3 py-1.5 flex items-center gap-2.5 flex-wrap">
             <div>
-              <div class="text-[9px] font-extrabold uppercase tracking-wider hud-text-muted">Score</div>
-              <div id="pause-score" class="text-xs sm:text-sm font-black hud-text-primary tabular-nums">0</div>
+              <div class="text-[8px] font-extrabold uppercase tracking-wider hud-text-muted">Score</div>
+              <div id="pause-score" class="text-xs font-black hud-text-primary tabular-nums">0</div>
             </div>
-            <div class="h-5 w-[1px] hud-divider"></div>
+            <div class="h-4 w-[1px] hud-divider"></div>
             <div>
-              <div class="text-[9px] font-extrabold uppercase tracking-wider hud-text-muted">Time</div>
-              <div id="pause-time" class="text-xs sm:text-sm font-black text-cyan-500 tabular-nums">0.0s</div>
+              <div class="text-[8px] font-extrabold uppercase tracking-wider hud-text-muted">Time</div>
+              <div id="pause-time" class="text-xs font-black text-cyan-500 tabular-nums">0.0s</div>
             </div>
-            <div class="h-5 w-[1px] hud-divider"></div>
+            <div class="h-4 w-[1px] hud-divider"></div>
             <div>
-              <div class="text-[9px] font-extrabold uppercase tracking-wider hud-text-muted">Blasted</div>
-              <div id="pause-blasts" class="text-xs sm:text-sm font-black text-pink-500 tabular-nums">0 💥</div>
+              <div class="text-[8px] font-extrabold uppercase tracking-wider hud-text-muted">Blasted</div>
+              <div id="pause-blasts" class="text-xs font-black text-pink-500 tabular-nums">0 💥</div>
+            </div>
+            <div class="h-4 w-[1px] hud-divider"></div>
+            <div>
+              <div class="text-[8px] font-extrabold uppercase tracking-wider hud-text-muted">Orbs</div>
+              <div id="pause-credits" class="text-xs font-black text-sky-400 tabular-nums">0 💎</div>
+            </div>
+            <div class="h-4 w-[1px] hud-divider"></div>
+            <div>
+              <div class="text-[8px] font-extrabold uppercase tracking-wider hud-text-muted">Shield</div>
+              <div id="pause-shield" class="text-xs font-black text-emerald-400 tabular-nums">0 🛡️</div>
             </div>
           </div>
         </div>
 
         <!-- 1. World Biome (Geotype) Live Switcher -->
-        <div class="spatial-subcard rounded-3xl p-3.5 sm:p-4 mb-3">
-          <div class="flex items-center justify-between mb-2">
+        <div class="spatial-subcard rounded-2xl sm:rounded-3xl p-3 mb-2.5">
+          <div class="flex items-center justify-between mb-1.5">
             <div>
-              <div class="text-[10px] font-extrabold uppercase tracking-wider text-pink-500">World Biome (Geotype)</div>
-              <div class="text-xs hud-text-secondary">Switch terrain & weather mid-run without losing progress</div>
+              <div class="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-pink-500">World Biome (Geotype)</div>
+              <div class="text-[10px] sm:text-xs hud-text-secondary">Switch terrain & weather mid-run without losing progress</div>
             </div>
-            <span id="pause-current-biome-badge" class="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-pink-500/15 text-pink-500">Pastel Meadow</span>
+            <span id="pause-current-biome-badge" class="text-[9px] sm:text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-pink-500/15 text-pink-500">Pastel Meadow</span>
           </div>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            <button onclick="window.gameApp.setGeotype('meadow')" id="pause-geo-meadow" class="spatial-subcard active-selection-ring rounded-2xl p-2.5 text-left transition">
-              <div class="text-base mb-0.5">🌸</div>
-              <div class="font-extrabold text-xs hud-text-primary">Pastel Meadow</div>
-              <div class="text-[10px] hud-text-secondary">Mint & Sakura</div>
+            <button onclick="window.gameApp.setGeotype('meadow')" id="pause-geo-meadow" class="spatial-subcard active-selection-ring rounded-xl sm:rounded-2xl p-2 text-left transition">
+              <div class="text-sm mb-0.5">🌸</div>
+              <div class="font-extrabold text-[11px] sm:text-xs hud-text-primary">Pastel Meadow</div>
+              <div class="text-[9px] hud-text-secondary">Mint & Sakura</div>
             </button>
-            <button onclick="window.gameApp.setGeotype('snow')" id="pause-geo-snow" class="spatial-subcard rounded-2xl p-2.5 text-left transition">
-              <div class="text-base mb-0.5">❄️</div>
-              <div class="font-extrabold text-xs hud-text-primary">Snow Glacier</div>
-              <div class="text-[10px] hud-text-secondary">Ice & Snowfall</div>
+            <button onclick="window.gameApp.setGeotype('snow')" id="pause-geo-snow" class="spatial-subcard rounded-xl sm:rounded-2xl p-2 text-left transition">
+              <div class="text-sm mb-0.5">❄️</div>
+              <div class="font-extrabold text-[11px] sm:text-xs hud-text-primary">Snow Glacier</div>
+              <div class="text-[9px] hud-text-secondary">Ice & Snowfall</div>
             </button>
-            <button onclick="window.gameApp.setGeotype('underwater')" id="pause-geo-underwater" class="spatial-subcard rounded-2xl p-2.5 text-left transition">
-              <div class="text-base mb-0.5">🫧</div>
-              <div class="font-extrabold text-xs hud-text-primary">Underwater</div>
-              <div class="text-[10px] hud-text-secondary">Coral & Bubbles</div>
+            <button onclick="window.gameApp.setGeotype('underwater')" id="pause-geo-underwater" class="spatial-subcard rounded-xl sm:rounded-2xl p-2 text-left transition">
+              <div class="text-sm mb-0.5">🫧</div>
+              <div class="font-extrabold text-[11px] sm:text-xs hud-text-primary">Underwater</div>
+              <div class="text-[9px] hud-text-secondary">Coral & Bubbles</div>
             </button>
-            <button onclick="window.gameApp.setGeotype('canyon')" id="pause-geo-canyon" class="spatial-subcard rounded-2xl p-2.5 text-left transition">
-              <div class="text-base mb-0.5">🏜️</div>
-              <div class="font-extrabold text-xs hud-text-primary">Sunset Canyon</div>
-              <div class="text-[10px] hud-text-secondary">Peach Mesas</div>
+            <button onclick="window.gameApp.setGeotype('canyon')" id="pause-geo-canyon" class="spatial-subcard rounded-xl sm:rounded-2xl p-2 text-left transition">
+              <div class="text-sm mb-0.5">🏜️</div>
+              <div class="font-extrabold text-[11px] sm:text-xs hud-text-primary">Sunset Canyon</div>
+              <div class="text-[9px] hud-text-secondary">Peach Mesas</div>
             </button>
           </div>
         </div>
 
-        <!-- 2. Sky Time (Day vs Night) & UI Glass Appearance (White vs Dark Mode) -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+        <!-- 2. Sky Time (Day vs Night), UI Glass Mode & Graphics Def Mode -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mb-2.5">
           <!-- Sky Atmosphere Time -->
-          <div class="spatial-subcard rounded-3xl p-3.5">
-            <div class="text-[10px] font-extrabold uppercase tracking-wider text-amber-500 mb-0.5">3D Sky Atmosphere</div>
-            <div class="text-xs font-bold hud-text-primary mb-2">Daylight vs Starlight Horizon</div>
-            <div class="grid grid-cols-2 gap-2">
-              <button onclick="window.gameApp.setSkyTimeMode('day')" id="pause-sky-day" class="spatial-subcard active-selection-ring rounded-2xl p-2.5 flex items-center gap-2 text-left transition">
-                <div class="w-8 h-8 rounded-xl bg-amber-400/20 text-amber-500 flex items-center justify-center shrink-0">
-                  <i class="fa-solid fa-sun text-sm"></i>
-                </div>
-                <div>
-                  <div class="text-xs font-extrabold hud-text-primary">Day Sky</div>
-                  <div class="text-[9px] hud-text-secondary">Solar Glow</div>
-                </div>
+          <div class="spatial-subcard rounded-2xl p-2.5">
+            <div class="text-[9px] font-extrabold uppercase tracking-wider text-amber-500 mb-0.5">3D Sky Time</div>
+            <div class="grid grid-cols-2 gap-1.5 mt-1">
+              <button onclick="window.gameApp.setSkyTimeMode('day')" id="pause-sky-day" class="spatial-subcard active-selection-ring rounded-xl p-2 flex items-center gap-1.5 text-left transition">
+                <i class="fa-solid fa-sun text-xs text-amber-500"></i>
+                <span class="text-[11px] font-extrabold hud-text-primary">Day</span>
               </button>
-              <button onclick="window.gameApp.setSkyTimeMode('night')" id="pause-sky-night" class="spatial-subcard rounded-2xl p-2.5 flex items-center gap-2 text-left transition">
-                <div class="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0">
-                  <i class="fa-solid fa-moon text-sm"></i>
-                </div>
-                <div>
-                  <div class="text-xs font-extrabold hud-text-primary">Night Sky</div>
-                  <div class="text-[9px] hud-text-secondary">Starfield</div>
-                </div>
+              <button onclick="window.gameApp.setSkyTimeMode('night')" id="pause-sky-night" class="spatial-subcard rounded-xl p-2 flex items-center gap-1.5 text-left transition">
+                <i class="fa-solid fa-moon text-xs text-indigo-400"></i>
+                <span class="text-[11px] font-extrabold hud-text-primary">Night</span>
               </button>
             </div>
           </div>
 
           <!-- UI Glass Theme (White vs Dark Mode) -->
-          <div class="spatial-subcard rounded-3xl p-3.5">
-            <div class="text-[10px] font-extrabold uppercase tracking-wider text-purple-500 mb-0.5">Glass Interface Mode</div>
-            <div class="text-xs font-bold hud-text-primary mb-2">White vs Dark Frosted Glass</div>
-            <div class="grid grid-cols-2 gap-2">
-              <button onclick="window.gameApp.setUITheme('light')" id="pause-theme-light" class="spatial-subcard active-selection-ring rounded-2xl p-2.5 flex items-center gap-2 text-left transition">
-                <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-200 to-pink-200 text-slate-800 flex items-center justify-center shrink-0">
-                  <i class="fa-solid fa-sun text-sm"></i>
-                </div>
-                <div>
-                  <div class="text-xs font-extrabold hud-text-primary">White Mode</div>
-                  <div class="text-[9px] hud-text-secondary">Pearl Glass</div>
-                </div>
+          <div class="spatial-subcard rounded-2xl p-2.5">
+            <div class="text-[9px] font-extrabold uppercase tracking-wider text-purple-500 mb-0.5">Glass Theme</div>
+            <div class="grid grid-cols-2 gap-1.5 mt-1">
+              <button onclick="window.gameApp.setUITheme('light')" id="pause-theme-light" class="spatial-subcard active-selection-ring rounded-xl p-2 flex items-center gap-1.5 text-left transition">
+                <i class="fa-solid fa-sun text-xs text-amber-500"></i>
+                <span class="text-[11px] font-extrabold hud-text-primary">White</span>
               </button>
-              <button onclick="window.gameApp.setUITheme('dark')" id="pause-theme-dark" class="spatial-subcard rounded-2xl p-2.5 flex items-center gap-2 text-left transition">
-                <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-slate-800 to-indigo-950 text-indigo-300 flex items-center justify-center shrink-0">
-                  <i class="fa-solid fa-moon text-sm"></i>
-                </div>
-                <div>
-                  <div class="text-xs font-extrabold hud-text-primary">Dark Mode</div>
-                  <div class="text-[9px] hud-text-secondary">Smoke Glass</div>
-                </div>
+              <button onclick="window.gameApp.setUITheme('dark')" id="pause-theme-dark" class="spatial-subcard rounded-xl p-2 flex items-center gap-1.5 text-left transition">
+                <i class="fa-solid fa-moon text-xs text-indigo-300"></i>
+                <span class="text-[11px] font-extrabold hud-text-primary">Dark</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Graphics Definition (HD vs LD 2GB RAM) -->
+          <div class="spatial-subcard rounded-2xl p-2.5">
+            <div class="text-[9px] font-extrabold uppercase tracking-wider text-emerald-500 mb-0.5">RAM & Graphics</div>
+            <div class="grid grid-cols-2 gap-1.5 mt-1">
+              <button onclick="window.gameApp.setGraphicsQuality('hd')" id="pause-gfx-hd" class="spatial-subcard active-selection-ring rounded-xl p-2 flex items-center gap-1.5 text-left transition">
+                <i class="fa-solid fa-wand-magic-sparkles text-xs text-emerald-400"></i>
+                <span class="text-[11px] font-extrabold hud-text-primary">HD</span>
+              </button>
+              <button onclick="window.gameApp.setGraphicsQuality('ld')" id="pause-gfx-ld" class="spatial-subcard rounded-xl p-2 flex items-center gap-1.5 text-left transition">
+                <i class="fa-solid fa-bolt text-xs text-amber-400"></i>
+                <span class="text-[11px] font-extrabold hud-text-primary">LD 2GB</span>
               </button>
             </div>
           </div>
         </div>
 
         <!-- 3. Camera Perspective Selector inside Pause Menu -->
-        <div class="spatial-subcard rounded-3xl p-3.5 mb-4">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-[10px] font-extrabold uppercase tracking-wider text-cyan-500">Camera Perspective</span>
-            <span class="text-[10px] hud-text-secondary">Active View</span>
+        <div class="spatial-subcard rounded-2xl sm:rounded-3xl p-3 mb-3.5">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-cyan-500">Camera Perspective</span>
+            <span class="text-[9px] sm:text-[10px] hud-text-secondary">Active View</span>
           </div>
           <div class="grid grid-cols-4 gap-2">
-            <button onclick="window.gameApp.selectCameraFromStudio(0)" id="pause-cam-0" class="spatial-subcard rounded-xl p-2 text-center transition">
+            <button onclick="window.gameApp.selectCameraFromStudio(0)" id="pause-cam-0" class="spatial-subcard rounded-xl p-1.5 text-center transition">
               <i class="fa-solid fa-car-rear text-xs text-pink-500"></i>
-              <div class="text-[10px] font-extrabold hud-text-primary mt-0.5">Chase</div>
+              <div class="text-[9px] sm:text-[10px] font-extrabold hud-text-primary mt-0.5">Chase</div>
             </button>
-            <button onclick="window.gameApp.selectCameraFromStudio(1)" id="pause-cam-1" class="spatial-subcard rounded-xl p-2 text-center transition">
+            <button onclick="window.gameApp.selectCameraFromStudio(1)" id="pause-cam-1" class="spatial-subcard rounded-xl p-1.5 text-center transition">
               <i class="fa-solid fa-eye text-xs text-cyan-500"></i>
-              <div class="text-[10px] font-extrabold hud-text-primary mt-0.5">Hood / POV</div>
+              <div class="text-[9px] sm:text-[10px] font-extrabold hud-text-primary mt-0.5">Hood / POV</div>
             </button>
-            <button onclick="window.gameApp.selectCameraFromStudio(2)" id="pause-cam-2" class="spatial-subcard rounded-xl p-2 text-center transition">
+            <button onclick="window.gameApp.selectCameraFromStudio(2)" id="pause-cam-2" class="spatial-subcard rounded-xl p-1.5 text-center transition">
               <i class="fa-solid fa-satellite text-xs text-purple-500"></i>
-              <div class="text-[10px] font-extrabold hud-text-primary mt-0.5">Top-Down</div>
+              <div class="text-[9px] sm:text-[10px] font-extrabold hud-text-primary mt-0.5">Top-Down</div>
             </button>
-            <button onclick="window.gameApp.selectCameraFromStudio(3)" id="pause-cam-3" class="spatial-subcard rounded-xl p-2 text-center transition">
+            <button onclick="window.gameApp.selectCameraFromStudio(3)" id="pause-cam-3" class="spatial-subcard rounded-xl p-1.5 text-center transition">
               <i class="fa-solid fa-film text-xs text-amber-500"></i>
-              <div class="text-[10px] font-extrabold hud-text-primary mt-0.5">Action Wide</div>
+              <div class="text-[9px] sm:text-[10px] font-extrabold hud-text-primary mt-0.5">Action Wide</div>
             </button>
           </div>
         </div>
 
         <!-- 4. Resume / Restart / Save & Leave Action Bar -->
-        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
-          <button onclick="window.gameApp.resumeGameWithCountdown()" class="flex-1 py-3.5 px-6 rounded-2xl bg-gradient-to-r from-emerald-400 via-teal-500 to-sky-500 text-white font-black text-xs sm:text-sm shadow-xl hover:opacity-95 hover:scale-[1.01] active:scale-98 transition flex items-center justify-center gap-2">
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+          <button onclick="window.gameApp.resumeGameWithCountdown()" class="flex-1 py-3 px-5 rounded-2xl bg-gradient-to-r from-emerald-400 via-teal-500 to-sky-500 text-white font-black text-xs sm:text-sm shadow-xl hover:opacity-95 hover:scale-[1.01] active:scale-98 transition flex items-center justify-center gap-2">
             <i class="fa-solid fa-play"></i>
             <span>RESUME ODYSSEY (3S COUNTDOWN)</span>
           </button>
-          <button onclick="window.gameApp.respawnAndRandomize()" class="py-3.5 px-4 rounded-2xl spatial-pill font-extrabold text-xs hud-text-primary hover:scale-[1.02] active:scale-95 transition flex items-center justify-center gap-1.5">
+          <button onclick="window.gameApp.respawnAndRandomize()" class="py-3 px-4 rounded-2xl spatial-pill font-extrabold text-xs hud-text-primary hover:scale-[1.02] active:scale-95 transition flex items-center justify-center gap-1.5">
             <i class="fa-solid fa-rotate-right text-pink-500"></i>
             <span>Restart</span>
           </button>
-          <button onclick="window.gameApp.saveAndLeaveGameplay()" class="py-3.5 px-4 rounded-2xl spatial-pill font-extrabold text-xs hud-text-primary hover:scale-[1.02] active:scale-95 transition flex items-center justify-center gap-1.5 border border-emerald-400/40" title="Save current score & time and leave to Studio">
+          <button onclick="window.gameApp.saveAndLeaveGameplay()" class="py-3 px-4 rounded-2xl spatial-pill font-extrabold text-xs hud-text-primary hover:scale-[1.02] active:scale-95 transition flex items-center justify-center gap-1.5 border border-emerald-400/40" title="Save current score & time and leave to Studio">
             <i class="fa-solid fa-floppy-disk text-emerald-400"></i>
             <span>Save Score & Leave</span>
           </button>
@@ -1006,7 +1071,7 @@
   <!-- 3-SECOND CIRCULAR ROTATING-RIM COUNTDOWN OVERLAY (#screen-countdown) -->
   <!-- =================================================================== -->
   <section id="screen-countdown" class="hidden fixed inset-0 z-40 pointer-events-none flex items-center justify-center p-4">
-    <div class="relative w-48 h-48 sm:w-56 sm:h-56 rounded-full spatial-glass flex items-center justify-center shadow-2xl">
+    <div class="relative w-44 h-44 sm:w-56 sm:h-56 rounded-full spatial-glass flex items-center justify-center shadow-2xl">
 
       <!-- Outer Rotating Rim (Rotates smoothly with each second) -->
       <div id="countdown-rim-rotator" class="countdown-outer-rim absolute inset-1.5 rounded-full pointer-events-none">
@@ -1038,8 +1103,8 @@
       <!-- Center Numeral & Status Caption -->
       <div class="relative z-10 flex flex-col items-center justify-center text-center">
         <span class="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.25em] text-pink-500 mb-0.5">Get Ready</span>
-        <div id="countdown-numeral" class="text-6xl sm:text-7xl font-black title-gradient leading-none tabular-nums">3</div>
-        <span id="countdown-subtext" class="text-[10px] font-extrabold hud-text-secondary tracking-widest uppercase mt-1.5">Resuming Odyssey</span>
+        <div id="countdown-numeral" class="text-5xl sm:text-7xl font-black title-gradient leading-none tabular-nums">3</div>
+        <span id="countdown-subtext" class="text-[9px] sm:text-[10px] font-extrabold hud-text-secondary tracking-widest uppercase mt-1.5">Resuming Odyssey</span>
       </div>
 
     </div>
@@ -1048,57 +1113,65 @@
   <!-- =================================================================== -->
   <!-- CRASH / RESPAWN MODAL (Glassmorphic Alert Sheet)                    -->
   <!-- =================================================================== -->
-  <section id="screen-gameover" class="hidden fixed inset-0 z-40 flex items-center justify-center p-4">
-    <div class="spatial-glass w-full max-w-md rounded-[36px] p-6 sm:p-7 text-center">
-      <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-pink-400 to-amber-300 text-white flex items-center justify-center text-3xl mx-auto mb-3 shadow-lg">
+  <section id="screen-gameover" class="hidden fixed inset-0 z-40 flex items-center justify-center modal-safe-Overlay">
+    <div class="spatial-glass w-full max-w-md modal-card-radius p-5 sm:p-7 text-center">
+      <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-3xl bg-gradient-to-tr from-pink-400 to-amber-300 text-white flex items-center justify-center text-2xl sm:text-3xl mx-auto mb-2.5 shadow-lg">
         <i class="fa-solid fa-burst"></i>
       </div>
-      <div class="inline-block px-3 py-0.5 rounded-full sou-badge text-[10px] font-extrabold hud-text-primary mb-1.5">
+      <div class="inline-block px-3 py-0.5 rounded-full sou-badge text-[9px] sm:text-[10px] font-extrabold hud-text-primary mb-1">
         "MADE BY SOU."
       </div>
-      <h2 class="text-2xl sm:text-3xl font-black hud-text-primary">Voxel Impact!</h2>
-      <p id="crash-subtitle" class="text-xs font-medium hud-text-secondary mt-1 mb-4">
+      <h2 class="text-xl sm:text-3xl font-black hud-text-primary">Voxel Impact!</h2>
+      <p id="crash-subtitle" class="text-[11px] sm:text-xs font-medium hud-text-secondary mt-1 mb-3.5">
         Terrain & obstacles will randomize upon respawn.
       </p>
 
       <!-- Current Run Stats -->
-      <div class="grid grid-cols-3 gap-2 spatial-subcard rounded-2xl p-3 mb-3">
+      <div class="grid grid-cols-4 gap-1.5 spatial-subcard rounded-2xl p-2.5 mb-2.5">
         <div>
-          <div class="text-[10px] font-bold uppercase hud-text-muted">Score</div>
-          <div id="final-score" class="text-lg sm:text-xl font-black hud-text-primary tabular-nums">0</div>
+          <div class="text-[9px] font-bold uppercase hud-text-muted">Score</div>
+          <div id="final-score" class="text-base sm:text-lg font-black hud-text-primary tabular-nums">0</div>
         </div>
         <div class="border-x border-white/20">
-          <div class="text-[10px] font-bold uppercase hud-text-muted">Survived</div>
-          <div id="final-time" class="text-lg sm:text-xl font-black text-cyan-400 tabular-nums">0.0s</div>
+          <div class="text-[9px] font-bold uppercase hud-text-muted">Survived</div>
+          <div id="final-time" class="text-base sm:text-lg font-black text-cyan-400 tabular-nums">0.0s</div>
+        </div>
+        <div class="border-r border-white/20">
+          <div class="text-[9px] font-bold uppercase hud-text-muted">Blasted</div>
+          <div id="final-blasts" class="text-base sm:text-lg font-black text-pink-400 tabular-nums">0</div>
         </div>
         <div>
-          <div class="text-[10px] font-bold uppercase hud-text-muted">Blasted</div>
-          <div id="final-blasts" class="text-lg sm:text-xl font-black text-pink-400 tabular-nums">0</div>
+          <div class="text-[9px] font-bold uppercase text-sky-400">Orbs</div>
+          <div id="final-credits" class="text-base sm:text-lg font-black text-sky-400 tabular-nums">0 💎</div>
         </div>
       </div>
 
       <!-- All-Time Personal Best Records -->
-      <div class="grid grid-cols-2 gap-2 spatial-subcard rounded-2xl p-2.5 mb-5">
+      <div class="grid grid-cols-3 gap-2 spatial-subcard rounded-2xl p-2.5 mb-4">
         <div>
-          <div class="text-[9px] font-extrabold uppercase tracking-wider text-purple-400">Highest Score</div>
-          <div id="final-best" class="text-base font-black text-purple-400 tabular-nums">0</div>
+          <div class="text-[8px] sm:text-[9px] font-extrabold uppercase tracking-wider text-purple-400">Highest Score</div>
+          <div id="final-best" class="text-sm sm:text-base font-black text-purple-400 tabular-nums">0</div>
         </div>
-        <div class="border-l border-white/20">
-          <div class="text-[9px] font-extrabold uppercase tracking-wider text-cyan-400">Longest Survival</div>
-          <div id="final-best-time" class="text-base font-black text-cyan-400 tabular-nums">0.0s</div>
+        <div class="border-x border-white/20">
+          <div class="text-[8px] sm:text-[9px] font-extrabold uppercase tracking-wider text-cyan-400">Longest Run</div>
+          <div id="final-best-time" class="text-sm sm:text-base font-black text-cyan-400 tabular-nums">0.0s</div>
+        </div>
+        <div>
+          <div class="text-[8px] sm:text-[9px] font-extrabold uppercase tracking-wider text-sky-400">Total Orbs</div>
+          <div id="final-total-credits" class="text-sm sm:text-base font-black text-sky-400 tabular-nums">0 💎</div>
         </div>
       </div>
 
-      <div class="flex flex-col sm:flex-row gap-2.5">
-        <button onclick="window.gameApp.respawnAndRandomize()" class="flex-1 py-3.5 px-5 rounded-2xl bg-gradient-to-r from-pink-400 via-purple-400 to-sky-400 text-white font-extrabold text-sm shadow-lg hover:opacity-95 active:scale-95 transition flex items-center justify-center gap-2">
+      <div class="flex flex-col sm:flex-row gap-2">
+        <button onclick="window.gameApp.respawnAndRandomize()" class="flex-1 py-3 px-5 rounded-2xl bg-gradient-to-r from-pink-400 via-purple-400 to-sky-400 text-white font-extrabold text-xs sm:text-sm shadow-lg hover:opacity-95 active:scale-95 transition flex items-center justify-center gap-2">
           <i class="fa-solid fa-rotate-right"></i>
           <span>Respawn (New Terrain)</span>
         </button>
-        <button onclick="window.gameApp.openGarageScreen()" class="py-3.5 px-5 rounded-2xl spatial-pill hud-text-primary font-extrabold text-sm active:scale-95 transition">
+        <button onclick="window.gameApp.openGarageScreen()" class="py-3 px-5 rounded-2xl spatial-pill hud-text-primary font-extrabold text-xs sm:text-sm active:scale-95 transition">
           Studio / Modes
         </button>
       </div>
-      <div class="mt-3 text-[11px] font-semibold hud-text-secondary">
+      <div class="mt-2.5 text-[10px] sm:text-[11px] font-semibold hud-text-secondary">
         Press <span class="keycap">SPACE</span> or <span class="keycap">ENTER</span> to Respawn immediately
       </div>
     </div>
