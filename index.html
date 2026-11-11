@@ -17,1096 +17,1874 @@
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
-  <!-- Custom Stylesheet -->
-  <link rel="stylesheet" href="./style.css" />
+  <style>
+    :root {
+      --light-glass-fill: rgba(250, 252, 255, 0.80);
+      --light-card-fill: rgba(255, 255, 255, 0.74);
+      --light-pill-fill: rgba(255, 255, 255, 0.82);
+
+      --dark-glass-fill: rgba(15, 23, 42, 0.86);
+      --dark-card-fill: rgba(30, 41, 59, 0.80);
+      --dark-pill-fill: rgba(30, 41, 59, 0.85);
+
+      --glass-fill: var(--light-glass-fill);
+      --card-fill: var(--light-card-fill);
+      --pill-fill: var(--light-pill-fill);
+
+      --glass-border: rgba(255, 255, 255, 0.92);
+      --glass-highlight: inset 0 1.5px 2px rgba(255, 255, 255, 0.98), inset 0 -1px 1.5px rgba(255, 255, 255, 0.45);
+      --glass-shadow: 0 20px 48px rgba(15, 23, 42, 0.14), 0 4px 14px rgba(15, 23, 42, 0.08), var(--glass-highlight);
+      --glass-pill-shadow: 0 6px 18px rgba(15, 23, 42, 0.09), var(--glass-highlight);
+      --text-primary: #0f172a;
+      --text-secondary: #334155;
+      --text-muted: #64748b;
+      --sub-surface: rgba(255, 255, 255, 0.68);
+
+      /* Strict Viewport-Proportional Fluid Scale Tokens:
+         Smaller Screen = Smaller UIs | Larger Screen = Larger UIs */
+      --hud-pad-x: clamp(0.4rem, 1.5vw, 1.5rem);
+      --hud-pad-y: clamp(0.35rem, 1.2vh, 1.15rem);
+      --hud-gap: clamp(0.28rem, 0.85vmin, 0.75rem);
+      --pill-pad-x: clamp(0.45rem, 1.1vw, 0.95rem);
+      --pill-pad-y: clamp(0.24rem, 0.65vh, 0.52rem);
+      --pill-font: clamp(0.62rem, 1.15vmin, 0.86rem);
+      --brand-font: clamp(0.75rem, 1.55vmin, 1.15rem);
+      --brand-sub-font: clamp(0.48rem, 0.85vmin, 0.65rem);
+      --telemetry-val-font: clamp(0.82rem, 1.95vmin, 1.45rem);
+      --telemetry-lbl-font: clamp(0.46rem, 0.85vmin, 0.66rem);
+      --speed-val-font: clamp(1.15rem, 2.8vmin, 2.2rem);
+      --icon-btn-size: clamp(1.95rem, 4.4vmin, 2.85rem);
+      --touch-btn-size: clamp(2.85rem, 11.2vmin, 5.1rem);
+      --touch-sub-w: clamp(2.7rem, 10.5vmin, 4.8rem);
+      --touch-sub-h: clamp(2.2rem, 8.2vmin, 3.9rem);
+      --modal-width: clamp(18.5rem, 88vw, 42rem);
+      --modal-pad: clamp(0.85rem, 2.6vmin, 1.85rem);
+      --modal-title: clamp(1.1rem, 2.6vmin, 1.75rem);
+      --glass-blur: 20px;
+      --pill-blur: 14px;
+    }
+
+    /* Ultra-compact mobile screens (<380px width or <480px height landscape) */
+    @media (max-width: 380px), (max-height: 480px) {
+      :root {
+        --hud-pad-x: 0.35rem;
+        --hud-pad-y: 0.25rem;
+        --hud-gap: 0.22rem;
+        --pill-pad-x: 0.38rem;
+        --pill-pad-y: 0.18rem;
+        --pill-font: 0.58rem;
+        --telemetry-val-font: 0.76rem;
+        --telemetry-lbl-font: 0.44rem;
+        --speed-val-font: 1.05rem;
+        --icon-btn-size: 1.75rem;
+        --touch-btn-size: clamp(2.45rem, 10vmin, 3.4rem);
+        --touch-sub-w: clamp(2.35rem, 9.5vmin, 3.2rem);
+        --touch-sub-h: clamp(1.95rem, 7.5vmin, 2.65rem);
+      }
+    }
+
+    /* Large Desktop / 2K / 4K Displays scale up generously */
+    @media (min-width: 1536px) and (min-height: 850px) {
+      :root {
+        --hud-pad-x: clamp(1.25rem, 2vw, 2.25rem);
+        --hud-pad-y: clamp(1rem, 1.6vh, 1.75rem);
+        --hud-gap: 0.85rem;
+        --pill-font: 0.92rem;
+        --brand-font: 1.25rem;
+        --telemetry-val-font: 1.55rem;
+        --telemetry-lbl-font: 0.7rem;
+        --speed-val-font: 2.4rem;
+        --icon-btn-size: 3.1rem;
+        --touch-btn-size: 5.4rem;
+        --modal-width: clamp(28rem, 52vw, 48rem);
+      }
+    }
+
+    /* 2GB RAM / Low-Spec Mode: Removes heavy multi-pass blur & shadows for 60FPS lock */
+    body.low-spec-mode {
+      --glass-blur: 0px;
+      --pill-blur: 0px;
+      --light-glass-fill: rgba(248, 250, 252, 0.95);
+      --light-card-fill: rgba(255, 255, 255, 0.94);
+      --light-pill-fill: rgba(255, 255, 255, 0.95);
+      --dark-glass-fill: rgba(15, 23, 42, 0.95);
+      --dark-card-fill: rgba(30, 41, 59, 0.94);
+      --dark-pill-fill: rgba(30, 41, 59, 0.95);
+      --glass-shadow: 0 8px 20px rgba(15, 23, 42, 0.18);
+      --glass-pill-shadow: 0 3px 8px rgba(15, 23, 42, 0.12);
+    }
+
+    body.dark-ui {
+      --glass-fill: var(--dark-glass-fill);
+      --card-fill: var(--dark-card-fill);
+      --pill-fill: var(--dark-pill-fill);
+
+      --glass-border: rgba(255, 255, 255, 0.20);
+      --glass-highlight: inset 0 1.5px 2px rgba(255, 255, 255, 0.24), inset 0 -1px 1.5px rgba(255, 255, 255, 0.08);
+      --glass-shadow: 0 20px 50px rgba(2, 6, 23, 0.62), 0 4px 16px rgba(0, 0, 0, 0.42), var(--glass-highlight);
+      --glass-pill-shadow: 0 6px 18px rgba(2, 6, 23, 0.48), var(--glass-highlight);
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --sub-surface: rgba(30, 41, 59, 0.72);
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+      background: linear-gradient(180deg, #ffdde1 0%, #fff0f3 100%);
+      color: var(--text-primary);
+      touch-action: none;
+    }
+
+    #game-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      z-index: 1;
+      pointer-events: auto;
+    }
+
+    /* Translucent Frosted Liquid Glass Surfaces */
+    .spatial-glass {
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+      background-color: var(--glass-fill);
+      backdrop-filter: blur(var(--glass-blur)) saturate(170%);
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(170%);
+      border: 1.5px solid var(--glass-border);
+      box-shadow: var(--glass-shadow);
+      color: var(--text-primary);
+      transition: background-color 0.35s ease, border-color 0.35s ease, color 0.35s ease;
+    }
+
+    .spatial-subcard {
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+      background-color: var(--card-fill);
+      border: 1.2px solid var(--glass-border);
+      box-shadow: var(--glass-pill-shadow);
+      color: var(--text-primary);
+      transition: transform 0.2s ease, background-color 0.35s ease, border-color 0.35s ease;
+    }
+
+    .spatial-pill {
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+      background-color: var(--pill-fill);
+      backdrop-filter: blur(var(--pill-blur)) saturate(165%);
+      -webkit-backdrop-filter: blur(var(--pill-blur)) saturate(165%);
+      border: 1.2px solid var(--glass-border);
+      box-shadow: var(--glass-pill-shadow);
+      color: var(--text-primary);
+      transition: transform 0.18s ease, background-color 0.35s ease, border-color 0.35s ease;
+    }
+
+    body.low-spec-mode .spatial-glass,
+    body.low-spec-mode .spatial-pill,
+    .spatial-glass .spatial-pill {
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+
+    /* ============================================================================
+       STRICT NON-OVERLAPPING HUD MASTER GRID
+       Divides screen into 3 dedicated horizontal bands:
+       Row 1 (Top): Brand + Telemetry + Quick Actions (never overlaps center)
+       Row 2 (Middle): Clear 3D Driving Viewport + non-overlapping top-center toast
+       Row 3 (Bottom): Left Steering + Center Speed/Nitro Deck + Right Pedals
+       ============================================================================ */
+    #hud-root {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      pointer-events: none;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      grid-template-columns: 100%;
+      padding:
+        max(var(--hud-pad-y), env(safe-area-inset-top, 0px))
+        max(var(--hud-pad-x), env(safe-area-inset-right, 0px))
+        max(var(--hud-pad-y), env(safe-area-inset-bottom, 0px))
+        max(var(--hud-pad-x), env(safe-area-inset-left, 0px));
+      gap: var(--hud-gap);
+      width: 100%;
+      height: 100%;
+    }
+
+    .hud-interactive {
+      pointer-events: auto;
+    }
+
+    /* Top Bar Grid: Strictly separated Left, Center, Right zones with automatic wrapping if ultra-narrow */
+    #hud-top-bar {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: center;
+      gap: var(--hud-gap);
+      width: 100%;
+    }
+
+    @media (max-width: 680px) {
+      #hud-top-bar {
+        grid-template-columns: 1fr auto;
+        grid-template-areas:
+          "brand actions"
+          "stats stats";
+      }
+      #hud-brand-zone { grid-area: brand; }
+      #hud-actions-zone { grid-area: actions; justify-self: end; }
+      #hud-stats-zone { grid-area: stats; justify-content: space-between; width: 100%; }
+    }
+
+    /* Telemetry Strip */
+    .telemetry-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--hud-gap);
+      width: 100%;
+      max-width: clamp(16rem, 48vw, 34rem);
+      margin: 0 auto;
+    }
+
+    .telemetry-card {
+      padding: var(--pill-pad-y) var(--pill-pad-x);
+      border-radius: clamp(0.65rem, 1.5vmin, 1.1rem);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+    }
+
+    .telemetry-lbl {
+      font-size: var(--telemetry-lbl-font);
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    .telemetry-val {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: var(--telemetry-val-font);
+      font-weight: 800;
+      line-height: 1.15;
+      white-space: nowrap;
+    }
+
+    /* Center Viewport Zone (Row 2) - Dedicated clear window for the 3D scene */
+    #hud-center-zone {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    /* Bottom Dock (Row 3): Left Controls | Center Speedometer & Nitro | Right Controls */
+    #hud-bottom-bar {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: end;
+      gap: var(--hud-gap);
+      width: 100%;
+    }
+
+    /* Action / Icon Buttons */
+    .hud-icon-btn {
+      width: var(--icon-btn-size);
+      height: var(--icon-btn-size);
+      border-radius: 9999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(0.72rem, 1.45vmin, 1.05rem);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .hud-icon-btn:active, .touch-ctrl-btn:active {
+      transform: scale(0.92);
+    }
+
+    /* Ergonomic Touch Controls */
+    .touch-ctrl-btn {
+      width: var(--touch-btn-size);
+      height: var(--touch-btn-size);
+      border-radius: clamp(0.85rem, 2.2vmin, 1.5rem);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      cursor: pointer;
+      font-size: clamp(0.9rem, 2.2vmin, 1.45rem);
+      transition: transform 0.12s ease, background-color 0.2s ease;
+    }
+
+    .touch-sub-btn {
+      width: var(--touch-sub-w);
+      height: var(--touch-sub-h);
+      border-radius: clamp(0.75rem, 1.8vmin, 1.25rem);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1px;
+      cursor: pointer;
+      font-size: clamp(0.78rem, 1.8vmin, 1.15rem);
+    }
+
+    .touch-ctrl-btn.active-press, .touch-sub-btn.active-press {
+      transform: scale(0.91);
+      border-color: #38bdf8;
+      box-shadow: 0 0 18px rgba(56, 189, 248, 0.45);
+    }
+
+    /* Center Speedometer Pod */
+    #speedometer-pod {
+      margin: 0 auto;
+      padding: clamp(0.35rem, 1vmin, 0.75rem) clamp(0.75rem, 2.2vw, 1.6rem);
+      border-radius: clamp(0.95rem, 2.4vmin, 1.65rem);
+      width: 100%;
+      max-width: clamp(11.5rem, 34vw, 22rem);
+      display: flex;
+      flex-direction: column;
+      gap: clamp(0.2rem, 0.6vmin, 0.45rem);
+    }
+
+    /* Strict Modal Manager Layer — Only 1 modal active at a time, never overlaps HUD buttons */
+    #modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      background: rgba(9, 13, 24, 0.48);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding:
+        max(0.75rem, env(safe-area-inset-top, 0px))
+        max(0.75rem, env(safe-area-inset-right, 0px))
+        max(0.75rem, env(safe-area-inset-bottom, 0px))
+        max(0.75rem, env(safe-area-inset-left, 0px));
+    }
+
+    body.low-spec-mode #modal-backdrop {
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      background: rgba(9, 13, 24, 0.76);
+    }
+
+    #modal-backdrop.open {
+      display: flex;
+    }
+
+    /* When any modal is open, disable pointer-events and subtly dim HUD so zero visual collision happens */
+    body.modal-open #hud-root {
+      opacity: 0.22;
+      pointer-events: none !important;
+      transition: opacity 0.25s ease;
+    }
+
+    .modal-window {
+      width: var(--modal-width);
+      max-width: 100%;
+      max-height: calc(100dvh - clamp(1.5rem, 5vh, 3.5rem));
+      border-radius: clamp(1.1rem, 2.8vmin, 1.85rem);
+      padding: var(--modal-pad);
+      display: none;
+      flex-direction: column;
+      gap: clamp(0.65rem, 1.8vmin, 1.25rem);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+
+    .modal-window.active {
+      display: flex;
+      animation: modalPop 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes modalPop {
+      from { opacity: 0; transform: scale(0.95) translateY(8px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    /* Custom subtle scrollbar inside modals */
+    .modal-window::-webkit-scrollbar {
+      width: 5px;
+    }
+    .modal-window::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.4);
+      border-radius: 999px;
+    }
+  </style>
 </head>
-<body class="relative select-none">
+<body>
 
-  <!-- 3D WebGL Main World Canvas -->
-  <canvas id="game-canvas"></canvas>
+  <!-- 3D WebGL Viewport Canvas -->
+  <canvas id="game-canvas" aria-label="Velozaar 3D Racing Viewport"></canvas>
 
-  <!-- =================================================================== -->
-  <!-- UNIFIED NON-OVERLAPPING FLEX VIEWPORT HUD (Top Bar + Telemetry)     -->
-  <!-- =================================================================== -->
-  <div class="fixed inset-0 z-30 pointer-events-none flex flex-col justify-between hud-safe-container sm:p-4 md:p-5">
+  <!-- STRICT NON-OVERLAPPING 3-ROW HUD GRID -->
+  <div id="hud-root">
 
-    <!-- TOP STACK: Header Controls Row + Centralized Unhide Row + Telemetry Row -->
-    <div class="w-full max-w-6xl mx-auto flex flex-col gap-2 sm:gap-2.5">
-
-      <!-- ROW 1: Refined Dual-Mode Brand Pill + Geotype & Utility Bar -->
-      <header class="w-full flex flex-wrap items-center justify-between gap-2 sm:gap-3">
-        <!-- Brand & Signature Pill with Luxury Dual-Odyssey Crest + Individual Hide Button -->
-        <div id="hud-panel-brand" class="ui-hideable pointer-events-auto spatial-pill rounded-full pl-2 pr-2.5 py-1 sm:px-3 sm:py-1.5 flex items-center gap-2.5 shrink-0">
-          <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-950 flex items-center justify-center shadow-lg overflow-hidden ring-1 ring-white/40 shrink-0">
-            <!-- Luxury Velozaar Crest (Miniaturized High-Contrast Vector Marque) -->
-            <svg viewBox="0 0 120 120" class="w-full h-full">
-              <defs>
-                <linearGradient id="hudBg" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#090d1a"/>
-                  <stop offset="52%" stop-color="#1b1438"/>
-                  <stop offset="100%" stop-color="#0a192f"/>
-                </linearGradient>
-                <linearGradient id="hudRim" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#ff7597"/>
-                  <stop offset="50%" stop-color="#f8fafc"/>
-                  <stop offset="100%" stop-color="#38bdf8"/>
-                </linearGradient>
-                <linearGradient id="hudChrome" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stop-color="#ffffff"/>
-                  <stop offset="55%" stop-color="#e2e8f0"/>
-                  <stop offset="100%" stop-color="#94a3b8"/>
-                </linearGradient>
-                <linearGradient id="hudSkyWing" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#38bdf8"/>
-                  <stop offset="100%" stop-color="#2dd4bf"/>
-                </linearGradient>
-                <linearGradient id="hudRoadWing" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#ff7597"/>
-                  <stop offset="100%" stop-color="#a855f7"/>
-                </linearGradient>
-              </defs>
-              <rect width="120" height="120" rx="28" fill="url(#hudRim)"/>
-              <rect x="3.5" y="3.5" width="113" height="113" rx="25" fill="url(#hudBg)"/>
-              <!-- Faceted Valley Peaks -->
-              <polygon points="12,74 38,38 62,74" fill="url(#hudSkyWing)" opacity="0.28"/>
-              <polygon points="58,74 84,36 108,74" fill="url(#hudRoadWing)" opacity="0.28"/>
-              <!-- Left Sky/River Aero Wing & Right Highway Speed Wing -->
-              <path d="M14 40 L38 40 L58 92 L42 92 Z" fill="url(#hudSkyWing)"/>
-              <path d="M106 40 L82 40 L62 92 L78 92 Z" fill="url(#hudRoadWing)"/>
-              <!-- Hot Air Balloon Crown at Crest Apex -->
-              <circle cx="60" cy="27" r="10.5" fill="url(#hudRoadWing)"/>
-              <path d="M54 18 Q60 27 54 36 M66 18 Q60 27 66 36 M60 16.5 L60 37.5" stroke="#ffffff" stroke-width="1.6" fill="none" opacity="0.85"/>
-              <!-- Sculpted 3D Chrome 'V' Marque -->
-              <path d="M26 28 L44 28 L60 72 L76 28 L94 28 L66 98 L54 98 Z" fill="url(#hudChrome)"/>
-              <!-- Hypercar Front LED Visor Silhouette -->
-              <path d="M34 80 Q60 71 86 80 L92 88 Q60 83 28 88 Z" fill="#0f172a" stroke="#ffffff" stroke-width="2"/>
-              <path d="M36 83 L48 81 M84 83 L72 81" stroke="#38bdf8" stroke-width="2.8" stroke-linecap="round"/>
-            </svg>
+    <!-- ROW 1: TOP BAR (Brand Crest | Telemetry Strip | Quick Controls) -->
+    <header id="hud-top-bar">
+      <!-- Left: Brand & Biome Pill -->
+      <div id="hud-brand-zone" class="flex items-center" style="gap: var(--hud-gap);">
+        <button id="btn-open-menu" class="spatial-pill hud-interactive flex items-center text-left cursor-pointer" style="padding: var(--pill-pad-y) var(--pill-pad-x); border-radius: 9999px; gap: var(--hud-gap);" title="Open Odyssey Command Center">
+          <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-tr from-rose-400 via-fuchsia-500 to-sky-400 flex items-center justify-center text-white font-black shadow-sm flex-shrink-0" style="font-size: var(--pill-font);">
+            V
           </div>
-          <div class="flex flex-col leading-none">
-            <div class="flex items-center gap-1.5">
-              <span class="font-black hud-text-primary text-xs sm:text-sm tracking-tight">Velozaar</span>
-              <i id="hud-mode-icon" class="fa-solid fa-car-side text-[10px] text-pink-500"></i>
+          <div class="leading-tight pr-1">
+            <div class="font-extrabold tracking-tight flex items-center gap-1.5" style="font-size: var(--brand-font);">
+              <span>VELOZAAR</span>
+              <span id="fps-badge" class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-500 border border-emerald-500/30">60 FPS</span>
             </div>
-            <span class="text-[8px] sm:text-[9px] font-extrabold tracking-widest text-purple-400 uppercase mt-0.5">"MADE BY SOU."</span>
+            <div class="font-bold tracking-widest uppercase opacity-70" style="font-size: var(--brand-sub-font);">
+              MADE BY SOU. • <span id="hud-biome-name">SAKURA HORIZON</span>
+            </div>
           </div>
-          <button onclick="window.gameApp.hideUIElement('brand')" class="ui-hide-chip ml-0.5" title="Hide Brand Pill">
-            <i class="fa-solid fa-eye-slash text-[10px]"></i>
-          </button>
-        </div>
-
-        <!-- Right Controls Cluster: Biomes, UI Theme, Sky Time, Camera, Device, Audio, Pause, Studio + Individual Hide -->
-        <div id="hud-panel-controls" class="ui-hideable pointer-events-auto flex items-center gap-1.5 sm:gap-2 flex-wrap justify-end">
-          <!-- Geotype Selector Capsule (Equally Distanced Buttons) -->
-          <div class="spatial-pill rounded-full p-1 flex items-center gap-1.5">
-            <button onclick="window.gameApp.setGeotype('meadow')" id="hud-geo-meadow" class="geo-pill px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-bold transition-all flex items-center gap-1.5 bg-pink-500/20 text-pink-500 shadow-sm" title="Pastel Meadow (Key B)">
-              <span>🌸</span><span class="hidden lg:inline">Meadow</span>
-            </button>
-            <button onclick="window.gameApp.setGeotype('snow')" id="hud-geo-snow" class="geo-pill px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-semibold transition-all flex items-center gap-1.5 hud-text-secondary hover:bg-white/20" title="Snow Wonderland (Key B)">
-              <span>❄️</span><span class="hidden lg:inline">Snow</span>
-            </button>
-            <button onclick="window.gameApp.setGeotype('underwater')" id="hud-geo-underwater" class="geo-pill px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-semibold transition-all flex items-center gap-1.5 hud-text-secondary hover:bg-white/20" title="Underwater Reef (Key B)">
-              <span>🫧</span><span class="hidden lg:inline">Underwater</span>
-            </button>
-            <button onclick="window.gameApp.setGeotype('canyon')" id="hud-geo-canyon" class="geo-pill px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-semibold transition-all flex items-center gap-1.5 hud-text-secondary hover:bg-white/20" title="Sunset Canyon (Key B)">
-              <span>🏜️</span><span class="hidden lg:inline">Canyon</span>
-            </button>
-          </div>
-
-          <!-- White / Dark UI Theme Mode Button -->
-          <button onclick="window.gameApp.toggleUITheme()" id="hud-theme-btn" class="spatial-pill rounded-full px-3 py-1.5 text-[11px] sm:text-xs font-bold hud-text-primary hover:scale-105 active:scale-95 transition flex items-center gap-1.5" title="Switch White / Dark Glass UI (Key T)">
-            <i id="hud-theme-icon" class="fa-solid fa-circle-half-stroke text-purple-400"></i>
-            <span id="hud-theme-label" class="hidden sm:inline">White UI</span>
-          </button>
-
-          <!-- Day / Night 3D Sky Mode Switcher Button -->
-          <button onclick="window.gameApp.toggleSkyTimeMode()" id="hud-sky-btn" class="spatial-pill rounded-full px-3 py-1.5 text-[11px] sm:text-xs font-bold hud-text-primary hover:scale-105 active:scale-95 transition flex items-center gap-1.5" title="Switch Day / Night Sky (Key N)">
-            <i id="hud-sky-icon" class="fa-solid fa-sun text-amber-400"></i>
-            <span id="hud-sky-label" class="hidden sm:inline">Day</span>
-          </button>
-
-          <!-- Camera Perspective Switcher Button -->
-          <button onclick="window.gameApp.cycleCameraView()" id="hud-cam-btn" class="spatial-pill rounded-full px-3 py-1.5 text-[11px] sm:text-xs font-bold hud-text-primary hover:scale-105 active:scale-95 transition flex items-center gap-1.5" title="Switch Camera Angle (Key C)">
-            <i class="fa-solid fa-video text-cyan-400"></i>
-            <span id="hud-cam-label" class="hidden md:inline">Chase Cam</span>
-          </button>
-
-          <!-- Device Mode Switcher Button -->
-          <button onclick="window.gameApp.toggleDeviceType()" id="hud-device-btn" class="spatial-pill rounded-full px-3 py-1.5 text-[11px] sm:text-xs font-bold hud-text-primary hover:scale-105 active:scale-95 transition flex items-center gap-1.5" title="Switch Input Device">
-            <i id="hud-device-icon" class="fa-solid fa-laptop text-purple-400"></i>
-            <span id="hud-device-label" class="hidden xl:inline">PC / Keys</span>
-          </button>
-
-          <!-- Sound Toggle Button -->
-          <button onclick="window.gameApp.toggleAudio()" id="hud-audio-btn" class="spatial-pill w-8 h-8 rounded-full flex items-center justify-center hud-text-primary hover:scale-105 active:scale-95 transition" title="Toggle Audio Synthesizer (Key M)">
-            <i id="hud-audio-icon" class="fa-solid fa-volume-high text-[11px] text-pink-400"></i>
-          </button>
-
-          <!-- Pause / Resume Button (Visible during gameplay) -->
-          <button onclick="window.gameApp.togglePause()" id="hud-pause-btn" class="hidden spatial-pill rounded-full px-3 py-1.5 text-[11px] sm:text-xs font-bold hud-text-primary hover:scale-105 active:scale-95 transition items-center gap-1.5" title="Pause / Resume Game (Key P or ESC)">
-            <i id="hud-pause-icon" class="fa-solid fa-pause text-amber-400"></i>
-            <span id="hud-pause-label" class="hidden sm:inline">Pause</span>
-          </button>
-
-          <!-- Studio / Menu Button (Visible during gameplay) -->
-          <button onclick="window.gameApp.openGarageScreen()" id="hud-menu-btn" class="hidden spatial-pill rounded-full px-3 py-1.5 text-[11px] sm:text-xs font-bold hud-text-primary hover:scale-105 active:scale-95 transition items-center gap-1.5">
-            <i class="fa-solid fa-sliders text-pink-400"></i>
-            <span class="hidden sm:inline">Studio</span>
-          </button>
-
-          <!-- Hide Top Controls Cluster Button -->
-          <button onclick="window.gameApp.hideUIElement('controls')" class="spatial-pill w-8 h-8 rounded-full flex items-center justify-center hud-text-secondary hover:text-pink-500 hover:scale-105 active:scale-95 transition" title="Hide Top Controls Bar">
-            <i class="fa-solid fa-eye-slash text-[11px]"></i>
-          </button>
-        </div>
-      </header>
-
-      <!-- CENTRALIZED UNHIDE ALL UI BUTTON ROW (Strictly Non-Overlapping & Centered) -->
-      <div class="w-full flex justify-center items-center pointer-events-none">
-        <button id="hud-unhide-all-btn" onclick="window.gameApp.unhideAllUI()" class="ui-hideable ui-unhide-hidden pointer-events-auto spatial-pill rounded-full px-4 py-1.5 text-xs font-black hud-text-primary shadow-lg hover:scale-105 active:scale-95 transition flex items-center gap-2 border border-pink-400/50">
-          <i class="fa-solid fa-eye text-pink-500"></i>
-          <span>Unhide All UI</span>
-          <span id="hud-unhide-count" class="px-2 py-0.5 rounded-full text-[10px] font-black bg-pink-500 text-white leading-none">1</span>
         </button>
       </div>
 
-      <!-- ROW 2: IN-GAME TELEMETRY HUD (Score, Stopwatch, Best, Speedometer) -->
-      <div id="gameplay-hud" class="hidden w-full flex flex-col items-center gap-2">
-        <div class="w-full flex items-stretch justify-between gap-2 sm:gap-3">
-
-          <!-- Left Telemetry Capsule: Score, Survival Stopwatch, Blasts & High Score + Individual Hide -->
-          <div id="hud-panel-telemetry-left" class="ui-hideable pointer-events-auto spatial-pill rounded-2xl sm:rounded-3xl px-3 py-1.5 sm:px-4 sm:py-2 flex items-center gap-3 sm:gap-4 flex-wrap">
-            <div>
-              <div class="text-[8px] sm:text-[10px] font-extrabold uppercase tracking-wider hud-text-secondary">Score</div>
-              <div id="hud-score" class="text-sm sm:text-xl font-black hud-text-primary tabular-nums leading-tight">0</div>
-            </div>
-
-            <div class="h-6 w-[1px] hud-divider"></div>
-
-            <div>
-              <div class="text-[8px] sm:text-[10px] font-extrabold uppercase tracking-wider hud-text-secondary flex items-center gap-1">
-                <i class="fa-regular fa-clock text-cyan-400 text-[9px]"></i>
-                <span>Time</span>
-              </div>
-              <div id="hud-time" class="text-xs sm:text-base font-black text-cyan-500 tabular-nums leading-tight">0.0s</div>
-            </div>
-
-            <div class="h-6 w-[1px] hud-divider"></div>
-
-            <div>
-              <div class="text-[8px] sm:text-[10px] font-extrabold uppercase tracking-wider hud-text-secondary">Blasted</div>
-              <div id="hud-blasts" class="text-xs sm:text-base font-extrabold text-pink-400 tabular-nums leading-tight">0 💥</div>
-            </div>
-
-            <div class="hidden md:block h-6 w-[1px] hud-divider"></div>
-
-            <div class="hidden md:block">
-              <div class="text-[9px] font-extrabold uppercase tracking-wider hud-text-secondary">Best Run</div>
-              <div class="text-xs sm:text-sm font-extrabold text-purple-400 tabular-nums leading-tight">
-                <span id="hud-high-score">0</span> <span class="hud-text-muted font-semibold mx-0.5">•</span> <span id="hud-best-time" class="text-cyan-400">0.0s</span>
-              </div>
-            </div>
-
-            <button onclick="window.gameApp.hideUIElement('telemetryLeft')" class="ui-hide-chip" title="Hide Telemetry Panel">
-              <i class="fa-solid fa-eye-slash text-[10px]"></i>
-            </button>
-          </div>
-
-          <!-- Right Telemetry Capsule: Speedometer & Throttle Gauge + Individual Hide -->
-          <div id="hud-panel-telemetry-right" class="ui-hideable pointer-events-auto spatial-pill rounded-2xl sm:rounded-3xl px-3 py-1.5 sm:px-4 sm:py-2 flex items-center gap-3 shrink-0">
-            <div class="text-right">
-              <div class="text-[8px] sm:text-[10px] font-extrabold uppercase tracking-wider hud-text-secondary" id="hud-speed-unit">SPEED (KM/H)</div>
-              <div class="flex items-baseline justify-end gap-1.5">
-                <span id="hud-speed" class="text-sm sm:text-xl font-black hud-text-primary tabular-nums leading-tight">120</span>
-                <span id="hud-throttle-state" class="text-[8px] sm:text-[10px] font-extrabold px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-500 border border-emerald-400/40">CRUISE</span>
-              </div>
-            </div>
-            <div class="w-2 sm:w-2.5 h-7 sm:h-9 bg-slate-300/40 rounded-full overflow-hidden p-0.5 flex items-end">
-              <div id="hud-speed-bar" class="w-full bg-gradient-to-t from-cyan-400 via-purple-400 to-pink-400 rounded-full transition-all duration-150" style="height: 50%;"></div>
-            </div>
-            <button onclick="window.gameApp.hideUIElement('telemetryRight')" class="ui-hide-chip" title="Hide Speedometer Panel">
-              <i class="fa-solid fa-eye-slash text-[10px]"></i>
-            </button>
-          </div>
+      <!-- Center: 4-Column Proportional Telemetry Strip -->
+      <div id="hud-stats-zone" class="telemetry-grid hud-interactive">
+        <div class="spatial-pill telemetry-card">
+          <span class="telemetry-lbl">SCORE</span>
+          <span id="hud-score" class="telemetry-val">0</span>
         </div>
-
-        <!-- Dynamic Toast Pill -->
-        <div id="hud-toast" class="opacity-0 transform -translate-y-2 transition-all duration-300 spatial-pill rounded-full px-3.5 py-1 text-[10px] sm:text-xs font-extrabold hud-text-primary flex items-center gap-1.5 shadow-sm">
-          <i class="fa-solid fa-wand-magic-sparkles text-pink-400"></i>
-          <span id="hud-toast-text">CONTINUOUS WORLD WRAPPED • TERRAIN RANDOMIZED!</span>
+        <div class="spatial-pill telemetry-card">
+          <span class="telemetry-lbl">DISTANCE</span>
+          <span id="hud-distance" class="telemetry-val">0.0 km</span>
         </div>
-      </div>
-    </div>
-
-    <!-- BOTTOM STACK: Touch Controls OR PC Keyboard Hint Bar -->
-    <div class="w-full max-w-6xl mx-auto">
-
-      <!-- KEYBOARD CONTROLS HINT PILL (Laptop Mode Only — Equally Distanced Wordings + Individual Hide) -->
-      <div id="pc-controls-hint" class="hidden w-full flex justify-center pb-1">
-        <div id="hud-panel-pc-hint" class="ui-hideable pointer-events-auto spatial-pill rounded-full px-4 py-1.5 flex flex-wrap items-center justify-center gap-3 text-[11px] font-semibold hud-text-primary">
-          <span class="flex items-center gap-1.5"><span class="keycap">←</span><span class="keycap">→</span><span>Steer</span></span>
-          <span class="hud-text-muted">•</span>
-          <span class="flex items-center gap-1.5"><span class="keycap">↑</span><span class="keycap">↓</span><span>Throttle</span></span>
-          <span class="hud-text-muted">•</span>
-          <span class="flex items-center gap-1.5"><span class="keycap">SPACE</span><span>Blast</span></span>
-          <span class="hud-text-muted">•</span>
-          <span class="flex items-center gap-1.5"><span class="keycap">C</span><span>Cam</span></span>
-          <span class="hud-text-muted">•</span>
-          <span class="flex items-center gap-1.5"><span class="keycap">B</span><span>Biome</span></span>
-          <span class="hud-text-muted hidden sm:inline">•</span>
-          <span class="hidden sm:flex items-center gap-1.5"><span class="keycap">N</span><span>Sky</span></span>
-          <span class="hud-text-muted hidden md:inline">•</span>
-          <span class="hidden md:flex items-center gap-1.5"><span class="keycap">T</span><span>Theme</span></span>
-          <span class="hud-text-muted hidden md:inline">•</span>
-          <span class="hidden md:flex items-center gap-1.5"><span class="keycap">P</span><span>Pause</span></span>
-          <span class="hud-text-muted">•</span>
-          <button onclick="window.gameApp.hideUIElement('pcHint')" class="ui-hide-chip" title="Hide Keyboard Controls Bar">
-            <i class="fa-solid fa-eye-slash text-[10px]"></i>
-          </button>
+        <div class="spatial-pill telemetry-card">
+          <span class="telemetry-lbl">CREDITS</span>
+          <span class="telemetry-val text-amber-500 flex items-center gap-1">
+            <i class="fa-solid fa-coins text-[0.75em]"></i>
+            <span id="hud-coins">0</span>
+          </span>
+        </div>
+        <div class="spatial-pill telemetry-card">
+          <span class="telemetry-lbl">COMBO</span>
+          <span id="hud-combo" class="telemetry-val text-sky-500">x1</span>
         </div>
       </div>
 
-      <!-- TOUCH CONTROLS OVERLAY (Mobile Mode — Permanently Visible, Cannot Be Hidden) -->
-      <div id="touch-controls-overlay" class="hidden w-full flex items-end justify-between gap-2 pt-2">
-        <div class="pointer-events-auto flex items-end gap-1.5 sm:gap-2.5">
-          <button id="touch-left" class="spatial-btn-touch w-14 h-14 sm:w-20 sm:h-20 rounded-[22px] sm:rounded-3xl flex flex-col items-center justify-center" aria-label="Steer Left">
-            <i class="fa-solid fa-chevron-left text-lg sm:text-2xl text-purple-400"></i>
-            <span class="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider mt-0.5 hud-text-secondary">Left</span>
-          </button>
-          <button id="touch-right" class="spatial-btn-touch w-14 h-14 sm:w-20 sm:h-20 rounded-[22px] sm:rounded-3xl flex flex-col items-center justify-center" aria-label="Steer Right">
-            <i class="fa-solid fa-chevron-right text-lg sm:text-2xl text-purple-400"></i>
-            <span class="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider mt-0.5 hud-text-secondary">Right</span>
-          </button>
-          <button id="touch-cam" class="spatial-btn-touch w-12 h-12 sm:w-16 sm:h-16 rounded-2xl flex flex-col items-center justify-center border-cyan-300/60" aria-label="Switch Camera View">
-            <i class="fa-solid fa-video text-sm sm:text-lg text-cyan-400"></i>
-            <span class="text-[8px] sm:text-[9px] font-extrabold uppercase tracking-wider mt-0.5 hud-text-secondary">Cam</span>
-          </button>
+      <!-- Right: Non-Overlapping Quick Action Buttons -->
+      <div id="hud-actions-zone" class="flex items-center hud-interactive" style="gap: var(--hud-gap);">
+        <button id="btn-biome-cycle" class="spatial-pill hud-icon-btn" title="Switch Odyssey World (B)">
+          <i class="fa-solid fa-earth-asia text-rose-500"></i>
+        </button>
+        <button id="btn-garage" class="spatial-pill hud-icon-btn" title="Luxury Garage (G)">
+          <i class="fa-solid fa-car-side text-sky-500"></i>
+        </button>
+        <button id="btn-camera" class="spatial-pill hud-icon-btn" title="Cycle Camera View (C)">
+          <i class="fa-solid fa-video text-purple-500"></i>
+        </button>
+        <button id="btn-perf-mode" class="spatial-pill hud-icon-btn" title="Toggle 2GB RAM Eco Turbo Mode">
+          <i class="fa-solid fa-bolt-lightning text-amber-500"></i>
+        </button>
+        <button id="btn-theme" class="spatial-pill hud-icon-btn" title="Toggle Day/Night Glass UI (T)">
+          <i id="icon-theme" class="fa-solid fa-moon"></i>
+        </button>
+        <button id="btn-audio" class="spatial-pill hud-icon-btn" title="Toggle Synth Audio (M)">
+          <i id="icon-audio" class="fa-solid fa-volume-high"></i>
+        </button>
+        <button id="btn-pause" class="spatial-pill hud-icon-btn" title="Pause Odyssey (P)">
+          <i id="icon-pause" class="fa-solid fa-pause"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- ROW 2: MIDDLE VIEWPORT SAFE ZONE (Strictly reserved for 3D Road & compact non-overlapping event banner) -->
+    <main id="hud-center-zone">
+      <div id="event-banner" class="spatial-pill px-4 py-1.5 rounded-full font-extrabold tracking-wider uppercase transition-all duration-300 opacity-0 -translate-y-3 pointer-events-none mt-1" style="font-size: var(--pill-font);">
+        <span id="event-banner-text" class="bg-gradient-to-r from-rose-500 via-purple-500 to-sky-500 bg-clip-text text-transparent">NEAR MISS +250</span>
+      </div>
+    </main>
+
+    <!-- ROW 3: BOTTOM BAR (Left Steer Pads | Center Speedometer & Nitro Bar | Right Pedals) -->
+    <footer id="hud-bottom-bar">
+      <!-- Left Touch Cluster: Steer Left & Right -->
+      <div class="flex items-end hud-interactive" style="gap: var(--hud-gap);">
+        <button id="touch-left" class="spatial-pill touch-ctrl-btn" aria-label="Steer Left">
+          <i class="fa-solid fa-chevron-left"></i>
+          <span class="font-bold uppercase tracking-wider" style="font-size: var(--telemetry-lbl-font);">LEFT</span>
+        </button>
+        <button id="touch-right" class="spatial-pill touch-ctrl-btn" aria-label="Steer Right">
+          <i class="fa-solid fa-chevron-right"></i>
+          <span class="font-bold uppercase tracking-wider" style="font-size: var(--telemetry-lbl-font);">RIGHT</span>
+        </button>
+      </div>
+
+      <!-- Center Telemetry Pod: Speedometer, Gear, Shield & Nitro Bar -->
+      <div id="speedometer-pod" class="spatial-glass hud-interactive">
+        <div class="flex items-baseline justify-between gap-2">
+          <div class="flex items-baseline gap-1.5">
+            <span id="hud-speed" class="font-black tracking-tight" style="font-size: var(--speed-val-font); font-family: 'Plus Jakarta Sans', sans-serif; line-height: 1;">0</span>
+            <span class="font-extrabold uppercase opacity-60" style="font-size: var(--telemetry-lbl-font);">KM/H</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span id="hud-shield-pill" class="px-2 py-0.5 rounded-full font-extrabold uppercase bg-sky-500/20 text-sky-500 border border-sky-400/30 hidden" style="font-size: var(--telemetry-lbl-font);">
+              <i class="fa-solid fa-shield-halved mr-0.5"></i>SHIELD
+            </span>
+            <span id="hud-gear" class="px-2 py-0.5 rounded-md font-black bg-rose-500/15 text-rose-500 border border-rose-500/30" style="font-size: var(--pill-font);">
+              D1
+            </span>
+          </div>
         </div>
-
-        <div class="pointer-events-auto flex items-end gap-1.5 sm:gap-2.5">
-          <button id="touch-fire" class="spatial-btn-touch w-14 h-14 sm:w-20 sm:h-20 rounded-full !bg-gradient-to-tr !from-pink-400/90 !to-purple-500/90 !text-white !border-white/80 flex flex-col items-center justify-center shadow-xl" aria-label="Fire Blaster">
-            <i class="fa-solid fa-crosshairs text-base sm:text-xl"></i>
-            <span class="text-[8px] sm:text-[10px] font-extrabold uppercase tracking-wider mt-0.5">Blast</span>
-          </button>
-
-          <div class="flex flex-col gap-1.5 sm:gap-2">
-            <button id="touch-up" class="spatial-btn-touch w-14 h-12 sm:w-20 sm:h-16 rounded-2xl flex flex-col items-center justify-center" aria-label="Accelerate">
-              <i class="fa-solid fa-angles-up text-sm sm:text-lg text-emerald-400"></i>
-              <span class="text-[8px] sm:text-[9px] font-extrabold uppercase tracking-wider hud-text-secondary">Accel</span>
-            </button>
-            <button id="touch-down" class="spatial-btn-touch w-14 h-12 sm:w-20 sm:h-16 rounded-2xl flex flex-col items-center justify-center" aria-label="Decelerate">
-              <i class="fa-solid fa-angles-down text-sm sm:text-lg text-rose-400"></i>
-              <span class="text-[8px] sm:text-[9px] font-extrabold uppercase tracking-wider hud-text-secondary">Brake</span>
-            </button>
+        <!-- Nitro Charge Bar -->
+        <div class="w-full flex flex-col gap-1">
+          <div class="flex justify-between items-center font-extrabold uppercase tracking-wider" style="font-size: var(--telemetry-lbl-font);">
+            <span class="text-sky-500 flex items-center gap-1"><i class="fa-solid fa-fire-flame-curved"></i> HYPER NITRO</span>
+            <span id="hud-nitro-pct">100%</span>
+          </div>
+          <div class="w-full h-2 rounded-full bg-slate-500/20 overflow-hidden p-[1px]">
+            <div id="hud-nitro-bar" class="h-full rounded-full bg-gradient-to-r from-sky-400 via-fuchsia-500 to-rose-500 transition-transform duration-75 origin-left" style="width: 100%;"></div>
           </div>
         </div>
       </div>
 
-    </div>
+      <!-- Right Touch Cluster: Brake/Drift & Nitro Boost -->
+      <div class="flex items-end hud-interactive" style="gap: var(--hud-gap);">
+        <button id="touch-brake" class="spatial-pill touch-sub-btn" aria-label="Brake or Drift">
+          <i class="fa-solid fa-gauge-simple text-rose-500"></i>
+          <span class="font-bold uppercase tracking-wider" style="font-size: var(--telemetry-lbl-font);">BRAKE</span>
+        </button>
+        <button id="touch-nitro" class="spatial-pill touch-ctrl-btn border-sky-400/60" aria-label="Activate Hyper Nitro">
+          <i class="fa-solid fa-rocket text-sky-400"></i>
+          <span class="font-bold uppercase tracking-wider text-sky-500" style="font-size: var(--telemetry-lbl-font);">NITRO</span>
+        </button>
+      </div>
+    </footer>
+
   </div>
 
-  <!-- =================================================================== -->
-  <!-- PART 1 OF 3: INITIATION, LUXURY CREST, THEME & DEVICE SELECTION     -->
-  <!-- =================================================================== -->
-  <section id="screen-device" class="fixed inset-0 z-40 flex items-center justify-center p-3 sm:p-4 pt-14">
-    <div class="spatial-glass modal-smooth-enter w-full max-w-lg rounded-[38px]">
-      <div class="modal-scroll max-h-[86vh] overflow-y-auto p-6 sm:p-8 text-center">
+  <!-- ============================================================================
+       STRICT SINGLE-INSTANCE MODAL MANAGER (Never overlaps HUD or stacks modals)
+       ============================================================================ -->
+  <div id="modal-backdrop" role="dialog" aria-modal="true">
 
-        <!-- Step Badge & Signature -->
-        <div class="flex items-center justify-center gap-2 mb-3">
-          <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-pink-500/15 text-pink-500 border border-pink-400/30">
-            Part 1 of 3 • Initiation
-          </span>
-          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full sou-badge text-[10px] font-extrabold hud-text-primary">
-            <span class="w-2 h-2 rounded-full bg-pink-500 animate-ping"></span>
-            <span>"MADE BY SOU."</span>
-          </div>
-        </div>
-
-        <!-- Luxury Bespoke Dual-Odyssey Crest Emblem -->
-        <div class="relative w-24 h-24 sm:w-28 sm:h-28 mx-auto mb-3 rounded-[28px] p-1 bg-gradient-to-tr from-pink-400 via-slate-100 to-sky-400 shadow-2xl">
-          <svg viewBox="0 0 160 160" class="w-full h-full rounded-[24px]">
-            <defs>
-              <linearGradient id="crestBg" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#070a14"/>
-                <stop offset="50%" stop-color="#171230"/>
-                <stop offset="100%" stop-color="#09192b"/>
-              </linearGradient>
-              <linearGradient id="crestSky" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#38bdf8"/>
-                <stop offset="100%" stop-color="#2dd4bf"/>
-              </linearGradient>
-              <linearGradient id="crestRoad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#ff7597"/>
-                <stop offset="100%" stop-color="#c084fc"/>
-              </linearGradient>
-              <linearGradient id="crestPlatinum" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#ffffff"/>
-                <stop offset="48%" stop-color="#f1f5f9"/>
-                <stop offset="100%" stop-color="#94a3b8"/>
-              </linearGradient>
-            </defs>
-            <rect width="160" height="160" rx="34" fill="url(#crestBg)"/>
-            <circle cx="80" cy="80" r="66" fill="none" stroke="url(#crestPlatinum)" stroke-width="1.2" opacity="0.25"/>
-            <!-- Twin Valley Mountain Peaks -->
-            <polygon points="18,104 54,48 84,104" fill="url(#crestSky)" opacity="0.25"/>
-            <polygon points="76,104 108,46 142,104" fill="url(#crestRoad)" opacity="0.25"/>
-            <!-- Left Sky Wing & Right Highway Wing -->
-            <path d="M20 52 L50 52 L76 124 L56 124 Z" fill="url(#crestSky)"/>
-            <path d="M140 52 L110 52 L84 124 L104 124 Z" fill="url(#crestRoad)"/>
-            <!-- Hot Air Balloon Crown -->
-            <circle cx="80" cy="34" r="14" fill="url(#crestRoad)"/>
-            <path d="M72 22 Q80 34 72 46 M88 22 Q80 34 88 46 M80 20 L80 48" stroke="#ffffff" stroke-width="2" fill="none" opacity="0.9"/>
-            <!-- 3D Bevelled Platinum 'V' Monogram -->
-            <path d="M36 38 L58 38 L80 96 L102 38 L124 38 L88 130 L72 130 Z" fill="url(#crestPlatinum)"/>
-            <!-- Hypercar Front Visor & Laser Headlights -->
-            <path d="M44 108 Q80 96 116 108 L124 120 Q80 113 36 120 Z" fill="#090d1a" stroke="#ffffff" stroke-width="2.5"/>
-            <path d="M46 113 L64 110 M114 113 L96 110" stroke="#38bdf8" stroke-width="3.5" stroke-linecap="round"/>
-          </svg>
-        </div>
-
-        <!-- Solid Black (White Mode) / Solid White (Dark Mode) Title -->
-        <h1 class="text-4xl sm:text-5xl font-black tracking-tight title-gradient mb-1.5">Velozaar</h1>
-        <p class="hud-text-secondary text-xs sm:text-sm font-semibold max-w-md mx-auto mb-5">
-          Dual-Odyssey 3D World • <span class="text-pink-500 font-extrabold">The Endless Highway</span> & <span class="text-sky-500 font-extrabold">Beyond the Fearless Sky</span>
-        </p>
-
-        <!-- Interface Appearance (White Mode vs Dark Mode) -->
-        <div class="spatial-subcard rounded-3xl p-4 mb-4 text-left">
-          <div class="flex items-center justify-between mb-2.5">
-            <div>
-              <div class="text-[10px] font-extrabold uppercase tracking-widest text-purple-500">Interface Appearance</div>
-              <div class="text-xs sm:text-sm font-extrabold hud-text-primary">Choose Translucent Glass Theme</div>
-            </div>
-            <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-purple-500/15 text-purple-400">Live Switch</span>
-          </div>
-          <div class="grid grid-cols-2 gap-2.5">
-            <button onclick="window.gameApp.setUITheme('light')" id="init-theme-light" class="spatial-subcard active-selection-ring rounded-2xl p-3 flex items-center gap-2.5 text-left transition">
-              <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-200 to-pink-200 text-slate-800 flex items-center justify-center shadow-sm shrink-0">
-                <i class="fa-solid fa-sun"></i>
-              </div>
-              <div>
-                <div class="font-extrabold text-xs sm:text-sm hud-text-primary">White Mode</div>
-                <div class="text-[10px] hud-text-secondary">Pearl Frosted Glass</div>
-              </div>
-            </button>
-            <button onclick="window.gameApp.setUITheme('dark')" id="init-theme-dark" class="spatial-subcard rounded-2xl p-3 flex items-center gap-2.5 text-left transition">
-              <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-slate-800 to-indigo-950 text-indigo-300 flex items-center justify-center shadow-sm shrink-0">
-                <i class="fa-solid fa-moon"></i>
-              </div>
-              <div>
-                <div class="font-extrabold text-xs sm:text-sm hud-text-primary">Dark Mode</div>
-                <div class="text-[10px] hud-text-secondary">Obsidian Smoke Glass</div>
-              </div>
-            </button>
-          </div>
-        </div>
-
-        <!-- Control Device Selection -->
-        <div class="spatial-subcard rounded-3xl p-4 text-left">
-          <div class="text-[10px] font-extrabold uppercase tracking-widest text-pink-500 mb-0.5">Select Control Device</div>
-          <h2 class="text-sm sm:text-base font-extrabold hud-text-primary mb-3">How are you initiating Velozaar today?</h2>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <button onclick="window.gameApp.selectDeviceAndGoToStep2('touch')" class="spatial-subcard spatial-card-hover group text-left rounded-2xl p-4 flex flex-col justify-between">
-              <div class="flex items-center justify-between mb-2.5">
-                <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-pink-400 to-rose-500 text-white flex items-center justify-center text-base shadow-md">
-                  <i class="fa-solid fa-mobile-screen-button"></i>
-                </div>
-                <span class="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-pink-500/15 text-pink-500">Touch UI</span>
-              </div>
-              <div>
-                <div class="font-extrabold hud-text-primary text-sm">Smartphone / Tablet</div>
-                <p class="text-[11px] hud-text-secondary mt-0.5">On-screen steering, throttle pedals, blaster & camera toggle.</p>
-              </div>
-            </button>
-
-            <button onclick="window.gameApp.selectDeviceAndGoToStep2('keyboard')" class="spatial-subcard spatial-card-hover group text-left rounded-2xl p-4 flex flex-col justify-between">
-              <div class="flex items-center justify-between mb-2.5">
-                <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-purple-500 to-cyan-500 text-white flex items-center justify-center text-base shadow-md">
-                  <i class="fa-solid fa-laptop"></i>
-                </div>
-                <span class="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-purple-500/15 text-purple-400">Keyboard UI</span>
-              </div>
-              <div>
-                <div class="font-extrabold hud-text-primary text-sm">Laptop / Desktop PC</div>
-                <p class="text-[11px] hud-text-secondary mt-0.5">Arrow/WASD steering, Space blaster, 'C' Cam & 'P' Pause.</p>
-              </div>
-            </button>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- =================================================================== -->
-  <!-- PART 2 OF 3: CHOOSE ODYSSEY MODE & WORLD BIOME                      -->
-  <!-- =================================================================== -->
-  <section id="screen-mode" class="hidden fixed inset-0 z-40 flex items-center justify-center p-3 sm:p-4 pt-14">
-    <div class="spatial-glass modal-smooth-enter w-full max-w-3xl rounded-[38px]">
-      <div class="modal-scroll max-h-[86vh] overflow-y-auto p-5 sm:p-7">
-
-        <!-- Header Row -->
-        <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
-          <div class="flex items-center gap-2.5">
-            <button onclick="window.gameApp.goToStep1()" class="spatial-pill w-9 h-9 rounded-full flex items-center justify-center hud-text-primary hover:scale-105 active:scale-95 transition" title="Back to Step 1">
-              <i class="fa-solid fa-arrow-left text-xs"></i>
-            </button>
-            <div>
-              <div class="text-[10px] font-black uppercase tracking-widest text-pink-500">Part 2 of 3 • Choose Your Odyssey</div>
-              <h2 class="text-xl sm:text-2xl font-black title-gradient">Select Game Mode & Biome</h2>
-            </div>
-          </div>
-
-          <div class="spatial-pill rounded-2xl px-3.5 py-1.5 text-center">
-            <div class="text-[9px] font-extrabold uppercase tracking-wider hud-text-muted">Personal Best</div>
-            <div class="text-xs font-black hud-text-primary">
-              🏆 <span id="menu-best-score">0</span> pts • ⏱️ <span id="menu-best-time" class="text-cyan-400">0.0s</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Saved Gameplay Session Banner (Shown when user pauses & leaves a run) -->
-        <div id="saved-session-banner-mode" class="hidden spatial-subcard active-selection-ring rounded-3xl p-3.5 mb-4 flex flex-wrap items-center justify-between gap-3">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-400 to-teal-500 text-white flex items-center justify-center text-base shadow-md shrink-0">
-              <i class="fa-solid fa-bookmark"></i>
-            </div>
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="text-[10px] font-black uppercase tracking-wider text-emerald-500">Saved Gameplay Progress</span>
-                <span id="saved-session-mode-tag" class="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-pink-500/15 text-pink-500">The Endless Highway</span>
-              </div>
-              <div class="text-xs sm:text-sm font-black hud-text-primary mt-0.5">
-                Score: <span id="saved-session-score" class="text-pink-500">0</span> pts • Time: <span id="saved-session-time" class="text-cyan-400">0.0s</span> • Blasted: <span id="saved-session-blasts" class="text-purple-400">0 💥</span>
-              </div>
-            </div>
-          </div>
-          <div class="flex items-center gap-2">
-            <button onclick="window.gameApp.resumeSavedSession()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 text-white font-black text-xs shadow-md hover:opacity-95 active:scale-95 transition flex items-center gap-1.5">
-              <i class="fa-solid fa-play"></i>
-              <span>Resume Saved Run</span>
-            </button>
-            <button onclick="window.gameApp.clearSavedSession()" class="spatial-pill px-2.5 py-2 rounded-xl text-xs font-bold hud-text-secondary hover:text-rose-500 transition" title="Dismiss Saved Run">
-              <i class="fa-solid fa-xmark"></i>
-            </button>
-          </div>
-        </div>
-
-        <!-- Two Odyssey Mode Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-          <!-- Mode 1: The Endless Highway -->
-          <button onclick="window.gameApp.selectModeAndGoToStep3('car')" class="spatial-subcard spatial-card-hover group text-left rounded-3xl p-5 flex flex-col justify-between">
-            <div>
-              <div class="flex items-center justify-between mb-3">
-                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-rose-500 to-pink-400 text-white shadow-lg flex items-center justify-center text-xl">
-                  <i class="fa-solid fa-road"></i>
-                </div>
-                <span class="px-3 py-1 rounded-full bg-pink-500 text-white font-black text-[10px] tracking-wider shadow-sm">
-                  PLAY CAR MODE
-                </span>
-              </div>
-              <h3 class="text-lg sm:text-xl font-black hud-text-primary group-hover:text-pink-500 transition">The Endless Highway</h3>
-              <p class="text-xs hud-text-secondary mt-1 leading-relaxed">
-                Tear down the high-contrast ash asphalt in a custom Sports Coupe, Muscle GT, Cyber SUV, or Formula Apex against multi-lane highway traffic.
-              </p>
-            </div>
-            <div class="mt-4 pt-3 border-t border-slate-400/20 flex items-center justify-between text-xs font-extrabold text-pink-500">
-              <span>Customize Highway Machine</span>
-              <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition"></i>
-            </div>
-          </button>
-
-          <!-- Mode 2: Beyond the Fearless Sky -->
-          <button onclick="window.gameApp.selectModeAndGoToStep3('balloon')" class="spatial-subcard spatial-card-hover group text-left rounded-3xl p-5 flex flex-col justify-between">
-            <div>
-              <div class="flex items-center justify-between mb-3">
-                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-sky-400 to-indigo-500 text-white shadow-lg flex items-center justify-center text-xl">
-                  <i class="fa-solid fa-cloud-sun"></i>
-                </div>
-                <span class="px-3 py-1 rounded-full bg-sky-500 text-white font-black text-[10px] tracking-wider shadow-sm">
-                  PLAY SKY MODE
-                </span>
-              </div>
-              <h3 class="text-lg sm:text-xl font-black hud-text-primary group-hover:text-sky-400 transition">Beyond the Fearless Sky</h3>
-              <p class="text-xs hud-text-secondary mt-1 leading-relaxed">
-                Soar above a crystal valley river between twin mountain ridges in a Hot Air Balloon, Aero Blimp, Mini Aircraft, or Paper Plane.
-              </p>
-            </div>
-            <div class="mt-4 pt-3 border-t border-slate-400/20 flex items-center justify-between text-xs font-extrabold text-sky-400">
-              <span>Customize Sky Craft</span>
-              <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition"></i>
-            </div>
-          </button>
-        </div>
-
-        <!-- World Geotype (Biome) Selector -->
-        <div class="spatial-subcard rounded-3xl p-4">
-          <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
-            <div>
-              <div class="text-[10px] font-extrabold uppercase tracking-wider text-purple-400">World Geotype (Biome)</div>
-              <div class="text-xs hud-text-secondary">Choose your starting environment</div>
-            </div>
-            <label class="inline-flex items-center gap-2 cursor-pointer spatial-pill px-3 py-1 rounded-full text-[11px] font-bold hud-text-primary">
-              <input type="checkbox" id="toggle-random-geotype" checked onchange="window.gameApp.toggleRandomizeGeotype(this.checked)" class="rounded text-pink-500 focus:ring-0" />
-              <span>Randomize Terrain on Respawn/Wrap</span>
-            </label>
-          </div>
-
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-            <button onclick="window.gameApp.setGeotype('meadow')" id="menu-geo-meadow" class="spatial-subcard active-selection-ring rounded-2xl p-2.5 text-left transition">
-              <div class="text-base mb-0.5">🌸</div>
-              <div class="font-extrabold text-xs hud-text-primary">Pastel Meadow</div>
-              <div class="text-[10px] hud-text-secondary">Deep Valley & Sakura</div>
-            </button>
-            <button onclick="window.gameApp.setGeotype('snow')" id="menu-geo-snow" class="spatial-subcard rounded-2xl p-2.5 text-left transition">
-              <div class="text-base mb-0.5">❄️</div>
-              <div class="font-extrabold text-xs hud-text-primary">Snow Glacier</div>
-              <div class="text-[10px] hud-text-secondary">Alpine Slate & Ice</div>
-            </button>
-            <button onclick="window.gameApp.setGeotype('underwater')" id="menu-geo-underwater" class="spatial-subcard rounded-2xl p-2.5 text-left transition">
-              <div class="text-base mb-0.5">🫧</div>
-              <div class="font-extrabold text-xs hud-text-primary">Underwater</div>
-              <div class="text-[10px] hud-text-secondary">Abyssal Reef & Coral</div>
-            </button>
-            <button onclick="window.gameApp.setGeotype('canyon')" id="menu-geo-canyon" class="spatial-subcard rounded-2xl p-2.5 text-left transition">
-              <div class="text-base mb-0.5">🏜️</div>
-              <div class="font-extrabold text-xs hud-text-primary">Sunset Canyon</div>
-              <div class="text-[10px] hud-text-secondary">Terracotta Mesas</div>
-            </button>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- =================================================================== -->
-  <!-- PART 3 OF 3: BESPOKE GARAGE, 360° LIVE PREVIEW, SPECS & PASTEL LAB  -->
-  <!-- =================================================================== -->
-  <section id="screen-garage" class="hidden fixed inset-0 z-40 flex items-center justify-center p-2.5 sm:p-4 pt-14">
-    <div class="spatial-glass modal-smooth-enter w-full max-w-5xl rounded-[36px]">
-      <div class="modal-scroll max-h-[86vh] overflow-y-auto p-4 sm:p-6">
-
-        <!-- Studio Top Bar -->
-        <div class="flex flex-wrap items-center justify-between gap-2 mb-3.5">
-          <div class="flex items-center gap-2.5">
-            <button onclick="window.gameApp.goToStep2()" class="spatial-pill w-9 h-9 rounded-full flex items-center justify-center hud-text-primary hover:scale-105 active:scale-95 transition" title="Back to Mode Select">
-              <i class="fa-solid fa-arrow-left text-xs"></i>
-            </button>
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="text-[10px] font-black uppercase tracking-widest text-pink-500">Part 3 of 3 • Bespoke Studio</span>
-                <span id="studio-mode-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-pink-500/15 text-pink-500">The Endless Highway</span>
-              </div>
-              <h2 class="text-lg sm:text-2xl font-black title-gradient">Customize Vehicle, Pastel Palette & Camera</h2>
-            </div>
-          </div>
-
-          <!-- Quick Mode Switcher Tabs inside Studio -->
-          <div class="spatial-pill rounded-full p-1 flex items-center gap-1">
-            <button onclick="window.gameApp.switchStudioMode('car')" id="studio-tab-car" class="px-3 py-1 rounded-full text-xs font-extrabold transition bg-pink-500 text-white shadow-sm">
-              <i class="fa-solid fa-car-side mr-1"></i>Highway
-            </button>
-            <button onclick="window.gameApp.switchStudioMode('balloon')" id="studio-tab-sky" class="px-3 py-1 rounded-full text-xs font-extrabold transition hud-text-secondary">
-              <i class="fa-solid fa-cloud-sun mr-1"></i>Sky Valley
-            </button>
-          </div>
-        </div>
-
-        <!-- Saved Gameplay Session Banner inside Studio -->
-        <div id="saved-session-banner-garage" class="hidden spatial-subcard active-selection-ring rounded-2xl p-3 mb-3 flex flex-wrap items-center justify-between gap-2.5">
-          <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm shrink-0">
-              <i class="fa-solid fa-floppy-disk"></i>
-            </div>
-            <div class="text-xs font-extrabold hud-text-primary">
-              Saved Score on Pause: <span id="garage-saved-score" class="text-pink-500 font-black">0</span> pts • <span id="garage-saved-time" class="text-cyan-400 font-black">0.0s</span> • <span id="garage-saved-blasts" class="text-purple-400 font-black">0 💥</span>
-              <span class="text-[10px] hud-text-secondary block sm:inline sm:ml-1">— Recorded when you paused & left gameplay.</span>
-            </div>
-          </div>
-          <div class="flex items-center gap-2">
-            <button onclick="window.gameApp.resumeSavedSession()" class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 text-white font-black text-xs shadow-md hover:opacity-95 active:scale-95 transition flex items-center gap-1.5">
-              <i class="fa-solid fa-play text-[10px]"></i>
-              <span>Resume From Saved Score</span>
-            </button>
-            <button onclick="window.gameApp.clearSavedSession()" class="spatial-pill px-2.5 py-1.5 rounded-xl text-xs font-bold hud-text-secondary hover:text-rose-500 transition" title="Dismiss Saved Checkpoint">
-              <i class="fa-solid fa-xmark"></i>
-            </button>
-          </div>
-        </div>
-
-        <!-- 2-Column Bespoke Studio Grid: Left = 360° 3D Showroom + Specs | Right = Craft, Pastel Palette & Camera -->
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-3.5 mb-4">
-
-          <!-- LEFT COLUMN (5 cols): Interactive 360° 3D Showroom + Specifications -->
-          <div class="md:col-span-5 flex flex-col gap-3">
-            <!-- Dark High-Contrast 3D Showroom Viewport -->
-            <div id="preview-canvas-container" class="showroom-viewport relative w-full h-48 sm:h-56 rounded-3xl overflow-hidden cursor-grab active:cursor-grabbing flex items-center justify-center">
-              <canvas id="preview-canvas" class="w-full h-full block"></canvas>
-
-              <!-- Top-Left Live 3D Badge -->
-              <div class="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full bg-slate-900/80 border border-white/20 text-[10px] font-extrabold text-white flex items-center gap-1.5 pointer-events-none">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span>360° Live 3D Preview</span>
-              </div>
-
-              <!-- Top-Right Drag Hint -->
-              <div class="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full bg-slate-900/75 border border-white/15 text-[10px] font-bold text-slate-300 pointer-events-none">
-                <i class="fa-solid fa-hand-pointer mr-1 text-pink-400"></i>Drag to Rotate
-              </div>
-
-              <!-- Bottom Camera Angle Preset Pills -->
-              <div class="absolute bottom-2.5 inset-x-2.5 flex items-center justify-between gap-1">
-                <div class="flex items-center gap-1">
-                  <button type="button" onclick="window.gameApp.setPreviewAngle(0.65, 0.22)" class="px-2.5 py-1 rounded-lg bg-slate-900/80 hover:bg-slate-800 text-white text-[10px] font-extrabold border border-white/15 transition">3/4</button>
-                  <button type="button" onclick="window.gameApp.setPreviewAngle(0, 0.15)" class="px-2.5 py-1 rounded-lg bg-slate-900/80 hover:bg-slate-800 text-white text-[10px] font-extrabold border border-white/15 transition">Front</button>
-                  <button type="button" onclick="window.gameApp.setPreviewAngle(1.57, 0.15)" class="px-2.5 py-1 rounded-lg bg-slate-900/80 hover:bg-slate-800 text-white text-[10px] font-extrabold border border-white/15 transition">Side</button>
-                  <button type="button" onclick="window.gameApp.setPreviewAngle(0, 1.15)" class="px-2.5 py-1 rounded-lg bg-slate-900/80 hover:bg-slate-800 text-white text-[10px] font-extrabold border border-white/15 transition">Top</button>
-                </div>
-                <button type="button" onclick="window.gameApp.togglePreviewAutoSpin()" class="px-2.5 py-1 rounded-lg bg-pink-500/85 hover:bg-pink-500 text-white text-[10px] font-extrabold transition flex items-center gap-1">
-                  <i class="fa-solid fa-sync text-[9px]"></i>
-                  <span>Spin</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Vehicle Specifications Card -->
-            <div class="spatial-subcard rounded-3xl p-3.5 flex-1 flex flex-col justify-between">
-              <div>
-                <div class="flex items-center justify-between gap-2 mb-1">
-                  <span class="text-[9px] font-black uppercase tracking-widest text-pink-500">Machine Specifications</span>
-                  <span id="spec-vehicle-class" class="px-2.5 py-0.5 rounded-full text-[9px] font-extrabold bg-purple-500/15 text-purple-400">Twin-Turbo Aero GT</span>
-                </div>
-                <h3 id="spec-vehicle-title" class="text-base sm:text-lg font-black hud-text-primary">Sports Coupe</h3>
-                <p id="spec-vehicle-desc" class="text-[11px] hud-text-secondary mt-0.5 leading-relaxed">
-                  Low-slung aerodynamic grand tourer with high-downforce rear wing and twin plasma blaster ports.
-                </p>
-              </div>
-
-              <div class="grid grid-cols-3 gap-2 mt-3 pt-2.5 border-t border-slate-400/20 text-center">
-                <div class="spatial-pill rounded-xl p-1.5">
-                  <div class="text-[8px] font-extrabold uppercase hud-text-muted">Top Velocity</div>
-                  <div id="spec-stat-speed" class="text-xs font-black text-pink-500 mt-0.5">250 KM/H</div>
-                </div>
-                <div class="spatial-pill rounded-xl p-1.5">
-                  <div class="text-[8px] font-extrabold uppercase hud-text-muted">Handling</div>
-                  <div id="spec-stat-handling" class="text-xs font-black text-cyan-400 mt-0.5">9.6 / 10</div>
-                </div>
-                <div class="spatial-pill rounded-xl p-1.5">
-                  <div class="text-[8px] font-extrabold uppercase hud-text-muted">Propulsion</div>
-                  <div id="spec-stat-power" class="text-xs font-black text-purple-400 mt-0.5">V8 Hybrid</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- RIGHT COLUMN (7 cols): Vehicle Selector, Multi-Pastel Studio & Camera View -->
-          <div class="md:col-span-7 flex flex-col gap-3">
-
-            <!-- 1A. Highway Car Chassis Selector -->
-            <div id="garage-car-selector" class="spatial-subcard rounded-3xl p-3.5">
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-[10px] font-extrabold uppercase tracking-wider text-pink-500">1. Choose Highway Chassis</span>
-                <span class="text-[10px] hud-text-secondary">4 Bespoke Builds</span>
-              </div>
-              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                <button type="button" onclick="window.gameApp.setPlayerBodyType('coupe')" id="body-btn-coupe" class="spatial-subcard active-selection-ring rounded-2xl p-2.5 text-left transition">
-                  <i class="fa-solid fa-car-side text-sm text-pink-500 mb-1"></i>
-                  <div class="font-extrabold text-xs hud-text-primary">Sports Coupe</div>
-                  <div class="text-[9px] hud-text-secondary">Aero GT Wing</div>
-                </button>
-                <button type="button" onclick="window.gameApp.setPlayerBodyType('muscle')" id="body-btn-muscle" class="spatial-subcard rounded-2xl p-2.5 text-left transition">
-                  <i class="fa-solid fa-car-rear text-sm text-amber-500 mb-1"></i>
-                  <div class="font-extrabold text-xs hud-text-primary">Muscle GT</div>
-                  <div class="text-[9px] hud-text-secondary">Blower Scoop</div>
-                </button>
-                <button type="button" onclick="window.gameApp.setPlayerBodyType('suv')" id="body-btn-suv" class="spatial-subcard rounded-2xl p-2.5 text-left transition">
-                  <i class="fa-solid fa-truck-monster text-sm text-emerald-500 mb-1"></i>
-                  <div class="font-extrabold text-xs hud-text-primary">Cyber SUV</div>
-                  <div class="text-[9px] hud-text-secondary">Armored 4x4</div>
-                </button>
-                <button type="button" onclick="window.gameApp.setPlayerBodyType('formula')" id="body-btn-formula" class="spatial-subcard rounded-2xl p-2.5 text-left transition">
-                  <i class="fa-solid fa-gauge-high text-sm text-cyan-400 mb-1"></i>
-                  <div class="font-extrabold text-xs hud-text-primary">Formula Apex</div>
-                  <div class="text-[9px] hud-text-secondary">Open-Wheel</div>
-                </button>
-              </div>
-            </div>
-
-            <!-- 1B. Sky Craft Selector (Balloon, Aero Blimp, Mini Aircraft, Paper Plane) -->
-            <div id="garage-sky-selector" class="hidden spatial-subcard rounded-3xl p-3.5">
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-[10px] font-extrabold uppercase tracking-wider text-sky-400">1. Choose Sky Craft</span>
-                <span class="text-[10px] hud-text-secondary">4 Aerial Machines</span>
-              </div>
-              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                <button type="button" onclick="window.gameApp.setSkyCraftType('balloon')" id="sky-btn-balloon" class="spatial-subcard active-selection-ring rounded-2xl p-2.5 text-left transition">
-                  <i class="fa-solid fa-parachute-box text-sm text-pink-500 mb-1"></i>
-                  <div class="font-extrabold text-xs hud-text-primary">Hot Air Balloon</div>
-                  <div class="text-[9px] hud-text-secondary">Striped Envelope</div>
-                </button>
-                <button type="button" onclick="window.gameApp.setSkyCraftType('blimp')" id="sky-btn-blimp" class="spatial-subcard rounded-2xl p-2.5 text-left transition">
-                  <i class="fa-solid fa-shuttle-space text-sm text-purple-400 mb-1"></i>
-                  <div class="font-extrabold text-xs hud-text-primary">Aero Blimp</div>
-                  <div class="text-[9px] hud-text-secondary">Helium Airship</div>
-                </button>
-                <button type="button" onclick="window.gameApp.setSkyCraftType('aircraft')" id="sky-btn-aircraft" class="spatial-subcard rounded-2xl p-2.5 text-left transition">
-                  <i class="fa-solid fa-plane-up text-sm text-sky-400 mb-1"></i>
-                  <div class="font-extrabold text-xs hud-text-primary">Mini Aircraft</div>
-                  <div class="text-[9px] hud-text-secondary">Turbo-Prop Plane</div>
-                </button>
-                <button type="button" onclick="window.gameApp.setSkyCraftType('paperplane')" id="sky-btn-paperplane" class="spatial-subcard rounded-2xl p-2.5 text-left transition">
-                  <i class="fa-solid fa-paper-plane text-sm text-emerald-400 mb-1"></i>
-                  <div class="font-extrabold text-xs hud-text-primary">Paper Plane</div>
-                  <div class="text-[9px] hud-text-secondary">Origami Delta</div>
-                </button>
-              </div>
-            </div>
-
-            <!-- 2. Pastel Colour Studio (Single or Multi-Color Combinations) -->
-            <div class="spatial-subcard rounded-3xl p-3.5">
-              <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
-                <div>
-                  <span class="text-[10px] font-extrabold uppercase tracking-wider text-purple-400">2. Pastel Colour Studio (Single or Multi-Select)</span>
-                  <div class="text-[10px] hud-text-secondary">Tap 1 or multiple pastel shades to blend across your vehicle</div>
-                </div>
-                <div class="flex items-center gap-1.5">
-                  <button type="button" onclick="window.gameApp.selectSinglePastelPreset()" class="spatial-pill px-2.5 py-1 rounded-lg text-[10px] font-extrabold hud-text-primary hover:scale-105 transition">
-                    Single Tone
-                  </button>
-                  <button type="button" onclick="window.gameApp.selectMultiPastelPreset()" class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold bg-gradient-to-r from-pink-400 via-purple-400 to-sky-400 text-white shadow-sm hover:opacity-95 transition">
-                    Multi-Pastel Mix
-                  </button>
-                </div>
-              </div>
-              <div id="pastel-color-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
-            </div>
-
-            <!-- 3. Camera Perspective Selector -->
-            <div class="spatial-subcard rounded-3xl p-3.5">
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-[10px] font-extrabold uppercase tracking-wider text-cyan-400">3. Initial Camera Perspective</span>
-                <span class="text-[10px] hud-text-secondary">Switchable anytime with 'C' or CAM</span>
-              </div>
-              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                <button type="button" onclick="window.gameApp.selectCameraFromStudio(0)" id="studio-cam-0" class="spatial-subcard rounded-xl p-2 text-center transition">
-                  <i class="fa-solid fa-car-rear text-xs text-pink-500"></i>
-                  <div class="text-[10px] font-extrabold hud-text-primary mt-0.5">Chase Cam</div>
-                </button>
-                <button type="button" onclick="window.gameApp.selectCameraFromStudio(1)" id="studio-cam-1" class="spatial-subcard rounded-xl p-2 text-center transition">
-                  <i class="fa-solid fa-eye text-xs text-cyan-400"></i>
-                  <div class="text-[10px] font-extrabold hud-text-primary mt-0.5">Hood / POV</div>
-                </button>
-                <button type="button" onclick="window.gameApp.selectCameraFromStudio(2)" id="studio-cam-2" class="spatial-subcard rounded-xl p-2 text-center transition">
-                  <i class="fa-solid fa-satellite text-xs text-purple-400"></i>
-                  <div class="text-[10px] font-extrabold hud-text-primary mt-0.5">Top-Down</div>
-                </button>
-                <button type="button" onclick="window.gameApp.selectCameraFromStudio(3)" id="studio-cam-3" class="spatial-subcard rounded-xl p-2 text-center transition">
-                  <i class="fa-solid fa-film text-xs text-amber-400"></i>
-                  <div class="text-[10px] font-extrabold hud-text-primary mt-0.5">Action Wide</div>
-                </button>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- Bottom Launch / Initiate Game Button -->
-        <button onclick="window.gameApp.launchFromStudio()" class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-pink-500 via-purple-500 to-sky-500 text-white font-black text-sm sm:text-base tracking-wide shadow-xl hover:opacity-95 hover:scale-[1.008] active:scale-98 transition flex items-center justify-center gap-2.5">
-          <i class="fa-solid fa-play"></i>
-          <span id="studio-launch-btn-text">INITIATE THE ENDLESS HIGHWAY</span>
-          <i class="fa-solid fa-arrow-right"></i>
-        </button>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- =================================================================== -->
-  <!-- DEDICATED PAUSE & ENVIRONMENT CONTROL CENTER (#screen-pause)        -->
-  <!-- =================================================================== -->
-  <section id="screen-pause" class="hidden fixed inset-0 z-40 flex items-center justify-center p-3 sm:p-4 pt-14">
-    <div class="spatial-glass modal-smooth-enter w-full max-w-2xl rounded-[38px]">
-      <div class="modal-scroll max-h-[86vh] overflow-y-auto p-5 sm:p-7">
-
-        <!-- Pause Header -->
-        <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
-          <div class="flex items-center gap-3">
-            <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-400 via-pink-500 to-purple-500 text-white flex items-center justify-center text-lg shadow-lg">
-              <i class="fa-solid fa-pause"></i>
-            </div>
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-amber-500/20 text-amber-500 border border-amber-400/30">Odyssey Paused</span>
-                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500/15 text-emerald-400 border border-emerald-400/30 flex items-center gap-1">
-                  <i class="fa-solid fa-circle-check text-[9px]"></i>
-                  <span>Score Saved</span>
-                </span>
-              </div>
-              <h2 class="text-xl sm:text-2xl font-black title-gradient">Live Environment & Control Center</h2>
-            </div>
-          </div>
-
-          <!-- Current Paused Run Telemetry Snapshot -->
-          <div class="spatial-pill rounded-2xl px-3.5 py-1.5 flex items-center gap-3">
-            <div>
-              <div class="text-[9px] font-extrabold uppercase tracking-wider hud-text-muted">Score</div>
-              <div id="pause-score" class="text-xs sm:text-sm font-black hud-text-primary tabular-nums">0</div>
-            </div>
-            <div class="h-5 w-[1px] hud-divider"></div>
-            <div>
-              <div class="text-[9px] font-extrabold uppercase tracking-wider hud-text-muted">Time</div>
-              <div id="pause-time" class="text-xs sm:text-sm font-black text-cyan-500 tabular-nums">0.0s</div>
-            </div>
-            <div class="h-5 w-[1px] hud-divider"></div>
-            <div>
-              <div class="text-[9px] font-extrabold uppercase tracking-wider hud-text-muted">Blasted</div>
-              <div id="pause-blasts" class="text-xs sm:text-sm font-black text-pink-500 tabular-nums">0 💥</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 1. World Biome (Geotype) Live Switcher -->
-        <div class="spatial-subcard rounded-3xl p-3.5 sm:p-4 mb-3">
-          <div class="flex items-center justify-between mb-2">
-            <div>
-              <div class="text-[10px] font-extrabold uppercase tracking-wider text-pink-500">World Biome (Geotype)</div>
-              <div class="text-xs hud-text-secondary">Switch terrain & weather mid-run without losing progress</div>
-            </div>
-            <span id="pause-current-biome-badge" class="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-pink-500/15 text-pink-500">Pastel Meadow</span>
-          </div>
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            <button onclick="window.gameApp.setGeotype('meadow')" id="pause-geo-meadow" class="spatial-subcard active-selection-ring rounded-2xl p-2.5 text-left transition">
-              <div class="text-base mb-0.5">🌸</div>
-              <div class="font-extrabold text-xs hud-text-primary">Pastel Meadow</div>
-              <div class="text-[10px] hud-text-secondary">Mint & Sakura</div>
-            </button>
-            <button onclick="window.gameApp.setGeotype('snow')" id="pause-geo-snow" class="spatial-subcard rounded-2xl p-2.5 text-left transition">
-              <div class="text-base mb-0.5">❄️</div>
-              <div class="font-extrabold text-xs hud-text-primary">Snow Glacier</div>
-              <div class="text-[10px] hud-text-secondary">Ice & Snowfall</div>
-            </button>
-            <button onclick="window.gameApp.setGeotype('underwater')" id="pause-geo-underwater" class="spatial-subcard rounded-2xl p-2.5 text-left transition">
-              <div class="text-base mb-0.5">🫧</div>
-              <div class="font-extrabold text-xs hud-text-primary">Underwater</div>
-              <div class="text-[10px] hud-text-secondary">Coral & Bubbles</div>
-            </button>
-            <button onclick="window.gameApp.setGeotype('canyon')" id="pause-geo-canyon" class="spatial-subcard rounded-2xl p-2.5 text-left transition">
-              <div class="text-base mb-0.5">🏜️</div>
-              <div class="font-extrabold text-xs hud-text-primary">Sunset Canyon</div>
-              <div class="text-[10px] hud-text-secondary">Peach Mesas</div>
-            </button>
-          </div>
-        </div>
-
-        <!-- 2. Sky Time (Day vs Night) & UI Glass Appearance (White vs Dark Mode) -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-          <!-- Sky Atmosphere Time -->
-          <div class="spatial-subcard rounded-3xl p-3.5">
-            <div class="text-[10px] font-extrabold uppercase tracking-wider text-amber-500 mb-0.5">3D Sky Atmosphere</div>
-            <div class="text-xs font-bold hud-text-primary mb-2">Daylight vs Starlight Horizon</div>
-            <div class="grid grid-cols-2 gap-2">
-              <button onclick="window.gameApp.setSkyTimeMode('day')" id="pause-sky-day" class="spatial-subcard active-selection-ring rounded-2xl p-2.5 flex items-center gap-2 text-left transition">
-                <div class="w-8 h-8 rounded-xl bg-amber-400/20 text-amber-500 flex items-center justify-center shrink-0">
-                  <i class="fa-solid fa-sun text-sm"></i>
-                </div>
-                <div>
-                  <div class="text-xs font-extrabold hud-text-primary">Day Sky</div>
-                  <div class="text-[9px] hud-text-secondary">Solar Glow</div>
-                </div>
-              </button>
-              <button onclick="window.gameApp.setSkyTimeMode('night')" id="pause-sky-night" class="spatial-subcard rounded-2xl p-2.5 flex items-center gap-2 text-left transition">
-                <div class="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0">
-                  <i class="fa-solid fa-moon text-sm"></i>
-                </div>
-                <div>
-                  <div class="text-xs font-extrabold hud-text-primary">Night Sky</div>
-                  <div class="text-[9px] hud-text-secondary">Starfield</div>
-                </div>
-              </button>
-            </div>
-          </div>
-
-          <!-- UI Glass Theme (White vs Dark Mode) -->
-          <div class="spatial-subcard rounded-3xl p-3.5">
-            <div class="text-[10px] font-extrabold uppercase tracking-wider text-purple-500 mb-0.5">Glass Interface Mode</div>
-            <div class="text-xs font-bold hud-text-primary mb-2">White vs Dark Frosted Glass</div>
-            <div class="grid grid-cols-2 gap-2">
-              <button onclick="window.gameApp.setUITheme('light')" id="pause-theme-light" class="spatial-subcard active-selection-ring rounded-2xl p-2.5 flex items-center gap-2 text-left transition">
-                <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-200 to-pink-200 text-slate-800 flex items-center justify-center shrink-0">
-                  <i class="fa-solid fa-sun text-sm"></i>
-                </div>
-                <div>
-                  <div class="text-xs font-extrabold hud-text-primary">White Mode</div>
-                  <div class="text-[9px] hud-text-secondary">Pearl Glass</div>
-                </div>
-              </button>
-              <button onclick="window.gameApp.setUITheme('dark')" id="pause-theme-dark" class="spatial-subcard rounded-2xl p-2.5 flex items-center gap-2 text-left transition">
-                <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-slate-800 to-indigo-950 text-indigo-300 flex items-center justify-center shrink-0">
-                  <i class="fa-solid fa-moon text-sm"></i>
-                </div>
-                <div>
-                  <div class="text-xs font-extrabold hud-text-primary">Dark Mode</div>
-                  <div class="text-[9px] hud-text-secondary">Smoke Glass</div>
-                </div>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- 3. Camera Perspective Selector inside Pause Menu -->
-        <div class="spatial-subcard rounded-3xl p-3.5 mb-4">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-[10px] font-extrabold uppercase tracking-wider text-cyan-500">Camera Perspective</span>
-            <span class="text-[10px] hud-text-secondary">Active View</span>
-          </div>
-          <div class="grid grid-cols-4 gap-2">
-            <button onclick="window.gameApp.selectCameraFromStudio(0)" id="pause-cam-0" class="spatial-subcard rounded-xl p-2 text-center transition">
-              <i class="fa-solid fa-car-rear text-xs text-pink-500"></i>
-              <div class="text-[10px] font-extrabold hud-text-primary mt-0.5">Chase</div>
-            </button>
-            <button onclick="window.gameApp.selectCameraFromStudio(1)" id="pause-cam-1" class="spatial-subcard rounded-xl p-2 text-center transition">
-              <i class="fa-solid fa-eye text-xs text-cyan-500"></i>
-              <div class="text-[10px] font-extrabold hud-text-primary mt-0.5">Hood / POV</div>
-            </button>
-            <button onclick="window.gameApp.selectCameraFromStudio(2)" id="pause-cam-2" class="spatial-subcard rounded-xl p-2 text-center transition">
-              <i class="fa-solid fa-satellite text-xs text-purple-500"></i>
-              <div class="text-[10px] font-extrabold hud-text-primary mt-0.5">Top-Down</div>
-            </button>
-            <button onclick="window.gameApp.selectCameraFromStudio(3)" id="pause-cam-3" class="spatial-subcard rounded-xl p-2 text-center transition">
-              <i class="fa-solid fa-film text-xs text-amber-500"></i>
-              <div class="text-[10px] font-extrabold hud-text-primary mt-0.5">Action Wide</div>
-            </button>
-          </div>
-        </div>
-
-        <!-- 4. Resume / Restart / Save & Leave Action Bar -->
-        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
-          <button onclick="window.gameApp.resumeGameWithCountdown()" class="flex-1 py-3.5 px-6 rounded-2xl bg-gradient-to-r from-emerald-400 via-teal-500 to-sky-500 text-white font-black text-xs sm:text-sm shadow-xl hover:opacity-95 hover:scale-[1.01] active:scale-98 transition flex items-center justify-center gap-2">
-            <i class="fa-solid fa-play"></i>
-            <span>RESUME ODYSSEY (3S COUNTDOWN)</span>
-          </button>
-          <button onclick="window.gameApp.respawnAndRandomize()" class="py-3.5 px-4 rounded-2xl spatial-pill font-extrabold text-xs hud-text-primary hover:scale-[1.02] active:scale-95 transition flex items-center justify-center gap-1.5">
-            <i class="fa-solid fa-rotate-right text-pink-500"></i>
-            <span>Restart</span>
-          </button>
-          <button onclick="window.gameApp.saveAndLeaveGameplay()" class="py-3.5 px-4 rounded-2xl spatial-pill font-extrabold text-xs hud-text-primary hover:scale-[1.02] active:scale-95 transition flex items-center justify-center gap-1.5 border border-emerald-400/40" title="Save current score & time and leave to Studio">
-            <i class="fa-solid fa-floppy-disk text-emerald-400"></i>
-            <span>Save Score & Leave</span>
-          </button>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- =================================================================== -->
-  <!-- 3-SECOND CIRCULAR ROTATING-RIM COUNTDOWN OVERLAY (#screen-countdown) -->
-  <!-- =================================================================== -->
-  <section id="screen-countdown" class="hidden fixed inset-0 z-40 pointer-events-none flex items-center justify-center p-4">
-    <div class="relative w-48 h-48 sm:w-56 sm:h-56 rounded-full spatial-glass flex items-center justify-center shadow-2xl">
-
-      <!-- Outer Rotating Rim (Rotates smoothly with each second) -->
-      <div id="countdown-rim-rotator" class="countdown-outer-rim absolute inset-1.5 rounded-full pointer-events-none">
-        <svg viewBox="0 0 200 200" class="w-full h-full">
-          <defs>
-            <linearGradient id="cdRimGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#ff7597" />
-              <stop offset="50%" stop-color="#a855f7" />
-              <stop offset="100%" stop-color="#38bdf8" />
-            </linearGradient>
-          </defs>
-          <!-- Subtle Base Track Ring -->
-          <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(148, 163, 184, 0.22)" stroke-width="5" />
-          <!-- Rotating Gradient Segmented Outer Rim -->
-          <circle cx="100" cy="100" r="90" fill="none" stroke="url(#cdRimGrad)" stroke-width="6.5" stroke-linecap="round" stroke-dasharray="110 31.4" />
-          <!-- Precision Cardinal Bezel Markers on the Rim -->
-          <circle cx="100" cy="10" r="5.5" fill="#ff7597" />
-          <circle cx="190" cy="100" r="4.5" fill="#38bdf8" />
-          <circle cx="100" cy="190" r="4.5" fill="#a855f7" />
-          <circle cx="10" cy="100" r="4.5" fill="#34d399" />
-        </svg>
-      </div>
-
-      <!-- Inner Continuous Progress Sweep Ring -->
-      <svg viewBox="0 0 200 200" class="absolute inset-4 w-[calc(100%-2rem)] h-[calc(100%-2rem)] -rotate-90 pointer-events-none">
-        <circle id="countdown-sweep-circle" cx="100" cy="100" r="76" fill="none" stroke="url(#cdRimGrad)" stroke-width="3" stroke-linecap="round" stroke-dasharray="477.5" stroke-dashoffset="0" opacity="0.65" />
-      </svg>
-
-      <!-- Center Numeral & Status Caption -->
-      <div class="relative z-10 flex flex-col items-center justify-center text-center">
-        <span class="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.25em] text-pink-500 mb-0.5">Get Ready</span>
-        <div id="countdown-numeral" class="text-6xl sm:text-7xl font-black title-gradient leading-none tabular-nums">3</div>
-        <span id="countdown-subtext" class="text-[10px] font-extrabold hud-text-secondary tracking-widest uppercase mt-1.5">Resuming Odyssey</span>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- =================================================================== -->
-  <!-- CRASH / RESPAWN MODAL (Glassmorphic Alert Sheet)                    -->
-  <!-- =================================================================== -->
-  <section id="screen-gameover" class="hidden fixed inset-0 z-40 flex items-center justify-center p-4">
-    <div class="spatial-glass w-full max-w-md rounded-[36px] p-6 sm:p-7 text-center">
-      <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-pink-400 to-amber-300 text-white flex items-center justify-center text-3xl mx-auto mb-3 shadow-lg">
-        <i class="fa-solid fa-burst"></i>
-      </div>
-      <div class="inline-block px-3 py-0.5 rounded-full sou-badge text-[10px] font-extrabold hud-text-primary mb-1.5">
-        "MADE BY SOU."
-      </div>
-      <h2 class="text-2xl sm:text-3xl font-black hud-text-primary">Voxel Impact!</h2>
-      <p id="crash-subtitle" class="text-xs font-medium hud-text-secondary mt-1 mb-4">
-        Terrain & obstacles will randomize upon respawn.
-      </p>
-
-      <!-- Current Run Stats -->
-      <div class="grid grid-cols-3 gap-2 spatial-subcard rounded-2xl p-3 mb-3">
+    <!-- 1. COMMAND CENTER / PAUSE & BIOME / PERFORMANCE SETTINGS MODAL -->
+    <div id="modal-menu" class="spatial-glass modal-window">
+      <div class="flex items-center justify-between border-b border-slate-500/20 pb-3">
         <div>
-          <div class="text-[10px] font-bold uppercase hud-text-muted">Score</div>
-          <div id="final-score" class="text-lg sm:text-xl font-black hud-text-primary tabular-nums">0</div>
+          <h2 class="font-black tracking-tight" style="font-size: var(--modal-title);">VELOZAAR ODYSSEY HUB</h2>
+          <p class="font-semibold opacity-70" style="font-size: var(--pill-font);">MADE BY SOU. • Viewport-Adaptive & 2GB RAM Tuned Engine</p>
         </div>
-        <div class="border-x border-white/20">
-          <div class="text-[10px] font-bold uppercase hud-text-muted">Survived</div>
-          <div id="final-time" class="text-lg sm:text-xl font-black text-cyan-400 tabular-nums">0.0s</div>
-        </div>
-        <div>
-          <div class="text-[10px] font-bold uppercase hud-text-muted">Blasted</div>
-          <div id="final-blasts" class="text-lg sm:text-xl font-black text-pink-400 tabular-nums">0</div>
-        </div>
-      </div>
-
-      <!-- All-Time Personal Best Records -->
-      <div class="grid grid-cols-2 gap-2 spatial-subcard rounded-2xl p-2.5 mb-5">
-        <div>
-          <div class="text-[9px] font-extrabold uppercase tracking-wider text-purple-400">Highest Score</div>
-          <div id="final-best" class="text-base font-black text-purple-400 tabular-nums">0</div>
-        </div>
-        <div class="border-l border-white/20">
-          <div class="text-[9px] font-extrabold uppercase tracking-wider text-cyan-400">Longest Survival</div>
-          <div id="final-best-time" class="text-base font-black text-cyan-400 tabular-nums">0.0s</div>
-        </div>
-      </div>
-
-      <div class="flex flex-col sm:flex-row gap-2.5">
-        <button onclick="window.gameApp.respawnAndRandomize()" class="flex-1 py-3.5 px-5 rounded-2xl bg-gradient-to-r from-pink-400 via-purple-400 to-sky-400 text-white font-extrabold text-sm shadow-lg hover:opacity-95 active:scale-95 transition flex items-center justify-center gap-2">
-          <i class="fa-solid fa-rotate-right"></i>
-          <span>Respawn (New Terrain)</span>
-        </button>
-        <button onclick="window.gameApp.openGarageScreen()" class="py-3.5 px-5 rounded-2xl spatial-pill hud-text-primary font-extrabold text-sm active:scale-95 transition">
-          Studio / Modes
+        <button data-close-modal class="spatial-pill hud-icon-btn" title="Resume Game">
+          <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
-      <div class="mt-3 text-[11px] font-semibold hud-text-secondary">
-        Press <span class="keycap">SPACE</span> or <span class="keycap">ENTER</span> to Respawn immediately
+
+      <!-- Dual-Odyssey World Selector -->
+      <div>
+        <div class="font-extrabold uppercase tracking-wider opacity-70 mb-2" style="font-size: var(--pill-font);">Select Odyssey Biome</div>
+        <div id="biome-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5"></div>
+      </div>
+
+      <!-- Performance & Hardware Scaler Controls -->
+      <div class="spatial-subcard p-3.5 rounded-2xl flex flex-col gap-2.5">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="font-extrabold" style="font-size: var(--pill-font);">2GB RAM Ultra-Smooth Mode (Eco Turbo)</div>
+            <div class="opacity-70" style="font-size: var(--telemetry-lbl-font);">Disables heavy glass blurs, lowers pixel ratio & locks zero-GC object pools</div>
+          </div>
+          <button id="toggle-low-spec" class="spatial-pill px-3.5 py-1.5 rounded-full font-extrabold text-xs cursor-pointer">
+            AUTO
+          </button>
+        </div>
+        <div class="flex items-center justify-between border-t border-slate-500/15 pt-2">
+          <span class="font-bold opacity-75" style="font-size: var(--pill-font);">Controls Guide</span>
+          <span class="font-semibold opacity-80 text-right" style="font-size: var(--telemetry-lbl-font);">WASD / Arrows: Steer & Speed • Space: Nitro • C: Camera • G: Garage</span>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2.5 pt-1">
+        <button id="btn-restart-run" class="spatial-pill px-4 py-2.5 rounded-xl font-bold cursor-pointer" style="font-size: var(--pill-font);">
+          <i class="fa-solid fa-rotate-right mr-1.5"></i>Restart Odyssey
+        </button>
+        <button data-close-modal class="px-5 py-2.5 rounded-xl font-extrabold text-white bg-gradient-to-r from-rose-500 via-fuchsia-500 to-sky-500 shadow-lg cursor-pointer" style="font-size: var(--pill-font);">
+          <i class="fa-solid fa-play mr-1.5"></i>Resume Drive
+        </button>
       </div>
     </div>
-  </section>
 
-  <!-- =================================================================== -->
-  <!-- MAIN APPLICATION & 3D GAME ENGINE SCRIPT                            -->
-  <!-- =================================================================== -->
-  <script type="module" src="./main.js"></script>
+    <!-- 2. LUXURY GARAGE & HYPERCAR SELECTOR MODAL -->
+    <div id="modal-garage" class="spatial-glass modal-window">
+      <div class="flex items-center justify-between border-b border-slate-500/20 pb-3">
+        <div>
+          <h2 class="font-black tracking-tight" style="font-size: var(--modal-title);">VELOZAAR ATELIER GARAGE</h2>
+          <p class="font-semibold opacity-70" style="font-size: var(--pill-font);">Select or unlock bespoke hypercars with earned Odyssey Credits</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="spatial-pill px-3 py-1.5 rounded-full font-extrabold text-amber-500 flex items-center gap-1.5" style="font-size: var(--pill-font);">
+            <i class="fa-solid fa-coins"></i>
+            <span id="garage-coins">0</span>
+          </div>
+          <button data-close-modal class="spatial-pill hud-icon-btn" title="Close Garage">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <div id="garage-cars-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+
+      <div class="flex justify-end pt-1">
+        <button data-close-modal class="px-5 py-2.5 rounded-xl font-extrabold text-white bg-gradient-to-r from-sky-500 to-indigo-600 shadow-lg cursor-pointer" style="font-size: var(--pill-font);">
+          Drive Selected Hypercar
+        </button>
+      </div>
+    </div>
+
+    <!-- 3. ODYSSEY RUN SUMMARY / CRASH RECOVERY MODAL -->
+    <div id="modal-gameover" class="spatial-glass modal-window text-center items-center">
+      <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-rose-500 via-fuchsia-500 to-sky-400 flex items-center justify-center text-white text-2xl shadow-lg">
+        <i class="fa-solid fa-flag-checkered"></i>
+      </div>
+      <div>
+        <h2 class="font-black tracking-tight" style="font-size: var(--modal-title);">ODYSSEY RUN COMPLETE</h2>
+        <p class="font-semibold opacity-70" style="font-size: var(--pill-font);">Hull integrity depleted — telemetry archived</p>
+      </div>
+
+      <div class="grid grid-cols-3 gap-2.5 w-full">
+        <div class="spatial-subcard p-3 rounded-2xl">
+          <div class="telemetry-lbl">FINAL SCORE</div>
+          <div id="over-score" class="telemetry-val mt-1">0</div>
+        </div>
+        <div class="spatial-subcard p-3 rounded-2xl">
+          <div class="telemetry-lbl">DISTANCE</div>
+          <div id="over-distance" class="telemetry-val mt-1">0.0 km</div>
+        </div>
+        <div class="spatial-subcard p-3 rounded-2xl">
+          <div class="telemetry-lbl">BEST SCORE</div>
+          <div id="over-best" class="telemetry-val text-rose-500 mt-1">0</div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-center gap-3 w-full pt-2">
+        <button id="btn-over-garage" class="spatial-pill px-4 py-2.5 rounded-xl font-bold cursor-pointer flex-1" style="font-size: var(--pill-font);">
+          <i class="fa-solid fa-car-side mr-1.5"></i>Garage
+        </button>
+        <button id="btn-over-retry" class="px-5 py-2.5 rounded-xl font-extrabold text-white bg-gradient-to-r from-rose-500 via-fuchsia-500 to-sky-500 shadow-lg cursor-pointer flex-1" style="font-size: var(--pill-font);">
+          <i class="fa-solid fa-bolt mr-1.5"></i>Launch New Run
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============================================================================
+       APPLICATION & 2GB-RAM-OPTIMIZED 3D ENGINE SCRIPT
+       ============================================================================ -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* --------------------------------------------------------------------------
+         1. HARDWARE CAPABILITY DETECTION & 2GB RAM OPTIMIZER
+         -------------------------------------------------------------------------- */
+      const deviceMem = navigator.deviceMemory || 4;
+      const cpuCores = navigator.hardwareConcurrency || 4;
+      const isLowEndDevice = (deviceMem <= 2) || (cpuCores <= 2);
+
+      const STATE = {
+        lowSpecMode: isLowEndDevice,
+        darkUi: false,
+        paused: false,
+        gameOver: false,
+        activeModal: null, // Strictly single modal ID or null
+        audioEnabled: true,
+        cameraMode: 0, // 0: Chase, 1: Low Apex, 2: Hood Cockpit, 3: Helicopter
+        biomeIndex: 0,
+        carIndex: 0,
+        unlockedCars: [true, false, false, false],
+        score: 0,
+        bestScore: 0,
+        distance: 0,
+        coins: 120,
+        combo: 1,
+        comboTimer: 0,
+        speed: 0,
+        baseMaxSpeed: 295,
+        nitro: 100,
+        nitroActive: false,
+        shieldActive: false,
+        shieldTimer: 0,
+        laneX: 0,
+        targetLaneX: 0,
+        steerInput: 0,
+        brakeInput: false,
+        camDragYaw: 0,
+        camDragPitch: 0
+      };
+
+      // Load saved progress safely
+      try {
+        const saved = JSON.parse(localStorage.getItem('velozaar_sou_save_v2') || '{}');
+        if (typeof saved.bestScore === 'number') STATE.bestScore = saved.bestScore;
+        if (typeof saved.coins === 'number') STATE.coins = saved.coins;
+        if (Array.isArray(saved.unlockedCars) && saved.unlockedCars.length === 4) STATE.unlockedCars = saved.unlockedCars;
+        if (typeof saved.carIndex === 'number') STATE.carIndex = saved.carIndex;
+      } catch (e) {
+        // Ignore storage errors in restricted iframes
+      }
+
+      function saveProgress() {
+        try {
+          localStorage.setItem('velozaar_sou_save_v2', JSON.stringify({
+            bestScore: Math.floor(STATE.bestScore),
+            coins: Math.floor(STATE.coins),
+            unlockedCars: STATE.unlockedCars,
+            carIndex: STATE.carIndex
+          }));
+        } catch (e) {}
+      }
+
+      /* --------------------------------------------------------------------------
+         2. BIOMES & HYPERCAR CATALOG
+         -------------------------------------------------------------------------- */
+      const BIOMES = [
+        {
+          id: 'sakura',
+          name: 'SAKURA HORIZON',
+          darkUi: false,
+          skyTop: '#ffdde1',
+          skyBottom: '#fff0f3',
+          fogColor: 0xffe4e9,
+          roadColor: 0x262936,
+          laneColor: 0xff7597,
+          terrainColor: 0xfce7f3,
+          foliageColor: 0xff8fab,
+          sunColor: 0xfff1f2,
+          ambientIntensity: 0.85
+        },
+        {
+          id: 'cyber',
+          name: 'CYBER NEON VOID',
+          darkUi: true,
+          skyTop: '#070b19',
+          skyBottom: '#1e1b4b',
+          fogColor: 0x111827,
+          roadColor: 0x0f172a,
+          laneColor: 0x38bdf8,
+          terrainColor: 0x090d16,
+          foliageColor: 0xc084fc,
+          sunColor: 0x38bdf8,
+          ambientIntensity: 0.65
+        },
+        {
+          id: 'alpine',
+          name: 'ALPINE ZENITH',
+          darkUi: false,
+          skyTop: '#bae6fd',
+          skyBottom: '#f0f9ff',
+          fogColor: 0xe0f2fe,
+          roadColor: 0x334155,
+          laneColor: 0x0ea5e9,
+          terrainColor: 0xf1f5f9,
+          foliageColor: 0x38bdf8,
+          sunColor: 0xffffff,
+          ambientIntensity: 0.9
+        },
+        {
+          id: 'mirage',
+          name: 'SOLAR MIRAGE',
+          darkUi: true,
+          skyTop: '#451a03',
+          skyBottom: '#9a3412',
+          fogColor: 0x7c2d12,
+          roadColor: 0x1c1917,
+          laneColor: 0xf59e0b,
+          terrainColor: 0x431407,
+          foliageColor: 0xfbbf24,
+          sunColor: 0xfde047,
+          ambientIntensity: 0.75
+        }
+      ];
+
+      const HYPERCARS = [
+        {
+          name: 'Velozaar V-12 Apex',
+          desc: 'Balanced grand tourer engineered by SOU.',
+          price: 0,
+          maxSpeed: 295,
+          handling: 1.0,
+          bodyColor: 0xf43f5e,
+          accentColor: 0x38bdf8
+        },
+        {
+          name: 'Sakura GT-R Spec',
+          desc: 'Precision drift aero & rose-gold twin turbo.',
+          price: 150,
+          maxSpeed: 320,
+          handling: 1.15,
+          bodyColor: 0xff7597,
+          accentColor: 0xffffff
+        },
+        {
+          name: 'Aether Valkyrie',
+          desc: 'Ultra-lightweight carbon hyper-prototype.',
+          price: 350,
+          maxSpeed: 350,
+          handling: 1.25,
+          bodyColor: 0x38bdf8,
+          accentColor: 0xc084fc
+        },
+        {
+          name: 'Cyber Specter X',
+          desc: 'Quantum-flux overdrive with maximum velocity.',
+          price: 600,
+          maxSpeed: 385,
+          handling: 1.38,
+          bodyColor: 0x0f172a,
+          accentColor: 0x2dd4bf
+        }
+      ];
+
+      /* --------------------------------------------------------------------------
+         3. ZERO-EXTERNAL-FILE WEB AUDIO SYNTHESIZER
+         -------------------------------------------------------------------------- */
+      const SoundFX = {
+        ctx: null,
+        init() {
+          if (!this.ctx && (window.AudioContext || window.webkitAudioContext)) {
+            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+          }
+          if (this.ctx && this.ctx.state === 'suspended') {
+            this.ctx.resume();
+          }
+        },
+        tone(freq, type, duration, vol = 0.08, slideTo = null) {
+          if (!STATE.audioEnabled) return;
+          try {
+            this.init();
+            if (!this.ctx) return;
+            const now = this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, now);
+            if (slideTo) osc.frequency.exponentialRampToValueAtTime(slideTo, now + duration);
+            gain.gain.setValueAtTime(vol, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now);
+            osc.stop(now + duration);
+          } catch (e) {}
+        },
+        coin() {
+          this.tone(880, 'sine', 0.11, 0.08, 1320);
+        },
+        nearMiss() {
+          this.tone(340, 'triangle', 0.18, 0.09, 680);
+        },
+        nitro() {
+          this.tone(140, 'sawtooth', 0.28, 0.07, 420);
+        },
+        crash() {
+          this.tone(110, 'sawtooth', 0.42, 0.14, 38);
+        },
+        click() {
+          this.tone(520, 'sine', 0.06, 0.05, 760);
+        }
+      };
+
+      /* --------------------------------------------------------------------------
+         4. DOM CACHE & STRICT NON-OVERLAPPING MODAL / HUD CONTROLLER
+         -------------------------------------------------------------------------- */
+      const DOM = {
+        canvas: document.getElementById('game-canvas'),
+        fpsBadge: document.getElementById('fps-badge'),
+        biomeName: document.getElementById('hud-biome-name'),
+        score: document.getElementById('hud-score'),
+        distance: document.getElementById('hud-distance'),
+        coins: document.getElementById('hud-coins'),
+        combo: document.getElementById('hud-combo'),
+        speed: document.getElementById('hud-speed'),
+        gear: document.getElementById('hud-gear'),
+        nitroPct: document.getElementById('hud-nitro-pct'),
+        nitroBar: document.getElementById('hud-nitro-bar'),
+        shieldPill: document.getElementById('hud-shield-pill'),
+        eventBanner: document.getElementById('event-banner'),
+        eventBannerText: document.getElementById('event-banner-text'),
+        modalBackdrop: document.getElementById('modal-backdrop'),
+        modalMenu: document.getElementById('modal-menu'),
+        modalGarage: document.getElementById('modal-garage'),
+        modalGameover: document.getElementById('modal-gameover'),
+        biomeGrid: document.getElementById('biome-grid'),
+        garageCarsGrid: document.getElementById('garage-cars-grid'),
+        garageCoins: document.getElementById('garage-coins'),
+        toggleLowSpec: document.getElementById('toggle-low-spec'),
+        iconTheme: document.getElementById('icon-theme'),
+        iconAudio: document.getElementById('icon-audio'),
+        iconPause: document.getElementById('icon-pause'),
+        overScore: document.getElementById('over-score'),
+        overDistance: document.getElementById('over-distance'),
+        overBest: document.getElementById('over-best')
+      };
+
+      // Cache previous HUD strings to avoid unnecessary DOM repaints on 2GB RAM devices
+      const prevHud = {
+        score: -1,
+        distance: '',
+        coins: -1,
+        combo: -1,
+        speed: -1,
+        gear: '',
+        nitro: -1,
+        shield: false
+      };
+
+      let bannerTimeout = null;
+      function showBanner(text) {
+        DOM.eventBannerText.textContent = text;
+        DOM.eventBanner.classList.remove('opacity-0', '-translate-y-3');
+        DOM.eventBanner.classList.add('opacity-100', 'translate-y-0');
+        if (bannerTimeout) clearTimeout(bannerTimeout);
+        bannerTimeout = setTimeout(() => {
+          DOM.eventBanner.classList.add('opacity-0', '-translate-y-3');
+          DOM.eventBanner.classList.remove('opacity-100', 'translate-y-0');
+        }, 1150);
+      }
+
+      // Mutual-Exclusion Modal Controller: Guarantees modals never overlap each other or HUD
+      function openModal(modalId) {
+        SoundFX.click();
+        STATE.activeModal = modalId;
+        STATE.paused = true;
+        document.body.classList.add('modal-open');
+        DOM.modalBackdrop.classList.add('open');
+
+        [DOM.modalMenu, DOM.modalGarage, DOM.modalGameover].forEach(el => {
+          if (el.id === modalId) {
+            el.classList.add('active');
+          } else {
+            el.classList.remove('active');
+          }
+        });
+
+        DOM.iconPause.className = 'fa-solid fa-play';
+        if (modalId === 'modal-menu') renderBiomeSelector();
+        if (modalId === 'modal-garage') renderGarage();
+      }
+
+      function closeAllModals() {
+        SoundFX.click();
+        if (STATE.gameOver) {
+          resetRun();
+        }
+        STATE.activeModal = null;
+        STATE.paused = false;
+        document.body.classList.remove('modal-open');
+        DOM.modalBackdrop.classList.remove('open');
+        [DOM.modalMenu, DOM.modalGarage, DOM.modalGameover].forEach(el => el.classList.remove('active'));
+        DOM.iconPause.className = 'fa-solid fa-pause';
+      }
+
+      /* --------------------------------------------------------------------------
+         5. THREE.JS 3D SCENE WITH ZERO-ALLOCATION OBJECT POOLING (2GB RAM READY)
+         -------------------------------------------------------------------------- */
+      let scene, camera, renderer, dirLight, ambientLight;
+      let playerCarGroup, playerBodyMat, playerAccentMat, shieldMesh;
+
+      const ROAD_WIDTH = 14;
+      const LANE_POSITIONS = [-4.5, -1.5, 1.5, 4.5];
+      const SEGMENT_LENGTH = 20;
+      const NUM_SEGMENTS = 14;
+
+      const roadSegments = [];
+      const sceneryPool = [];
+      const trafficPool = [];
+      const collectiblePool = [];
+
+      function initThreeScene() {
+        scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(BIOMES[0].fogColor, 0.0068);
+
+        camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.5, 220);
+        camera.position.set(0, 4.2, 10.5);
+
+        renderer = new THREE.WebGLRenderer({
+          canvas: DOM.canvas,
+          antialias: !STATE.lowSpecMode,
+          powerPreference: 'high-performance',
+          alpha: false
+        });
+        updateRendererQuality();
+
+        ambientLight = new THREE.AmbientLight(0xffffff, BIOMES[0].ambientIntensity);
+        scene.add(ambientLight);
+
+        dirLight = new THREE.DirectionalLight(BIOMES[0].sunColor, 0.95);
+        dirLight.position.set(18, 36, 24);
+        scene.add(dirLight);
+
+        buildSharedRoadAndScenery();
+        buildPlayerHypercar();
+        buildTrafficAndCollectiblePools();
+        applyBiome(STATE.biomeIndex, true);
+      }
+
+      function updateRendererQuality() {
+        if (!renderer) return;
+        const maxDpr = STATE.lowSpecMode ? 1.0 : Math.min(window.devicePixelRatio || 1, 1.65);
+        renderer.setPixelRatio(maxDpr);
+        renderer.setSize(window.innerWidth, window.innerHeight, false);
+
+        if (camera) {
+          camera.aspect = window.innerWidth / window.innerHeight;
+          // Automatically widen FOV slightly on narrow portrait screens so car & lanes never clip
+          const aspect = camera.aspect;
+          camera.fov = aspect < 0.75 ? 72 : (aspect < 1.1 ? 65 : 58);
+          camera.updateProjectionMatrix();
+        }
+
+        document.body.classList.toggle('low-spec-mode', STATE.lowSpecMode);
+        DOM.toggleLowSpec.textContent = STATE.lowSpecMode ? '2GB ECO ON' : 'HIGH QUALITY';
+        DOM.toggleLowSpec.className = STATE.lowSpecMode
+          ? 'spatial-pill px-3.5 py-1.5 rounded-full font-extrabold text-xs cursor-pointer text-emerald-500 border-emerald-500/40'
+          : 'spatial-pill px-3.5 py-1.5 rounded-full font-extrabold text-xs cursor-pointer text-sky-500';
+      }
+
+      // Shared materials so biome transitions mutate existing materials with zero memory allocations
+      const sharedMats = {
+        road: new THREE.MeshLambertMaterial({ color: BIOMES[0].roadColor }),
+        shoulder: new THREE.MeshBasicMaterial({ color: BIOMES[0].laneColor }),
+        laneDash: new THREE.MeshBasicMaterial({ color: 0xffffff }),
+        terrain: new THREE.MeshLambertMaterial({ color: BIOMES[0].terrainColor }),
+        foliage: new THREE.MeshLambertMaterial({ color: BIOMES[0].foliageColor }),
+        trunk: new THREE.MeshLambertMaterial({ color: 0x475569 })
+      };
+
+      function buildSharedRoadAndScenery() {
+        const roadGeo = new THREE.PlaneGeometry(ROAD_WIDTH, SEGMENT_LENGTH);
+        const terrainGeo = new THREE.PlaneGeometry(140, SEGMENT_LENGTH);
+        const shoulderGeo = new THREE.PlaneGeometry(0.35, SEGMENT_LENGTH);
+        const dashGeo = new THREE.PlaneGeometry(0.18, 4.2);
+        const pillarGeo = new THREE.CylinderGeometry(0.35, 0.5, 4.5, 6);
+        const crownGeo = new THREE.OctahedronGeometry(2.1, 0);
+
+        for (let i = 0; i < NUM_SEGMENTS; i++) {
+          const segGroup = new THREE.Group();
+          segGroup.position.z = -i * SEGMENT_LENGTH;
+
+          const terrain = new THREE.Mesh(terrainGeo, sharedMats.terrain);
+          terrain.rotation.x = -Math.PI / 2;
+          terrain.position.y = -0.08;
+          segGroup.add(terrain);
+
+          const road = new THREE.Mesh(roadGeo, sharedMats.road);
+          road.rotation.x = -Math.PI / 2;
+          segGroup.add(road);
+
+          const leftLine = new THREE.Mesh(shoulderGeo, sharedMats.shoulder);
+          leftLine.rotation.x = -Math.PI / 2;
+          leftLine.position.set(-ROAD_WIDTH / 2 + 0.3, 0.02, 0);
+          segGroup.add(leftLine);
+
+          const rightLine = new THREE.Mesh(shoulderGeo, sharedMats.shoulder);
+          rightLine.rotation.x = -Math.PI / 2;
+          rightLine.position.set(ROAD_WIDTH / 2 - 0.3, 0.02, 0);
+          segGroup.add(rightLine);
+
+          // 3 inner lane dividers
+          [-3, 0, 3].forEach(lx => {
+            const dash = new THREE.Mesh(dashGeo, sharedMats.laneDash);
+            dash.rotation.x = -Math.PI / 2;
+            dash.position.set(lx, 0.02, 0);
+            segGroup.add(dash);
+          });
+
+          // Low-poly stylized roadside trees/crystals (2 per segment)
+          [-1, 1].forEach(side => {
+            const propGroup = new THREE.Group();
+            const trunk = new THREE.Mesh(pillarGeo, sharedMats.trunk);
+            trunk.position.y = 2.25;
+            const crown = new THREE.Mesh(crownGeo, sharedMats.foliage);
+            crown.position.y = 5.1;
+            propGroup.add(trunk, crown);
+            propGroup.position.set(side * (ROAD_WIDTH / 2 + 4.5 + (i % 3) * 2.5), 0, 0);
+            segGroup.add(propGroup);
+            sceneryPool.push(crown);
+          });
+
+          scene.add(segGroup);
+          roadSegments.push(segGroup);
+        }
+      }
+
+      function buildPlayerHypercar() {
+        playerCarGroup = new THREE.Group();
+
+        playerBodyMat = new THREE.MeshStandardMaterial({
+          color: HYPERCARS[STATE.carIndex].bodyColor,
+          roughness: 0.25,
+          metalness: 0.65
+        });
+        playerAccentMat = new THREE.MeshBasicMaterial({
+          color: HYPERCARS[STATE.carIndex].accentColor
+        });
+        const cabinMat = new THREE.MeshStandardMaterial({
+          color: 0x0f172a,
+          roughness: 0.1,
+          metalness: 0.9
+        });
+        const wheelMat = new THREE.MeshLambertMaterial({ color: 0x111827 });
+
+        // Main aerodynamic chassis
+        const chassis = new THREE.Mesh(new THREE.BoxGeometry(2.05, 0.58, 4.4), playerBodyMat);
+        chassis.position.y = 0.52;
+        playerCarGroup.add(chassis);
+
+        // Teardrop cockpit canopy
+        const cabin = new THREE.Mesh(new THREE.BoxGeometry(1.62, 0.48, 2.15), cabinMat);
+        cabin.position.set(0, 0.98, -0.2);
+        playerCarGroup.add(cabin);
+
+        // Rear active aero wing
+        const wing = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.1, 0.45), playerAccentMat);
+        wing.position.set(0, 1.05, 1.95);
+        playerCarGroup.add(wing);
+
+        // Twin LED tail-strip & underglow strip
+        const tailGlow = new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.14, 0.1), playerAccentMat);
+        tailGlow.position.set(0, 0.6, 2.21);
+        playerCarGroup.add(tailGlow);
+
+        // 4 Wheels
+        const wheelGeo = new THREE.CylinderGeometry(0.38, 0.38, 0.28, 12);
+        wheelGeo.rotateZ(Math.PI / 2);
+        [
+          [-1.02, 0.38, -1.35],
+          [1.02, 0.38, -1.35],
+          [-1.02, 0.38, 1.35],
+          [1.02, 0.38, 1.35]
+        ].forEach(pos => {
+          const wheel = new THREE.Mesh(wheelGeo, wheelMat);
+          wheel.position.set(pos[0], pos[1], pos[2]);
+          playerCarGroup.add(wheel);
+        });
+
+        // Energy Shield Dome
+        const shieldGeo = new THREE.SphereGeometry(2.65, 16, 12);
+        const shieldMat = new THREE.MeshBasicMaterial({
+          color: 0x38bdf8,
+          wireframe: true,
+          transparent: true,
+          opacity: 0.45
+        });
+        shieldMesh = new THREE.Mesh(shieldGeo, shieldMat);
+        shieldMesh.position.y = 0.8;
+        shieldMesh.visible = false;
+        playerCarGroup.add(shieldMesh);
+
+        playerCarGroup.position.set(0, 0, 2);
+        scene.add(playerCarGroup);
+      }
+
+      function buildTrafficAndCollectiblePools() {
+        const trafficChassisGeo = new THREE.BoxGeometry(1.95, 0.68, 4.1);
+        const trafficCabinGeo = new THREE.BoxGeometry(1.55, 0.48, 1.9);
+        const trafficColors = [0x38bdf8, 0xf43f5e, 0xa855f7, 0x10b981, 0xf59e0b];
+        const cabinMat = new THREE.MeshLambertMaterial({ color: 0x1e293b });
+        const tailMat = new THREE.MeshBasicMaterial({ color: 0xff2a55 });
+        const tailGeo = new THREE.BoxGeometry(1.75, 0.15, 0.1);
+
+        // Pre-allocate 7 traffic vehicles (zero runtime allocation)
+        for (let i = 0; i < 7; i++) {
+          const tGroup = new THREE.Group();
+          const bodyMat = new THREE.MeshLambertMaterial({ color: trafficColors[i % trafficColors.length] });
+          const body = new THREE.Mesh(trafficChassisGeo, bodyMat);
+          body.position.y = 0.56;
+          const top = new THREE.Mesh(trafficCabinGeo, cabinMat);
+          top.position.set(0, 1.04, 0.1);
+          const tail = new THREE.Mesh(tailGeo, tailMat);
+          tail.position.set(0, 0.62, 2.06);
+          tGroup.add(body, top, tail);
+
+          const lane = LANE_POSITIONS[i % LANE_POSITIONS.length];
+          tGroup.position.set(lane, 0, -45 - i * 36);
+          tGroup.userData = {
+            laneIndex: i % LANE_POSITIONS.length,
+            speedFactor: 0.42 + (i % 3) * 0.12,
+            nearMissed: false
+          };
+          scene.add(tGroup);
+          trafficPool.push(tGroup);
+        }
+
+        // Pre-allocate 8 collectibles (Coins & Shield Orbs)
+        const orbGeo = new THREE.OctahedronGeometry(0.65, 0);
+        const coinMat = new THREE.MeshBasicMaterial({ color: 0xfbbf24 });
+        const shieldOrbMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+
+        for (let i = 0; i < 8; i++) {
+          const isShield = (i === 7);
+          const mesh = new THREE.Mesh(orbGeo, isShield ? shieldOrbMat : coinMat);
+          const lane = LANE_POSITIONS[(i * 2) % LANE_POSITIONS.length];
+          mesh.position.set(lane, 0.9, -28 - i * 28);
+          mesh.userData = {
+            type: isShield ? 'shield' : 'coin',
+            active: true
+          };
+          scene.add(mesh);
+          collectiblePool.push(mesh);
+        }
+      }
+
+      function applyBiome(index, keepTheme = false) {
+        STATE.biomeIndex = (index + BIOMES.length) % BIOMES.length;
+        const b = BIOMES[STATE.biomeIndex];
+
+        DOM.biomeName.textContent = b.name;
+        document.body.style.background = `linear-gradient(180deg, ${b.skyTop} 0%, ${b.skyBottom} 100%)`;
+
+        if (!keepTheme) {
+          STATE.darkUi = b.darkUi;
+          syncThemeUI();
+        }
+
+        if (scene && scene.fog) {
+          scene.fog.color.setHex(b.fogColor);
+        }
+        sharedMats.road.color.setHex(b.roadColor);
+        sharedMats.shoulder.color.setHex(b.laneColor);
+        sharedMats.terrain.color.setHex(b.terrainColor);
+        sharedMats.foliage.color.setHex(b.foliageColor);
+        if (dirLight) dirLight.color.setHex(b.sunColor);
+        if (ambientLight) ambientLight.intensity = b.ambientIntensity;
+      }
+
+      function applyCarSelection(index) {
+        STATE.carIndex = index;
+        const car = HYPERCARS[index];
+        STATE.baseMaxSpeed = car.maxSpeed;
+        if (playerBodyMat && playerAccentMat) {
+          playerBodyMat.color.setHex(car.bodyColor);
+          playerAccentMat.color.setHex(car.accentColor);
+        }
+        saveProgress();
+      }
+
+      function syncThemeUI() {
+        document.body.classList.toggle('dark-ui', STATE.darkUi);
+        DOM.iconTheme.className = STATE.darkUi ? 'fa-solid fa-sun text-amber-400' : 'fa-solid fa-moon';
+      }
+
+      /* --------------------------------------------------------------------------
+         6. MODAL CONTENT RENDERERS (BIOMES & GARAGE)
+         -------------------------------------------------------------------------- */
+      function renderBiomeSelector() {
+        DOM.biomeGrid.innerHTML = BIOMES.map((b, idx) => {
+          const active = idx === STATE.biomeIndex;
+          return `
+            <button data-biome-idx="${idx}" class="spatial-subcard p-3 rounded-xl text-left cursor-pointer flex flex-col justify-between gap-2 ${active ? 'ring-2 ring-rose-500' : ''}">
+              <div class="w-full h-7 rounded-lg" style="background: linear-gradient(135deg, ${b.skyTop}, ${b.skyBottom}); border: 1px solid rgba(255,255,255,0.4);"></div>
+              <div class="font-extrabold tracking-tight truncate" style="font-size: var(--pill-font);">${b.name}</div>
+            </button>
+          `;
+        }).join('');
+
+        DOM.biomeGrid.querySelectorAll('[data-biome-idx]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            SoundFX.click();
+            applyBiome(parseInt(btn.getAttribute('data-biome-idx'), 10));
+            renderBiomeSelector();
+          });
+        });
+      }
+
+      function renderGarage() {
+        DOM.garageCoins.textContent = Math.floor(STATE.coins);
+        DOM.garageCarsGrid.innerHTML = HYPERCARS.map((car, idx) => {
+          const unlocked = STATE.unlockedCars[idx];
+          const selected = STATE.carIndex === idx;
+          const hexBody = '#' + car.bodyColor.toString(16).padStart(6, '0');
+          const hexAccent = '#' + car.accentColor.toString(16).padStart(6, '0');
+
+          return `
+            <div class="spatial-subcard p-3.5 rounded-2xl flex flex-col justify-between gap-2.5 ${selected ? 'ring-2 ring-sky-400' : ''}">
+              <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="w-8 h-8 rounded-xl flex-shrink-0 shadow-inner" style="background: linear-gradient(135deg, ${hexBody}, ${hexAccent});"></div>
+                  <div class="min-w-0">
+                    <div class="font-extrabold truncate" style="font-size: var(--pill-font);">${car.name}</div>
+                    <div class="opacity-70 truncate" style="font-size: var(--telemetry-lbl-font);">${car.desc}</div>
+                  </div>
+                </div>
+                <span class="px-2 py-0.5 rounded-full font-extrabold text-[11px] bg-sky-500/15 text-sky-500 flex-shrink-0">${car.maxSpeed} KM/H</span>
+              </div>
+              <div class="flex items-center justify-between pt-1">
+                <span class="font-bold opacity-75" style="font-size: var(--telemetry-lbl-font);">Handling: ${(car.handling * 100).toFixed(0)}%</span>
+                <button data-car-idx="${idx}" class="px-3.5 py-1.5 rounded-xl font-extrabold cursor-pointer ${
+                  selected
+                    ? 'bg-emerald-500 text-white'
+                    : unlocked
+                      ? 'spatial-pill'
+                      : 'bg-amber-500 text-slate-950'
+                }" style="font-size: var(--pill-font);">
+                  ${selected ? 'EQUIPPED' : unlocked ? 'SELECT' : `<i class="fa-solid fa-coins mr-1"></i>${car.price}`}
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        DOM.garageCarsGrid.querySelectorAll('[data-car-idx]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const idx = parseInt(btn.getAttribute('data-car-idx'), 10);
+            const car = HYPERCARS[idx];
+            if (STATE.unlockedCars[idx]) {
+              SoundFX.click();
+              applyCarSelection(idx);
+              renderGarage();
+            } else if (STATE.coins >= car.price) {
+              STATE.coins -= car.price;
+              STATE.unlockedCars[idx] = true;
+              SoundFX.coin();
+              applyCarSelection(idx);
+              renderGarage();
+            } else {
+              showBanner('NEED MORE CREDITS');
+            }
+          });
+        });
+      }
+
+      /* --------------------------------------------------------------------------
+         7. INPUT LISTENERS (KEYBOARD, TOUCH BUTTONS, SWIPE & 3D CAMERA ORBIT)
+         -------------------------------------------------------------------------- */
+      const keys = { left: false, right: false, up: false, down: false, nitro: false };
+
+      window.addEventListener('keydown', (e) => {
+        if (e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = true;
+        if (e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = true;
+        if (e.code === 'ArrowUp' || e.code === 'KeyW') keys.up = true;
+        if (e.code === 'ArrowDown' || e.code === 'KeyS') keys.down = true;
+        if (e.code === 'Space' || e.code === 'ShiftLeft') {
+          if (!keys.nitro && STATE.nitro > 15) SoundFX.nitro();
+          keys.nitro = true;
+        }
+        if (e.code === 'KeyC') cycleCamera();
+        if (e.code === 'KeyB') {
+          SoundFX.click();
+          applyBiome(STATE.biomeIndex + 1);
+          showBanner(BIOMES[STATE.biomeIndex].name);
+        }
+        if (e.code === 'KeyG') {
+          STATE.activeModal === 'modal-garage' ? closeAllModals() : openModal('modal-garage');
+        }
+        if (e.code === 'KeyP' || e.code === 'Escape') {
+          STATE.activeModal ? closeAllModals() : openModal('modal-menu');
+        }
+        if (e.code === 'KeyT') {
+          STATE.darkUi = !STATE.darkUi;
+          syncThemeUI();
+        }
+        if (e.code === 'KeyM') toggleAudio();
+      });
+
+      window.addEventListener('keyup', (e) => {
+        if (e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = false;
+        if (e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = false;
+        if (e.code === 'ArrowUp' || e.code === 'KeyW') keys.up = false;
+        if (e.code === 'ArrowDown' || e.code === 'KeyS') keys.down = false;
+        if (e.code === 'Space' || e.code === 'ShiftLeft') keys.nitro = false;
+      });
+
+      function bindHoldButton(btnId, onChange) {
+        const el = document.getElementById(btnId);
+        if (!el) return;
+        const start = (e) => {
+          e.preventDefault();
+          el.classList.add('active-press');
+          onChange(true);
+        };
+        const end = (e) => {
+          e.preventDefault();
+          el.classList.remove('active-press');
+          onChange(false);
+        };
+        el.addEventListener('pointerdown', start);
+        el.addEventListener('pointerup', end);
+        el.addEventListener('pointerleave', end);
+        el.addEventListener('pointercancel', end);
+      }
+
+      bindHoldButton('touch-left', (v) => { keys.left = v; });
+      bindHoldButton('touch-right', (v) => { keys.right = v; });
+      bindHoldButton('touch-brake', (v) => { keys.down = v; });
+      bindHoldButton('touch-nitro', (v) => {
+        if (v && STATE.nitro > 15) SoundFX.nitro();
+        keys.nitro = v;
+      });
+
+      // Mouse drag & touch swipe on 3D Canvas for free camera angle inspection
+      let isDraggingCanvas = false;
+      let dragStartX = 0;
+      let dragStartY = 0;
+
+      DOM.canvas.addEventListener('mousedown', (e) => {
+        isDraggingCanvas = true;
+        dragStartX = e.clientX;
+        dragStartY = e.clientY;
+      });
+      window.addEventListener('mousemove', (e) => {
+        if (!isDraggingCanvas) return;
+        const dx = (e.clientX - dragStartX) / window.innerWidth;
+        const dy = (e.clientY - dragStartY) / window.innerHeight;
+        STATE.camDragYaw = Math.max(-0.85, Math.min(0.85, dx * 2.2));
+        STATE.camDragPitch = Math.max(-0.35, Math.min(0.45, dy * 1.5));
+      });
+      window.addEventListener('mouseup', () => {
+        isDraggingCanvas = false;
+        STATE.camDragYaw = 0;
+        STATE.camDragPitch = 0;
+      });
+
+      // Touch swipe support on canvas
+      let touchStartX = 0;
+      let touchStartY = 0;
+      DOM.canvas.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+          touchStartX = e.touches[0].clientX;
+          touchStartY = e.touches[0].clientY;
+        }
+      }, { passive: true });
+
+      DOM.canvas.addEventListener('touchmove', (e) => {
+        if (e.touches.length === 1) {
+          const dx = e.touches[0].clientX - touchStartX;
+          if (Math.abs(dx) > 28) {
+            STATE.targetLaneX = Math.max(-5.2, Math.min(5.2, STATE.targetLaneX + Math.sign(dx) * 0.32));
+            touchStartX = e.touches[0].clientX;
+          }
+        }
+      }, { passive: true });
+
+      DOM.canvas.addEventListener('touchend', () => {
+        STATE.camDragYaw = 0;
+        STATE.camDragPitch = 0;
+      }, { passive: true });
+
+      /* --------------------------------------------------------------------------
+         8. TOP BAR & MODAL BUTTON WIRING
+         -------------------------------------------------------------------------- */
+      function cycleCamera() {
+        SoundFX.click();
+        STATE.cameraMode = (STATE.cameraMode + 1) % 4;
+        const labels = ['CHASE CAM', 'APEX LOW CAM', 'COCKPIT HOOD CAM', 'HELI OVERWATCH'];
+        showBanner(labels[STATE.cameraMode]);
+      }
+
+      function toggleAudio() {
+        STATE.audioEnabled = !STATE.audioEnabled;
+        DOM.iconAudio.className = STATE.audioEnabled ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark opacity-50';
+        if (STATE.audioEnabled) SoundFX.click();
+      }
+
+      document.getElementById('btn-open-menu').addEventListener('click', () => openModal('modal-menu'));
+      document.getElementById('btn-pause').addEventListener('click', () => {
+        STATE.activeModal ? closeAllModals() : openModal('modal-menu');
+      });
+      document.getElementById('btn-garage').addEventListener('click', () => openModal('modal-garage'));
+      document.getElementById('btn-camera').addEventListener('click', cycleCamera);
+      document.getElementById('btn-biome-cycle').addEventListener('click', () => {
+        SoundFX.click();
+        applyBiome(STATE.biomeIndex + 1);
+        showBanner(BIOMES[STATE.biomeIndex].name);
+      });
+      document.getElementById('btn-perf-mode').addEventListener('click', () => {
+        SoundFX.click();
+        STATE.lowSpecMode = !STATE.lowSpecMode;
+        updateRendererQuality();
+        showBanner(STATE.lowSpecMode ? '2GB RAM ECO TURBO ON' : 'ULTRA GLASS QUALITY ON');
+      });
+      DOM.toggleLowSpec.addEventListener('click', () => {
+        SoundFX.click();
+        STATE.lowSpecMode = !STATE.lowSpecMode;
+        updateRendererQuality();
+      });
+      document.getElementById('btn-theme').addEventListener('click', () => {
+        SoundFX.click();
+        STATE.darkUi = !STATE.darkUi;
+        syncThemeUI();
+      });
+      document.getElementById('btn-audio').addEventListener('click', toggleAudio);
+
+      document.querySelectorAll('[data-close-modal]').forEach(btn => {
+        btn.addEventListener('click', closeAllModals);
+      });
+
+      document.getElementById('btn-restart-run').addEventListener('click', () => {
+        resetRun();
+        closeAllModals();
+      });
+      document.getElementById('btn-over-retry').addEventListener('click', () => {
+        resetRun();
+        closeAllModals();
+      });
+      document.getElementById('btn-over-garage').addEventListener('click', () => {
+        resetRun();
+        openModal('modal-garage');
+      });
+
+      window.addEventListener('resize', updateRendererQuality);
+
+      /* --------------------------------------------------------------------------
+         9. GAMEPLAY SIMULATION & ZERO-GC LOOP
+         -------------------------------------------------------------------------- */
+      function resetRun() {
+        STATE.gameOver = false;
+        STATE.score = 0;
+        STATE.distance = 0;
+        STATE.combo = 1;
+        STATE.comboTimer = 0;
+        STATE.speed = 90;
+        STATE.nitro = 100;
+        STATE.shieldActive = false;
+        STATE.shieldTimer = 0;
+        STATE.laneX = 0;
+        STATE.targetLaneX = 0;
+        if (shieldMesh) shieldMesh.visible = false;
+
+        // Reposition traffic vehicles cleanly ahead
+        trafficPool.forEach((t, idx) => {
+          const lane = LANE_POSITIONS[idx % LANE_POSITIONS.length];
+          t.position.set(lane, 0, -48 - idx * 36);
+          t.userData.nearMissed = false;
+        });
+
+        collectiblePool.forEach((c, idx) => {
+          const lane = LANE_POSITIONS[(idx * 2) % LANE_POSITIONS.length];
+          c.position.set(lane, 0.9, -30 - idx * 28);
+          c.visible = true;
+        });
+      }
+
+      function triggerGameOver() {
+        SoundFX.crash();
+        STATE.gameOver = true;
+        if (STATE.score > STATE.bestScore) {
+          STATE.bestScore = Math.floor(STATE.score);
+        }
+        saveProgress();
+
+        DOM.overScore.textContent = Math.floor(STATE.score).toLocaleString();
+        DOM.overDistance.textContent = STATE.distance.toFixed(1) + ' km';
+        DOM.overBest.textContent = Math.floor(STATE.bestScore).toLocaleString();
+        openModal('modal-gameover');
+      }
+
+      // Rolling FPS Monitor & Auto-2GB-RAM Protector
+      let frameCount = 0;
+      let fpsAccumTime = 0;
+      let lowFpsStreak = 0;
+
+      function updateSimulation(dt) {
+        const carSpec = HYPERCARS[STATE.carIndex];
+        const handlingRate = 10.5 * carSpec.handling;
+
+        // Steering
+        const steerDir = (keys.left ? -1 : 0) + (keys.right ? 1 : 0);
+        if (steerDir !== 0) {
+          STATE.targetLaneX += steerDir * handlingRate * dt;
+        }
+        STATE.targetLaneX = Math.max(-5.35, Math.min(5.35, STATE.targetLaneX));
+        STATE.laneX += (STATE.targetLaneX - STATE.laneX) * Math.min(1, dt * 11.5);
+
+        // Speed & Nitro
+        STATE.nitroActive = keys.nitro && STATE.nitro > 1;
+        const maxSpd = STATE.nitroActive ? STATE.baseMaxSpeed * 1.32 : STATE.baseMaxSpeed;
+        const accel = STATE.nitroActive ? 145 : (keys.up ? 82 : 52);
+
+        if (keys.down) {
+          STATE.speed = Math.max(65, STATE.speed - 175 * dt);
+        } else if (STATE.speed < maxSpd) {
+          STATE.speed = Math.min(maxSpd, STATE.speed + accel * dt);
+        } else {
+          STATE.speed = Math.max(maxSpd, STATE.speed - 65 * dt);
+        }
+
+        if (STATE.nitroActive) {
+          STATE.nitro = Math.max(0, STATE.nitro - 28 * dt);
+        } else {
+          STATE.nitro = Math.min(100, STATE.nitro + 8.5 * dt);
+        }
+
+        // Shield countdown
+        if (STATE.shieldActive) {
+          STATE.shieldTimer -= dt;
+          if (shieldMesh) shieldMesh.rotation.y += dt * 2.5;
+          if (STATE.shieldTimer <= 0) {
+            STATE.shieldActive = false;
+            if (shieldMesh) shieldMesh.visible = false;
+          }
+        }
+
+        // Combo decay
+        if (STATE.combo > 1) {
+          STATE.comboTimer -= dt;
+          if (STATE.comboTimer <= 0) STATE.combo = 1;
+        }
+
+        const forwardStep = (STATE.speed * 0.26) * dt;
+        STATE.distance += forwardStep * 0.0042;
+        STATE.score += forwardStep * 1.45 * STATE.combo;
+
+        // Player Car visual dynamics
+        playerCarGroup.position.x = STATE.laneX;
+        const rollAngle = (STATE.laneX - STATE.targetLaneX) * 0.095;
+        playerCarGroup.rotation.z = rollAngle;
+        playerCarGroup.rotation.y = -rollAngle * 0.45;
+
+        // Recycle Road Segments
+        const totalRoadLen = NUM_SEGMENTS * SEGMENT_LENGTH;
+        for (let i = 0; i < roadSegments.length; i++) {
+          const seg = roadSegments[i];
+          seg.position.z += forwardStep;
+          if (seg.position.z > SEGMENT_LENGTH) {
+            seg.position.z -= totalRoadLen;
+          }
+        }
+
+        // Update Traffic Pool & Check Collisions / Near Misses
+        for (let i = 0; i < trafficPool.length; i++) {
+          const t = trafficPool[i];
+          const relSpeed = forwardStep - (STATE.baseMaxSpeed * 0.22 * t.userData.speedFactor) * dt;
+          t.position.z += relSpeed;
+
+          const dz = Math.abs(t.position.z - playerCarGroup.position.z);
+          const dx = Math.abs(t.position.x - playerCarGroup.position.x);
+
+          // Direct Collision Check
+          if (dz < 3.45 && dx < 1.62) {
+            if (STATE.shieldActive || STATE.nitroActive) {
+              // Smash through with Shield or Hyper Nitro
+              STATE.shieldActive = false;
+              if (shieldMesh) shieldMesh.visible = false;
+              SoundFX.nearMiss();
+              showBanner('SHIELD DEFLECT +500');
+              STATE.score += 500;
+              t.position.z = -210 - Math.random() * 50;
+              continue;
+            } else {
+              triggerGameOver();
+              return;
+            }
+          }
+
+          // Near-Miss Bonus Detection
+          if (!t.userData.nearMissed && t.position.z > playerCarGroup.position.z && dz < 4.5 && dx < 2.65) {
+            t.userData.nearMissed = true;
+            STATE.combo = Math.min(8, STATE.combo + 1);
+            STATE.comboTimer = 4.0;
+            const bonus = 250 * STATE.combo;
+            STATE.score += bonus;
+            STATE.nitro = Math.min(100, STATE.nitro + 12);
+            SoundFX.nearMiss();
+            showBanner(`NEAR MISS +${bonus}`);
+          }
+
+          // Recycle passed traffic car
+          if (t.position.z > 16) {
+            const nextLane = LANE_POSITIONS[Math.floor(Math.random() * LANE_POSITIONS.length)];
+            t.position.set(nextLane, 0, -210 - Math.random() * 65);
+            t.userData.nearMissed = false;
+          }
+        }
+
+        // Update Collectibles Pool
+        for (let i = 0; i < collectiblePool.length; i++) {
+          const orb = collectiblePool[i];
+          orb.position.z += forwardStep;
+          orb.rotation.y += dt * 3.2;
+
+          if (orb.visible) {
+            const dz = Math.abs(orb.position.z - playerCarGroup.position.z);
+            const dx = Math.abs(orb.position.x - playerCarGroup.position.x);
+            if (dz < 2.3 && dx < 1.55) {
+              orb.visible = false;
+              if (orb.userData.type === 'shield') {
+                STATE.shieldActive = true;
+                STATE.shieldTimer = 8.0;
+                if (shieldMesh) shieldMesh.visible = true;
+                SoundFX.nearMiss();
+                showBanner('AEGIS SHIELD ACTIVE');
+              } else {
+                STATE.coins += 5;
+                STATE.score += 150 * STATE.combo;
+                SoundFX.coin();
+              }
+            }
+          }
+
+          if (orb.position.z > 14) {
+            const nextLane = LANE_POSITIONS[Math.floor(Math.random() * LANE_POSITIONS.length)];
+            orb.position.set(nextLane, 0.9, -195 - Math.random() * 55);
+            orb.visible = true;
+          }
+        }
+
+        // Dynamic Camera Tracking
+        updateCameraTransform(dt);
+        // Throttled DOM Telemetry Update
+        syncHudTelemetry();
+      }
+
+      function updateCameraTransform(dt) {
+        let targetX = playerCarGroup.position.x * 0.58 + STATE.camDragYaw * 5.0;
+        let targetY = 4.1 + STATE.camDragPitch * 2.5;
+        let targetZ = 10.2 + (STATE.nitroActive ? 1.35 : 0);
+        let lookZ = -18;
+
+        if (STATE.cameraMode === 1) {
+          // Low Apex Action Cam
+          targetY = 2.35;
+          targetZ = 7.4;
+        } else if (STATE.cameraMode === 2) {
+          // Hood Cockpit Cam
+          targetX = playerCarGroup.position.x;
+          targetY = 1.48;
+          targetZ = 0.6;
+          lookZ = -40;
+        } else if (STATE.cameraMode === 3) {
+          // Helicopter Overwatch Cam
+          targetY = 9.5;
+          targetZ = 14.5;
+        }
+
+        camera.position.x += (targetX - camera.position.x) * Math.min(1, dt * 8.5);
+        camera.position.y += (targetY - camera.position.y) * Math.min(1, dt * 8.5);
+        camera.position.z += (targetZ - camera.position.z) * Math.min(1, dt * 8.5);
+        camera.lookAt(playerCarGroup.position.x * 0.35, 1.0, lookZ);
+      }
+
+      function syncHudTelemetry() {
+        const sScore = Math.floor(STATE.score);
+        if (sScore !== prevHud.score) {
+          prevHud.score = sScore;
+          DOM.score.textContent = sScore.toLocaleString();
+        }
+
+        const sDist = STATE.distance.toFixed(1) + ' km';
+        if (sDist !== prevHud.distance) {
+          prevHud.distance = sDist;
+          DOM.distance.textContent = sDist;
+        }
+
+        const sCoins = Math.floor(STATE.coins);
+        if (sCoins !== prevHud.coins) {
+          prevHud.coins = sCoins;
+          DOM.coins.textContent = sCoins;
+        }
+
+        if (STATE.combo !== prevHud.combo) {
+          prevHud.combo = STATE.combo;
+          DOM.combo.textContent = 'x' + STATE.combo;
+        }
+
+        const sSpeed = Math.round(STATE.speed);
+        if (sSpeed !== prevHud.speed) {
+          prevHud.speed = sSpeed;
+          DOM.speed.textContent = sSpeed;
+          const gearNum = Math.min(7, Math.max(1, Math.ceil(sSpeed / 52)));
+          const gearStr = STATE.nitroActive ? 'OVR' : ('D' + gearNum);
+          if (gearStr !== prevHud.gear) {
+            prevHud.gear = gearStr;
+            DOM.gear.textContent = gearStr;
+          }
+        }
+
+        const sNitro = Math.round(STATE.nitro);
+        if (sNitro !== prevHud.nitro) {
+          prevHud.nitro = sNitro;
+          DOM.nitroPct.textContent = sNitro + '%';
+          DOM.nitroBar.style.width = sNitro + '%';
+        }
+
+        if (STATE.shieldActive !== prevHud.shield) {
+          prevHud.shield = STATE.shieldActive;
+          DOM.shieldPill.classList.toggle('hidden', !STATE.shieldActive);
+        }
+      }
+
+      /* --------------------------------------------------------------------------
+         10. MAIN ANIMATION LOOP (STARTED ON WINDOW LOAD)
+         -------------------------------------------------------------------------- */
+      let lastTime = performance.now();
+
+      function animate(now) {
+        requestAnimationFrame(animate);
+
+        const rawDt = (now - lastTime) * 0.001;
+        lastTime = now;
+        const dt = Math.min(rawDt, 0.05);
+
+        // Real-time FPS monitor & automatic 2GB RAM frame-drop guard
+        frameCount++;
+        fpsAccumTime += rawDt;
+        if (fpsAccumTime >= 0.75) {
+          const fps = Math.min(60, Math.round(frameCount / fpsAccumTime));
+          DOM.fpsBadge.textContent = fps + ' FPS';
+          if (fps < 42 && !STATE.lowSpecMode) {
+            lowFpsStreak++;
+            if (lowFpsStreak >= 2) {
+              STATE.lowSpecMode = true;
+              updateRendererQuality();
+            }
+          } else {
+            lowFpsStreak = 0;
+          }
+          frameCount = 0;
+          fpsAccumTime = 0;
+        }
+
+        if (!STATE.paused && !STATE.gameOver) {
+          updateSimulation(dt);
+        }
+
+        renderer.render(scene, camera);
+      }
+
+      window.onload = function () {
+        initThreeScene();
+        applyCarSelection(STATE.carIndex);
+        resetRun();
+        lastTime = performance.now();
+        animate(lastTime);
+      };
+    })();
+  </script>
 </body>
 </html>
