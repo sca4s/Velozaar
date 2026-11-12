@@ -40,16 +40,16 @@ body.dark-ui {
 /* 2GB RAM LOW-DEFINITION (LD) ULTRA-SMOOTH COMPOSITOR OPTIMIZATIONS   */
 /* =================================================================== */
 body.low-def-mode {
-  --light-glass-fill: rgba(252, 253, 255, 0.94);
-  --light-card-fill: rgba(255, 255, 255, 0.92);
-  --light-pill-fill: rgba(255, 255, 255, 0.94);
+  --light-glass-fill: rgba(252, 253, 255, 0.96);
+  --light-card-fill: rgba(255, 255, 255, 0.94);
+  --light-pill-fill: rgba(255, 255, 255, 0.96);
 
-  --dark-glass-fill: rgba(15, 23, 42, 0.95);
-  --dark-card-fill: rgba(30, 41, 59, 0.93);
-  --dark-pill-fill: rgba(30, 41, 59, 0.95);
+  --dark-glass-fill: rgba(15, 23, 42, 0.96);
+  --dark-card-fill: rgba(30, 41, 59, 0.95);
+  --dark-pill-fill: rgba(30, 41, 59, 0.96);
 
-  --glass-shadow: 0 8px 20px rgba(15, 23, 42, 0.18);
-  --glass-pill-shadow: 0 4px 10px rgba(15, 23, 42, 0.12);
+  --glass-shadow: 0 6px 16px rgba(15, 23, 42, 0.16);
+  --glass-pill-shadow: 0 3px 8px rgba(15, 23, 42, 0.12);
 }
 
 body.low-def-mode .spatial-glass,
@@ -57,6 +57,13 @@ body.low-def-mode .spatial-pill,
 body.low-def-mode .spatial-btn-touch {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
+}
+
+body.low-def-mode .spatial-glass::before,
+body.low-def-mode .spatial-subcard::before,
+body.low-def-mode .spatial-pill::before,
+body.low-def-mode .spatial-btn-touch::before {
+  display: none !important;
 }
 
 body.low-def-mode .ui-hideable {
@@ -202,7 +209,7 @@ html, body {
   margin-bottom: 0 !important;
 }
 
-/* Telemetry Capsules (Score, Time, Blasts, Orbs, Shield, Speedometer) */
+/* Telemetry Capsules (Score, Time, Blasts, Diamonds, Shield, Speedometer) */
 .hud-telemetry-card {
   border-radius: clamp(0.85rem, 1.8vw, 1.5rem);
   padding: clamp(0.24rem, 0.55vw, 0.55rem) clamp(0.48rem, 1vw, 1rem);
@@ -547,6 +554,13 @@ body.dark-ui .title-gradient {
 .active-selection-ring {
   border-color: #ec4899 !important;
   box-shadow: 0 0 0 2.5px rgba(236, 72, 153, 0.38), var(--glass-pill-shadow) !important;
+}
+
+/* Disabled state for Diamond Revive button when vault balance is below cost */
+.btn-revive-disabled {
+  opacity: 0.48 !important;
+  filter: grayscale(0.65);
+  cursor: not-allowed !important;
 }
 
 /* Ultra-Smooth GPU Slide & Fade Transitions for Individual Hideable UI Panels */
