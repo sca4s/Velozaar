@@ -131,6 +131,46 @@ class PastelAudioSynth {
     osc.stop(now + 0.29);
   }
 
+  playReviveFanfare() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime;
+    const notes = [523.25, 659.25, 783.99, 1046.5, 1318.51];
+    notes.forEach((freq, idx) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, now + idx * 0.055);
+      gain.gain.setValueAtTime(0.16, now + idx * 0.055);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.055 + 0.36);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now + idx * 0.055);
+      osc.stop(now + idx * 0.055 + 0.36);
+    });
+  }
+
+  playErrorBuzz() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(160, now);
+    osc.frequency.setValueAtTime(130, now + 0.08);
+    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.22);
+  }
+
   playVoxelExplosion(isBig = false) {
     if (this.muted) return;
     this.init();
@@ -497,28 +537,82 @@ const CAMERA_VIEWS = [
 
 /**
  * =====================================================================
- * 3. MAIN 3D VELOZAAR APPLICATION
+ * 3. UNIVERSAL CROSS-GAME DIAMOND VAULT API
+ *    Allows stored diamonds to be shared across Velozaar & other games
+ * =====================================================================
+ */
+const DIAMOND_VAULT_KEYS = [
+  'velozaar_total_credits',
+  'velozaar_universal_diamond_vault',
+  'sou_universal_diamonds'
+];
+
+window.VelozaarVault = {
+  getBalance() {
+    try {
+      let maxVal = 0;
+      DIAMOND_VAULT_KEYS.forEach(k => {
+        const raw = localStorage.getItem(k);
+        const parsed = parseInt(raw, 10);
+        if (!isNaN(parsed) && parsed > maxVal) {
+          maxVal = parsed;
+        }
+      });
+      return maxVal;
+    } catch (e) {
+      return 0;
+    }
+  },
+  setBalance(amount) {
+    const clean = Math.max(0, Math.floor(Number(amount) || 0));
+    try {
+      DIAMOND_VAULT_KEYS.forEach(k => {
+        localStorage.setItem(k, String(clean));
+      });
+    } catch (e) {}
+    return clean;
+  },
+  addDiamonds(count = 1) {
+    const next = this.getBalance() + Math.max(0, Math.floor(Number(count) || 0));
+    return this.setBalance(next);
+  },
+  spendDiamonds(cost = 5) {
+    const current = this.getBalance();
+    const cleanCost = Math.max(0, Math.floor(Number(cost) || 0));
+    if (current < cleanCost) return false;
+    this.setBalance(current - cleanCost);
+    return true;
+  }
+};
+
+/**
+ * =====================================================================
+ * 4. MAIN 3D VELOZAAR APPLICATION
  * =====================================================================
  */
 class TrafficRGame {
   constructor() {
     this.audio = new PastelAudioSynth();
 
+    // Game Flow State: 'DEVICE_SELECT' | 'MODE_SELECT' | 'GARAGE' | 'PLAYING' | 'PAUSED' | 'COUNTDOWN' | 'GAMEOVER'
     this.state = 'DEVICE_SELECT';
     this.deviceType = 'keyboard';
     this.uiTheme = 'light';
-    this.graphicsQuality = 'hd';
-    this.gameMode = 'car';
+    this.graphicsQuality = 'hd'; // 'hd' (High Def) | 'ld' (Low Def 2GB RAM Smooth Mode)
+    this.gameMode = 'car';       // 'car' ("The Endless Highway") | 'balloon' ("Beyond the Fearless Sky")
     this.currentGeotype = 'meadow';
     this.skyTimeMode = 'day';
     this.randomizeOnRespawn = true;
 
+    // Player Customization State
     this.playerBodyType = 'coupe';
     this.skyCraftType = 'balloon';
     this.selectedPastelKeys = ['sakura', 'babyblue', 'lavender'];
 
+    // Camera View Index
     this.cameraViewIndex = 0;
 
+    // Player Movement & Physics Constants
     this.WORLD_WRAP_LIMIT = 23.0;
     this.playerX = 0;
     this.playerVX = 0;
@@ -527,12 +621,15 @@ class TrafficRGame {
     this.maxSpeed = 96;
     this.currentSpeed = 46;
 
+    // Score, Survival Stopwatch, Diamonds (💎), Revive Cost & Aegis Shields (🛡️)
     this.score = 0;
     this.survivalTime = 0;
     this.blasts = 0;
-    this.credits = 0;
-    this.totalCredits = 0;
-    this.shields = 0;
+    this.credits = 0;       // Diamonds collected in current run
+    this.totalCredits = 0;  // Persistent Cross-Game Diamond Vault
+    this.reviveCost = 5;    // Diamonds needed to revive after an accident
+    this.revivesUsed = 0;
+    this.shields = 0;       // Active Aegis Shields (prevents accidents)
     this.maxShields = 3;
     this.highScore = 0;
     this.bestTime = 0;
@@ -543,8 +640,10 @@ class TrafficRGame {
     this.lastShotTime = 0;
     this.shotCooldown = 0.22;
 
+    // Input States
     this.keys = { left: false, right: false, up: false, down: false, space: false };
 
+    // 3D Scene Collections & Shared Geometry Cache (Zero GC Stutter for 2GB RAM)
     this.obstacles = [];
     this.collectibles = [];
     this.terrainProps = [];
@@ -562,11 +661,14 @@ class TrafficRGame {
     this.playerShieldMesh = null;
 
     this.sharedVoxelGeo = new THREE.BoxGeometry(0.48, 0.48, 0.48);
-    this.sharedOrbGeo = new THREE.OctahedronGeometry(0.85, 0);
-    this.sharedOrbRingGeo = new THREE.TorusGeometry(1.15, 0.08, 8, 20);
-    this.sharedShieldCoreGeo = new THREE.IcosahedronGeometry(0.78, 0);
-    this.sharedShieldShellGeo = new THREE.OctahedronGeometry(1.18, 1);
+    this.sharedOrbGeo = new THREE.OctahedronGeometry(1.05, 0);
+    this.sharedOrbInnerGeo = new THREE.OctahedronGeometry(0.62, 0);
+    this.sharedOrbRingGeo = new THREE.TorusGeometry(1.38, 0.1, 8, 24);
+    this.sharedShieldCoreGeo = new THREE.IcosahedronGeometry(0.95, 0);
+    this.sharedShieldShellGeo = new THREE.OctahedronGeometry(1.42, 1);
+    this.sharedShieldRingGeo = new THREE.TorusGeometry(1.5, 0.1, 8, 24);
 
+    // Interactive 3D Studio Preview State
     this.previewYaw = 0.65;
     this.previewPitch = 0.25;
     this.previewAutoSpin = true;
@@ -574,11 +676,13 @@ class TrafficRGame {
     this.dragStartX = 0;
     this.dragStartY = 0;
 
+    // Countdown & Frame Smoothing State
     this.countdownRemaining = 0;
     this.countdownLastInt = 0;
     this.countdownRimAngle = 0;
     this.smoothedDt = 1 / 60;
 
+    // Individual UI Visibility State
     this.hiddenUIs = {
       keyboard: { brand: false, controls: false, telemetryLeft: false, telemetryRight: false, pcHint: false },
       touch: { brand: false, controls: false, telemetryLeft: false, telemetryRight: false }
@@ -595,6 +699,8 @@ class TrafficRGame {
     this.renderPastelColorGrid();
     this.applyGraphicsQualitySettings(false);
     this.applyGeotype('meadow', false);
+    this.resetObstacles();
+    this.resetCollectibles();
     this.updateRecordDisplays();
     this.updateStudioUI();
     this.bindEvents();
@@ -607,7 +713,6 @@ class TrafficRGame {
       const savedTime = localStorage.getItem('velozaar_best_time');
       const lastScore = localStorage.getItem('velozaar_last_saved_score');
       const lastTime = localStorage.getItem('velozaar_last_saved_time');
-      const savedCredits = localStorage.getItem('velozaar_total_credits');
       const savedGfx = localStorage.getItem('velozaar_gfx_quality');
       const savedRunJson = localStorage.getItem('velozaar_saved_session');
 
@@ -615,7 +720,10 @@ class TrafficRGame {
       if (savedTime) this.bestTime = parseFloat(savedTime) || 0;
       if (lastScore) this.lastSavedScore = parseInt(lastScore, 10) || 0;
       if (lastTime) this.lastSavedTime = parseFloat(lastTime) || 0;
-      if (savedCredits) this.totalCredits = parseInt(savedCredits, 10) || 0;
+
+      // Load Universal Cross-Game Diamond Vault balance
+      this.totalCredits = window.VelozaarVault.getBalance();
+      window.VelozaarVault.setBalance(this.totalCredits);
 
       if (savedGfx === 'ld' || savedGfx === 'hd') {
         this.graphicsQuality = savedGfx;
@@ -635,8 +743,8 @@ class TrafficRGame {
       localStorage.setItem('velozaar_best_time', String(this.bestTime.toFixed(1)));
       localStorage.setItem('velozaar_last_saved_score', String(this.lastSavedScore));
       localStorage.setItem('velozaar_last_saved_time', String(this.lastSavedTime.toFixed(1)));
-      localStorage.setItem('velozaar_total_credits', String(this.totalCredits));
       localStorage.setItem('velozaar_gfx_quality', this.graphicsQuality);
+      window.VelozaarVault.setBalance(this.totalCredits);
     } catch (e) {}
   }
 
@@ -777,22 +885,32 @@ class TrafficRGame {
   }
 
   updateRecordDisplays() {
+    this.totalCredits = window.VelozaarVault.getBalance();
     const bestTimeStr = this.formatTime(this.bestTime);
+
     const hsEl = document.getElementById('hud-high-score');
     const btEl = document.getElementById('hud-best-time');
+    const initCredEl = document.getElementById('init-total-credits');
     const mScoreEl = document.getElementById('menu-best-score');
     const mTimeEl = document.getElementById('menu-best-time');
     const mCredEl = document.getElementById('menu-total-credits');
     const sCredEl = document.getElementById('studio-total-credits');
+    const hudVaultEl = document.getElementById('hud-vault-credits');
     const fTotalCredEl = document.getElementById('final-total-credits');
+    const goVaultEl = document.getElementById('gameover-vault-credits');
 
     if (hsEl) hsEl.textContent = this.highScore;
     if (btEl) btEl.textContent = bestTimeStr;
+    if (initCredEl) initCredEl.textContent = this.totalCredits;
     if (mScoreEl) mScoreEl.textContent = this.highScore;
     if (mTimeEl) mTimeEl.textContent = bestTimeStr;
     if (mCredEl) mCredEl.textContent = this.totalCredits;
     if (sCredEl) sCredEl.textContent = this.totalCredits;
+    if (hudVaultEl) hudVaultEl.textContent = this.totalCredits;
     if (fTotalCredEl) fTotalCredEl.textContent = `${this.totalCredits} 💎`;
+    if (goVaultEl) goVaultEl.textContent = this.totalCredits;
+
+    this.updateReviveButtonState();
 
     const modeBanner = document.getElementById('saved-session-banner-mode');
     const garageBanner = document.getElementById('saved-session-banner-garage');
@@ -839,6 +957,80 @@ class TrafficRGame {
     }
   }
 
+  /**
+   * ===================================================================
+   * INSTANT REVIVE WITH STORED DIAMONDS (CROSS-GAME VAULT)
+   * ===================================================================
+   */
+  updateReviveButtonState() {
+    const reviveBtn = document.getElementById('btn-revive-diamonds');
+    const costLabel = document.getElementById('revive-cost-label');
+    const hintEl = document.getElementById('revive-status-hint');
+    const vaultEl = document.getElementById('gameover-vault-credits');
+
+    if (vaultEl) vaultEl.textContent = this.totalCredits;
+    if (costLabel) costLabel.textContent = `${this.reviveCost} 💎`;
+
+    const canAfford = this.totalCredits >= this.reviveCost;
+    if (reviveBtn) {
+      reviveBtn.classList.toggle('btn-revive-disabled', !canAfford);
+    }
+    if (hintEl) {
+      if (canAfford) {
+        hintEl.innerHTML = `Press <span class="keycap">R</span> or tap above to Revive • Keeps score, time & grants +1 Shield 🛡️!`;
+      } else {
+        const needed = this.reviveCost - this.totalCredits;
+        hintEl.innerHTML = `Collect <span class="text-sky-400 font-extrabold">${needed} more 💎</span> on the road/sky to unlock Instant Revive!`;
+      }
+    }
+  }
+
+  reviveWithDiamonds() {
+    if (this.state !== 'GAMEOVER') return;
+
+    this.totalCredits = window.VelozaarVault.getBalance();
+    if (this.totalCredits < this.reviveCost) {
+      this.audio.playErrorBuzz();
+      const needed = this.reviveCost - this.totalCredits;
+      this.showToast(`NEED ${needed} MORE STORED DIAMONDS (💎) TO REVIVE!`);
+      this.updateReviveButtonState();
+      return;
+    }
+
+    // Deduct diamonds from universal cross-game vault
+    window.VelozaarVault.spendDiamonds(this.reviveCost);
+    this.totalCredits = window.VelozaarVault.getBalance();
+    this.revivesUsed += 1;
+
+    // Grant 1 emergency Aegis Shield so the player is protected upon revival
+    this.shields = Math.min(this.maxShields, this.shields + 1);
+    this.saveRecords();
+    this.updateRecordDisplays();
+    this.updateShieldVisuals();
+
+    this.audio.playReviveFanfare();
+
+    // Clear any obstacles near the player so they have a safe runway after reviving
+    this.obstacles.forEach(obs => {
+      if (obs.position.z > -165) {
+        obs.position.z -= 210;
+      }
+    });
+
+    document.getElementById('screen-gameover').classList.add('hidden');
+    document.getElementById('gameplay-hud').classList.remove('hidden');
+
+    // Transition into PAUSED and immediately trigger the 3-second circular countdown
+    this.state = 'PAUSED';
+    this.resumeGameWithCountdown();
+    this.showToast(`💎 REVIVED WITH ${this.reviveCost} DIAMONDS • +1 SHIELD EQUIPPED!`);
+  }
+
+  /**
+   * ===================================================================
+   * HIGH DEF (HD) VS LOW DEF (LD / 2GB RAM SMOOTH MODE) OPTIMIZER
+   * ===================================================================
+   */
   setGraphicsQuality(mode) {
     if (mode !== 'hd' && mode !== 'ld') return;
     this.audio.playUITap(640);
@@ -856,7 +1048,7 @@ class TrafficRGame {
     document.body.classList.toggle('low-def-mode', isLD);
 
     if (this.renderer) {
-      const targetPixelRatio = isLD ? 1 : Math.min(window.devicePixelRatio || 1, 2);
+      const targetPixelRatio = isLD ? 0.85 : Math.min(window.devicePixelRatio || 1, 2);
       this.renderer.setPixelRatio(targetPixelRatio);
       this.renderer.shadowMap.enabled = !isLD;
       if (this.dirLight) {
@@ -874,20 +1066,32 @@ class TrafficRGame {
       this.weatherParticles.visible = !isLD;
     }
 
+    // Update Initiation Screen Buttons & Status Pill
     const initHd = document.getElementById('init-gfx-hd');
     const initLd = document.getElementById('init-gfx-ld');
+    const initStatus = document.getElementById('init-gfx-status');
     if (initHd) initHd.classList.toggle('active-selection-ring', !isLD);
     if (initLd) initLd.classList.toggle('active-selection-ring', isLD);
+    if (initStatus) {
+      initStatus.textContent = isLD ? 'LD 2GB RAM ACTIVE ⚡' : 'HD ACTIVE ✨';
+      initStatus.className = isLD
+        ? 'text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-500 shrink-0'
+        : 'text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-500 shrink-0';
+    }
 
+    // Update Pause Screen Buttons
     const pauseHd = document.getElementById('pause-gfx-hd');
     const pauseLd = document.getElementById('pause-gfx-ld');
     if (pauseHd) pauseHd.classList.toggle('active-selection-ring', !isLD);
     if (pauseLd) pauseLd.classList.toggle('active-selection-ring', isLD);
 
+    // Update Top HUD Bar Quick Toggle
     const hudGfxIcon = document.getElementById('hud-gfx-icon');
     const hudGfxLabel = document.getElementById('hud-gfx-label');
     if (hudGfxIcon) {
-      hudGfxIcon.className = isLD ? 'fa-solid fa-bolt text-amber-400' : 'fa-solid fa-microchip text-emerald-400';
+      hudGfxIcon.className = isLD
+        ? 'fa-solid fa-bolt text-amber-400'
+        : 'fa-solid fa-wand-magic-sparkles text-emerald-400';
     }
     if (hudGfxLabel) {
       hudGfxLabel.textContent = isLD ? 'LD 2GB' : 'HD';
@@ -898,10 +1102,19 @@ class TrafficRGame {
     }
 
     if (notify) {
-      this.showToast(isLD ? 'LOW DEF (2GB RAM ULTRA-SMOOTH MODE) ACTIVATED ⚡' : 'HIGH DEF MODE ACTIVATED ✨');
+      this.showToast(
+        isLD
+          ? 'LOW DEF (2GB RAM ULTRA-SMOOTH MODE) ACTIVATED ⚡'
+          : 'HIGH DEF (FULL SHADOWS & FX MODE) ACTIVATED ✨'
+      );
     }
   }
 
+  /**
+   * ===================================================================
+   * INITIALIZE THREE.JS MAIN SCENE, 3D STUDIO PREVIEW & WORLD GEOMETRY
+   * ===================================================================
+   */
   initThreeScene() {
     this.canvas = document.getElementById('game-canvas');
     this.scene = new THREE.Scene();
@@ -917,7 +1130,7 @@ class TrafficRGame {
       powerPreference: 'high-performance'
     });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
-    this.renderer.setPixelRatio(isLD ? 1 : Math.min(window.devicePixelRatio || 1, 2));
+    this.renderer.setPixelRatio(isLD ? 0.85 : Math.min(window.devicePixelRatio || 1, 2));
     this.renderer.shadowMap.enabled = !isLD;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.setClearColor(0x000000, 0);
@@ -1227,7 +1440,7 @@ class TrafficRGame {
     const geoConfig = GEOTYPES[this.currentGeotype];
     const mColors = this.skyTimeMode === 'night' ? geoConfig.night.mountainColors : geoConfig.mountainColors;
     const minBankDist = this.gameMode === 'balloon' ? 38 : 55;
-    const count = this.graphicsQuality === 'ld' ? 22 : 42;
+    const count = this.graphicsQuality === 'ld' ? 20 : 42;
 
     for (let i = 0; i < count; i++) {
       const radius = 18 + Math.random() * 34;
@@ -1255,15 +1468,16 @@ class TrafficRGame {
     this.balloonModel = new THREE.Group();
     this.playerRoot.add(this.carModel, this.balloonModel);
 
-    const shieldGeo = new THREE.IcosahedronGeometry(3.15, 1);
+    // 3D Protective Aegis Shield Forcefield Bubble around Player Vehicle
+    const shieldGeo = new THREE.IcosahedronGeometry(3.25, 1);
     const shieldMat = new THREE.MeshBasicMaterial({
       color: 0x34d399,
       wireframe: true,
       transparent: true,
-      opacity: 0.42
+      opacity: 0.48
     });
     this.playerShieldMesh = new THREE.Mesh(shieldGeo, shieldMat);
-    this.playerShieldMesh.position.set(0, 1.4, 0);
+    this.playerShieldMesh.position.set(0, 1.5, 0);
     this.playerShieldMesh.visible = false;
     this.playerRoot.add(this.playerShieldMesh);
 
@@ -1293,6 +1507,10 @@ class TrafficRGame {
 
     this.carModel.visible = this.gameMode === 'car';
     this.balloonModel.visible = this.gameMode === 'balloon';
+
+    if (this.playerShieldMesh) {
+      this.playerShieldMesh.position.y = this.gameMode === 'car' ? 1.4 : 6.8;
+    }
 
     if (this.previewVehicleHolder) {
       while (this.previewVehicleHolder.children.length > 0) {
@@ -1890,6 +2108,7 @@ class TrafficRGame {
     }
     this.audio.playUITap(540);
     this.state = 'DEVICE_SELECT';
+    this.updateRecordDisplays();
     document.getElementById('screen-device').classList.remove('hidden');
     document.getElementById('screen-mode').classList.add('hidden');
     document.getElementById('screen-garage').classList.add('hidden');
@@ -1944,6 +2163,8 @@ class TrafficRGame {
     this.applyDefaultCameraForMode(mode);
     this.generateDistantMountains();
     this.rebuildAllPlayerMeshes();
+    this.resetObstacles();
+    this.resetCollectibles();
     this.updateStudioUI();
   }
 
@@ -1996,7 +2217,7 @@ class TrafficRGame {
     document.getElementById('pause-time').textContent = this.formatTime(this.survivalTime);
     document.getElementById('pause-blasts').textContent = `${this.blasts} 💥`;
     const pCredEl = document.getElementById('pause-credits');
-    if (pCredEl) pCredEl.textContent = `${this.credits} 💎`;
+    if (pCredEl) pCredEl.textContent = `${this.credits} 💎 (Vault: ${this.totalCredits})`;
     this.updateShieldVisuals();
 
     const pauseIcon = document.getElementById('hud-pause-icon');
@@ -2182,7 +2403,7 @@ class TrafficRGame {
 
     const geoConfig = GEOTYPES[this.currentGeotype];
     const propTypes = geoConfig.propTypes;
-    const count = this.graphicsQuality === 'ld' ? 32 : 65;
+    const count = this.graphicsQuality === 'ld' ? 28 : 64;
 
     for (let i = 0; i < count; i++) {
       const pType = propTypes[Math.floor(Math.random() * propTypes.length)];
@@ -2381,7 +2602,7 @@ class TrafficRGame {
     this.obstacles = [];
 
     const initialClearDistance = -205;
-    const count = 16;
+    const count = this.graphicsQuality === 'ld' ? 12 : 16;
     for (let i = 0; i < count; i++) {
       const z = initialClearDistance - i * 19;
       if (this.gameMode === 'car') {
@@ -2392,28 +2613,56 @@ class TrafficRGame {
     }
   }
 
-  createCollectible(zPos) {
+  /**
+   * ===================================================================
+   * HIGH-VISIBILITY CREDIT DIAMONDS (💎) & AEGIS SHIELD DROPS (🛡️)
+   * ===================================================================
+   */
+  createCollectible(zPos, forceType = null) {
     const group = new THREE.Group();
-    const isShield = Math.random() < 0.28;
+    const isShield = forceType ? forceType === 'shield' : Math.random() < 0.30;
 
     if (isShield) {
-      const core = new THREE.Mesh(this.sharedShieldCoreGeo, new THREE.MeshBasicMaterial({ color: 0x34d399 }));
-      const shell = new THREE.Mesh(this.sharedShieldShellGeo, new THREE.MeshBasicMaterial({ color: 0x6ee7b7, wireframe: true, transparent: true, opacity: 0.65 }));
-      group.add(core, shell);
-      group.scale.set(0.9, 0.9, 0.9);
-      group.userData = { type: 'shield', hitRadius: 2.1 };
+      // Special Aegis Shield Drop (Bright Emerald Core + Wireframe Geodesic Shell + Halo Ring)
+      const core = new THREE.Mesh(
+        this.sharedShieldCoreGeo,
+        new THREE.MeshBasicMaterial({ color: 0x10b981 })
+      );
+      const shell = new THREE.Mesh(
+        this.sharedShieldShellGeo,
+        new THREE.MeshBasicMaterial({ color: 0x6ee7b7, wireframe: true, transparent: true, opacity: 0.85 })
+      );
+      const ring = new THREE.Mesh(
+        this.sharedShieldRingGeo,
+        new THREE.MeshBasicMaterial({ color: 0x34d399, side: THREE.DoubleSide })
+      );
+      group.add(core, shell, ring);
+      group.scale.set(1.15, 1.15, 1.15);
+      group.userData = { type: 'shield', hitRadius: 2.5, bobPhase: Math.random() * Math.PI * 2 };
     } else {
-      const orb = new THREE.Mesh(this.sharedOrbGeo, new THREE.MeshBasicMaterial({ color: 0x38bdf8 }));
-      const ring = new THREE.Mesh(this.sharedOrbRingGeo, new THREE.MeshBasicMaterial({ color: 0x7dd3fc, side: THREE.DoubleSide }));
+      // Credit Diamond / Orb Drop (Vibrant Cyan Faceted Diamond + Inner Pearl Core + Equatorial Ring)
+      const orb = new THREE.Mesh(
+        this.sharedOrbGeo,
+        new THREE.MeshBasicMaterial({ color: 0x00f5d4 })
+      );
+      const inner = new THREE.Mesh(
+        this.sharedOrbInnerGeo,
+        new THREE.MeshBasicMaterial({ color: 0xffffff })
+      );
+      const ring = new THREE.Mesh(
+        this.sharedOrbRingGeo,
+        new THREE.MeshBasicMaterial({ color: 0x38bdf8, side: THREE.DoubleSide })
+      );
       ring.rotation.x = Math.PI / 2;
-      group.add(orb, ring);
-      group.scale.set(0.85, 0.85, 0.85);
-      group.userData = { type: 'credit', hitRadius: 1.9 };
+      group.add(orb, inner, ring);
+      group.scale.set(1.15, 1.15, 1.15);
+      group.userData = { type: 'credit', hitRadius: 2.4, bobPhase: Math.random() * Math.PI * 2 };
     }
 
-    const xPos = (Math.random() - 0.5) * (this.WORLD_WRAP_LIMIT * 1.6);
-    const yPos = this.gameMode === 'car' ? 1.4 : 6.8;
-    group.position.set(xPos, yPos, zPos);
+    const xPos = (Math.random() - 0.5) * (this.WORLD_WRAP_LIMIT * 1.45);
+    const baseY = this.gameMode === 'car' ? 1.65 : 6.8;
+    group.position.set(xPos, baseY, zPos);
+    group.userData.baseY = baseY;
 
     this.scene.add(group);
     this.collectibles.push(group);
@@ -2423,10 +2672,13 @@ class TrafficRGame {
     this.collectibles.forEach(c => this.scene.remove(c));
     this.collectibles = [];
 
-    const count = 10;
+    // Spawn 14 collectibles starting right in front of the player (z = -38 to -298)
+    // Guarantee the first two drops include both a Credit Diamond and an Aegis Shield!
+    const count = 14;
     for (let i = 0; i < count; i++) {
-      const z = -130 - i * 25;
-      this.createCollectible(z);
+      const z = -38 - i * 20;
+      const forced = i === 0 ? 'credit' : i === 1 ? 'shield' : null;
+      this.createCollectible(z, forced);
     }
   }
 
@@ -2445,6 +2697,7 @@ class TrafficRGame {
 
     if (this.playerShieldMesh) {
       this.playerShieldMesh.visible = this.shields > 0;
+      this.playerShieldMesh.position.y = this.gameMode === 'car' ? 1.4 : 6.8;
     }
   }
 
@@ -2586,7 +2839,7 @@ class TrafficRGame {
   }
 
   spawnVoxelExplosion(position, baseColor = 0xff8fab, count = 28) {
-    if (this.graphicsQuality === 'ld') count = Math.floor(count * 0.5);
+    if (this.graphicsQuality === 'ld') count = Math.floor(count * 0.45);
     const palette = [baseColor, 0xffffff, 0xffd166, 0x72efdd, 0xbdb2ff];
 
     for (let i = 0; i < count; i++) {
@@ -2791,7 +3044,9 @@ class TrafficRGame {
     this.survivalTime = 0;
     this.blasts = 0;
     this.credits = 0;
-    this.shields = 0;
+    this.revivesUsed = 0;
+    // Start every new run with 1 complimentary Aegis Shield + spawn more ahead!
+    this.shields = 1;
 
     const isCar = mode === 'car';
     this.highwayGroup.visible = isCar;
@@ -2847,8 +3102,8 @@ class TrafficRGame {
 
     this.showToast(
       isCar
-        ? `THE ENDLESS HIGHWAY • ${activeVehicleName.toUpperCase()}`
-        : `BEYOND THE FEARLESS SKY • ${activeVehicleName.toUpperCase()}`
+        ? `THE ENDLESS HIGHWAY • ${activeVehicleName.toUpperCase()} (🛡️ SHIELD ACTIVE)`
+        : `BEYOND THE FEARLESS SKY • ${activeVehicleName.toUpperCase()} (🛡️ SHIELD ACTIVE)`
     );
   }
 
@@ -2877,7 +3132,6 @@ class TrafficRGame {
     if (this.survivalTime > this.bestTime) {
       this.bestTime = Number(this.survivalTime.toFixed(1));
     }
-    this.clearSavedSession();
     this.saveRecords();
     this.updateRecordDisplays();
 
@@ -2891,12 +3145,14 @@ class TrafficRGame {
     const fTotalCredEl = document.getElementById('final-total-credits');
     if (fTotalCredEl) fTotalCredEl.textContent = `${this.totalCredits} 💎`;
 
+    this.updateReviveButtonState();
     this.syncControlOverlays();
+
     setTimeout(() => {
       if (this.state === 'GAMEOVER') {
         document.getElementById('screen-gameover').classList.remove('hidden');
       }
-    }, 480);
+    }, 450);
   }
 
   bindEvents() {
@@ -2905,6 +3161,14 @@ class TrafficRGame {
       this.camera.updateProjectionMatrix();
       this.renderer.setSize(window.innerWidth, window.innerHeight);
       this.resizePreviewRenderer();
+    });
+
+    // Sync Universal Cross-Game Diamond Vault if updated in another tab/game
+    window.addEventListener('storage', e => {
+      if (e.key && DIAMOND_VAULT_KEYS.includes(e.key)) {
+        this.totalCredits = window.VelozaarVault.getBalance();
+        this.updateRecordDisplays();
+      }
     });
 
     document.addEventListener('visibilitychange', () => {
@@ -2976,6 +3240,13 @@ class TrafficRGame {
     window.addEventListener('keydown', e => {
       const key = e.key.toLowerCase();
 
+      // Press 'R' on Game Over screen to Revive with Stored Diamonds
+      if (key === 'r' && !e.repeat && this.state === 'GAMEOVER') {
+        e.preventDefault();
+        this.reviveWithDiamonds();
+        return;
+      }
+
       if (this.deviceType === 'keyboard') {
         if ((key === 'p' || e.code === 'Escape') && !e.repeat) {
           if (this.state === 'PLAYING' || this.state === 'PAUSED') {
@@ -3009,7 +3280,7 @@ class TrafficRGame {
           return;
         }
 
-        if (key === 'g' && !e.repeat && this.state !== 'DEVICE_SELECT') {
+        if (key === 'g' && !e.repeat) {
           e.preventDefault();
           this.toggleGraphicsQuality();
           return;
@@ -3198,9 +3469,17 @@ class TrafficRGame {
     }
 
     if (this.playerShieldMesh && this.playerShieldMesh.visible) {
-      this.playerShieldMesh.rotation.y += dt * 2.2;
-      this.playerShieldMesh.rotation.x += dt * 1.4;
+      this.playerShieldMesh.rotation.y += dt * 2.4;
+      this.playerShieldMesh.rotation.x += dt * 1.5;
     }
+
+    // Rotate collectibles even in menu showcase so they sparkle in the background
+    this.collectibles.forEach(item => {
+      item.rotation.y += dt * 3.2;
+      if (item.userData.baseY !== undefined) {
+        item.position.y = item.userData.baseY + Math.sin(elapsed * 3.5 + (item.userData.bobPhase || 0)) * 0.35;
+      }
+    });
 
     if (this.state !== 'PLAYING') {
       this.carModel.visible = this.gameMode === 'car';
@@ -3363,40 +3642,43 @@ class TrafficRGame {
       }
     }
 
+    // Update Collectibles (Credit Diamonds 💎 & Shield Drops 🛡️)
     for (let i = this.collectibles.length - 1; i >= 0; i--) {
       const item = this.collectibles[i];
       item.position.z += this.currentSpeed * dt;
-      item.rotation.y += dt * 3.5;
 
       const distZ = Math.abs(item.position.z - 0);
       const distX = Math.abs(item.position.x - this.playerX);
 
-      if (distZ < 2.2 && distX < 1.8) {
+      if (distZ < 2.6 && distX < 2.3) {
         if (item.userData.type === 'shield') {
           this.shields = Math.min(this.maxShields, this.shields + 1);
           this.audio.playShieldPowerup();
-          this.showToast('🛡️ AEGIS SHIELD ACQUIRED! ACCIDENT PROTECTED.');
+          this.spawnVoxelExplosion(item.position.clone(), 0x34d399, 14);
+          this.showToast(`🛡️ AEGIS SHIELD ACQUIRED (${this.shields}/${this.maxShields})! ACCIDENT PROTECTED.`);
         } else {
           this.credits += 1;
-          this.totalCredits += 1;
+          this.totalCredits = window.VelozaarVault.addDiamonds(1);
           this.score += 50;
           this.audio.playCreditChime();
-          this.showToast('💎 CREDIT ORB COLLECTED (+50 PTS)!');
+          this.spawnVoxelExplosion(item.position.clone(), 0x00f5d4, 14);
+          this.showToast(`💎 DIAMOND STORED IN VAULT (${this.totalCredits} 💎 TOTAL • +50 PTS)!`);
         }
 
+        this.saveRecords();
         this.updateShieldVisuals();
         this.updateRecordDisplays();
 
         this.scene.remove(item);
         this.collectibles.splice(i, 1);
-        this.createCollectible(-210 - Math.random() * 40);
+        this.createCollectible(-250 - Math.random() * 45);
         continue;
       }
 
       if (item.position.z > 24) {
         this.scene.remove(item);
         this.collectibles.splice(i, 1);
-        this.createCollectible(-210 - Math.random() * 40);
+        this.createCollectible(-250 - Math.random() * 45);
       }
     }
 
@@ -3458,7 +3740,7 @@ class TrafficRGame {
           this.shields--;
           this.updateShieldVisuals();
           this.audio.playShieldDeflect();
-          this.spawnVoxelExplosion(obs.position.clone(), 0x34d399, 24);
+          this.spawnVoxelExplosion(obs.position.clone(), 0x34d399, 28);
 
           this.scene.remove(obs);
           this.obstacles.splice(i, 1);
@@ -3469,7 +3751,8 @@ class TrafficRGame {
             this.createBirdObstacle(nextZ);
           }
 
-          this.showToast('🛡️ AEGIS SHIELD DEFLECTED ACCIDENT!');
+          this.score += 30;
+          this.showToast(`🛡️ AEGIS SHIELD PREVENTED ACCIDENT! (${this.shields} 🛡️ LEFT)`);
           continue;
         } else {
           const impactPos = new THREE.Vector3(this.playerX, playerCenterY, 0);
@@ -3498,6 +3781,8 @@ class TrafficRGame {
     document.getElementById('hud-blasts').textContent = `${this.blasts} 💥`;
     const credEl = document.getElementById('hud-credits');
     if (credEl) credEl.textContent = `${this.credits} 💎`;
+    const vaultHudEl = document.getElementById('hud-vault-credits');
+    if (vaultHudEl) vaultHudEl.textContent = this.totalCredits;
 
     if (Math.floor(this.score) > this.highScore) {
       this.highScore = Math.floor(this.score);
