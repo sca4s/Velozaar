@@ -86,7 +86,9 @@ html, body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
   background: linear-gradient(180deg, #ffdde1 0%, #fff0f3 100%);
   color: var(--text-primary);
-  transition: background 0.6s ease, color 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: background 0.55s cubic-bezier(0.22, 1, 0.36, 1), color 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 #game-canvas {
@@ -97,6 +99,7 @@ html, body {
   height: 100%;
   display: block;
   z-index: 1;
+  transform: translateZ(0);
 }
 
 /* =================================================================== */
@@ -193,11 +196,13 @@ html, body {
 
 /* Collapsible Unhide Row — Takes 0px when no panels are hidden so it NEVER pushes telemetry down */
 #hud-unhide-row {
-  transition: max-height 0.32s cubic-bezier(0.16, 1, 0.3, 1), margin 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: max-height 0.36s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.32s cubic-bezier(0.22, 1, 0.36, 1), margin 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: max-height, opacity;
 }
 
 .hud-unhide-row-collapsed {
   max-height: 0 !important;
+  opacity: 0 !important;
   margin-top: -0.2rem !important;
   margin-bottom: -0.2rem !important;
   overflow: hidden !important;
@@ -205,6 +210,7 @@ html, body {
 
 .hud-unhide-row-active {
   max-height: 2.6rem !important;
+  opacity: 1 !important;
   margin-top: 0 !important;
   margin-bottom: 0 !important;
 }
@@ -322,6 +328,7 @@ html, body {
 .modal-body-scroll {
   max-height: calc(100dvh - clamp(4.1rem, 11vh, 6.2rem));
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Landscape Mobile Compactness so Top & Bottom HUD never crowd the 3D road */
@@ -346,18 +353,28 @@ html, body {
   }
 }
 
-/* Translucent Frosted Liquid Glass Surfaces with 100% GPU-Composited Upper-Left Drop Wave */
+/* =================================================================== */
+/* GLITCH-FREE HARDWARE-ACCELERATED LIQUID GLASS SURFACES              */
+/* Smoothly interpolates background-color + self-fading corner wave    */
+/* =================================================================== */
 .spatial-glass {
   position: relative;
   overflow: hidden;
   isolation: isolate;
   background-color: var(--glass-fill);
-  backdrop-filter: blur(38px) saturate(200%);
-  -webkit-backdrop-filter: blur(38px) saturate(200%);
+  backdrop-filter: blur(32px) saturate(190%);
+  -webkit-backdrop-filter: blur(32px) saturate(190%);
   border: 1.5px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
   color: var(--text-primary);
-  transition: border-color 0.55s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.55s cubic-bezier(0.16, 1, 0.3, 1), color 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
+  transition:
+    background-color 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+    color 0.48s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .spatial-subcard {
@@ -368,7 +385,15 @@ html, body {
   border: 1.2px solid var(--glass-border);
   box-shadow: var(--glass-pill-shadow);
   color: var(--text-primary);
-  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.55s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.55s cubic-bezier(0.16, 1, 0.3, 1), color 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
+  transition:
+    transform 0.26s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+    color 0.48s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .spatial-pill {
@@ -376,12 +401,20 @@ html, body {
   overflow: hidden;
   isolation: isolate;
   background-color: var(--pill-fill);
-  backdrop-filter: blur(24px) saturate(190%);
-  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   border: 1.2px solid var(--glass-border);
   box-shadow: var(--glass-pill-shadow);
   color: var(--text-primary);
-  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.55s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.55s cubic-bezier(0.16, 1, 0.3, 1), color 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
+  transition:
+    transform 0.26s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+    color 0.48s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* Avoid redundant nested backdrop-filter inside already-blurred modals for 120fps performance */
@@ -390,7 +423,7 @@ html, body {
   -webkit-backdrop-filter: none;
 }
 
-/* GPU-Accelerated Blurry Drop Layer Anchored at Upper-Left (0% 0%) of Each UI Zone */
+/* GPU-Accelerated Self-Fading Wave Layer Anchored at Upper-Left (0% 0%) */
 .spatial-glass::before,
 .spatial-subcard::before,
 .spatial-pill::before,
@@ -399,91 +432,91 @@ html, body {
   position: absolute;
   top: 0;
   left: 0;
-  width: 520%;
-  height: 520%;
+  width: 280%;
+  height: 280%;
   pointer-events: none;
   z-index: -1;
   opacity: 0;
-  transform: translate3d(-50%, -50%, 0) scale3d(0.001, 0.001, 1);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translate3d(-50%, -50%, 0) scale3d(0.01, 0.01, 1);
   will-change: transform, opacity;
 }
 
-/* While spreading Dark Mode from upper-left, hold base surface at Light and expand Dark drop */
-body.theme-to-dark .spatial-glass { background-color: var(--light-glass-fill) !important; }
-body.theme-to-dark .spatial-subcard { background-color: var(--light-card-fill) !important; }
-body.theme-to-dark .spatial-pill,
-body.theme-to-dark .spatial-btn-touch { background-color: var(--light-pill-fill) !important; }
-
 body.theme-to-dark .spatial-glass::before {
-  background: radial-gradient(ellipse closest-side at center, var(--dark-glass-fill) 0%, var(--dark-glass-fill) 56%, rgba(15, 23, 42, 0) 100%);
-  animation: gpuDropSpread 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  background: radial-gradient(circle at center, var(--dark-glass-fill) 0%, rgba(15, 23, 42, 0.5) 52%, rgba(15, 23, 42, 0) 75%);
+  animation: gpuDropSpreadSmooth 0.56s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 body.theme-to-dark .spatial-subcard::before {
-  background: radial-gradient(ellipse closest-side at center, var(--dark-card-fill) 0%, var(--dark-card-fill) 56%, rgba(30, 41, 59, 0) 100%);
-  animation: gpuDropSpread 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  background: radial-gradient(circle at center, var(--dark-card-fill) 0%, rgba(30, 41, 59, 0.5) 52%, rgba(30, 41, 59, 0) 75%);
+  animation: gpuDropSpreadSmooth 0.56s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 body.theme-to-dark .spatial-pill::before,
 body.theme-to-dark .spatial-btn-touch::before {
-  background: radial-gradient(ellipse closest-side at center, var(--dark-pill-fill) 0%, var(--dark-pill-fill) 56%, rgba(30, 41, 59, 0) 100%);
-  animation: gpuDropSpread 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  background: radial-gradient(circle at center, var(--dark-pill-fill) 0%, rgba(30, 41, 59, 0.5) 52%, rgba(30, 41, 59, 0) 75%);
+  animation: gpuDropSpreadSmooth 0.56s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
-
-/* While spreading White Mode from upper-left, hold base surface at Dark and expand White drop */
-body.theme-to-light .spatial-glass { background-color: var(--dark-glass-fill) !important; }
-body.theme-to-light .spatial-subcard { background-color: var(--dark-card-fill) !important; }
-body.theme-to-light .spatial-pill,
-body.theme-to-light .spatial-btn-touch { background-color: var(--dark-pill-fill) !important; }
 
 body.theme-to-light .spatial-glass::before {
-  background: radial-gradient(ellipse closest-side at center, var(--light-glass-fill) 0%, var(--light-glass-fill) 56%, rgba(250, 252, 255, 0) 100%);
-  animation: gpuDropSpread 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  background: radial-gradient(circle at center, var(--light-glass-fill) 0%, rgba(250, 252, 255, 0.5) 52%, rgba(250, 252, 255, 0) 75%);
+  animation: gpuDropSpreadSmooth 0.56s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 body.theme-to-light .spatial-subcard::before {
-  background: radial-gradient(ellipse closest-side at center, var(--light-card-fill) 0%, var(--light-card-fill) 56%, rgba(255, 255, 255, 0) 100%);
-  animation: gpuDropSpread 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  background: radial-gradient(circle at center, var(--light-card-fill) 0%, rgba(255, 255, 255, 0.5) 52%, rgba(255, 255, 255, 0) 75%);
+  animation: gpuDropSpreadSmooth 0.56s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 body.theme-to-light .spatial-pill::before,
 body.theme-to-light .spatial-btn-touch::before {
-  background: radial-gradient(ellipse closest-side at center, var(--light-pill-fill) 0%, var(--light-pill-fill) 56%, rgba(255, 255, 255, 0) 100%);
-  animation: gpuDropSpread 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  background: radial-gradient(circle at center, var(--light-pill-fill) 0%, rgba(255, 255, 255, 0.5) 52%, rgba(255, 255, 255, 0) 75%);
+  animation: gpuDropSpreadSmooth 0.56s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-@keyframes gpuDropSpread {
+/* Smoothly expands from top-left and dissolves to opacity 0 so there is NEVER a snap at 100% */
+@keyframes gpuDropSpreadSmooth {
   0% {
-    opacity: 1;
-    transform: translate3d(-50%, -50%, 0) scale3d(0.001, 0.001, 1);
+    opacity: 0.92;
+    transform: translate3d(-50%, -50%, 0) scale3d(0.05, 0.05, 1);
+  }
+  55% {
+    opacity: 0.75;
+    transform: translate3d(-50%, -50%, 0) scale3d(0.95, 0.95, 1);
   }
   100% {
-    opacity: 1;
-    transform: translate3d(-50%, -50%, 0) scale3d(1, 1, 1);
+    opacity: 0;
+    transform: translate3d(-50%, -50%, 0) scale3d(1.15, 1.15, 1);
   }
 }
 
 .hud-text-primary {
   color: var(--text-primary) !important;
-  transition: color 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: color 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .hud-text-secondary {
   color: var(--text-secondary) !important;
-  transition: color 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: color 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .hud-text-muted {
   color: var(--text-muted) !important;
-  transition: color 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: color 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .hud-divider {
   background-color: var(--glass-border) !important;
+  transition: background-color 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .spatial-card-hover {
-  transition: all 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  transition:
+    transform 0.26s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.28s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .spatial-card-hover:hover {
-  transform: translateY(-3px) scale(1.012);
+  transform: translate3d(0, -3px, 0) scale3d(1.012, 1.012, 1);
   box-shadow: 0 24px 48px rgba(31, 38, 135, 0.18), var(--glass-highlight);
 }
 .spatial-card-hover:active {
-  transform: translateY(0px) scale(0.985);
+  transform: translate3d(0, 0, 0) scale3d(0.985, 0.985, 1);
 }
 
 .spatial-btn-touch {
@@ -491,15 +524,22 @@ body.theme-to-light .spatial-btn-touch::before {
   overflow: hidden;
   isolation: isolate;
   background-color: var(--pill-fill);
-  backdrop-filter: blur(24px) saturate(190%);
-  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   border: 1.5px solid var(--glass-border);
   box-shadow: var(--glass-pill-shadow);
   color: var(--text-primary);
-  transition: transform 0.1s ease, box-shadow 0.15s ease;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
+  transition:
+    transform 0.12s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.18s ease;
 }
 .spatial-btn-touch:active, .spatial-btn-touch.active-press {
-  transform: scale(0.91);
+  transform: scale3d(0.91, 0.91, 1);
 }
 
 .title-gradient {
@@ -519,6 +559,7 @@ body.dark-ui .title-gradient {
   background: radial-gradient(circle at 50% 52%, #1e293b 0%, #0f172a 100%);
   border: 1.5px solid rgba(255, 255, 255, 0.28);
   box-shadow: inset 0 4px 24px rgba(0, 0, 0, 0.55), 0 8px 24px rgba(15, 23, 42, 0.18);
+  transform: translateZ(0);
 }
 
 .sou-badge {
@@ -541,6 +582,7 @@ body.dark-ui .title-gradient {
   font-weight: 800;
   font-size: clamp(0.58rem, 0.8vw, 0.72rem);
   color: var(--text-primary);
+  transition: background-color 0.45s cubic-bezier(0.22, 1, 0.36, 1), color 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .modal-scroll::-webkit-scrollbar {
@@ -563,44 +605,50 @@ body.dark-ui .title-gradient {
   cursor: not-allowed !important;
 }
 
-/* Ultra-Smooth GPU Slide & Fade Transitions for Individual Hideable UI Panels */
+/* =================================================================== */
+/* ULTRA-SMOOTH GPU SLIDE & FADE FOR HIDEABLE UI PANELS                */
+/* Uses pure translate3d + scale3d + opacity (No conflicting blur!)    */
+/* =================================================================== */
 .ui-hideable {
-  transition: transform 0.52s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), filter 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: transform, opacity, filter;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
+  transition:
+    transform 0.44s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.36s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.48s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform, opacity;
 }
 
 .ui-hidden-left {
   opacity: 0 !important;
-  filter: blur(6px);
-  transform: translate3d(-64px, 0, 0) scale3d(0.94, 0.94, 1) !important;
+  transform: translate3d(-52px, 0, 0) scale3d(0.95, 0.95, 1) !important;
   pointer-events: none !important;
 }
 
 .ui-hidden-right {
   opacity: 0 !important;
-  filter: blur(6px);
-  transform: translate3d(64px, 0, 0) scale3d(0.94, 0.94, 1) !important;
+  transform: translate3d(52px, 0, 0) scale3d(0.95, 0.95, 1) !important;
   pointer-events: none !important;
 }
 
 .ui-hidden-up {
   opacity: 0 !important;
-  filter: blur(6px);
-  transform: translate3d(0, -44px, 0) scale3d(0.94, 0.94, 1) !important;
+  transform: translate3d(0, -36px, 0) scale3d(0.95, 0.95, 1) !important;
   pointer-events: none !important;
 }
 
 .ui-hidden-down {
   opacity: 0 !important;
-  filter: blur(6px);
-  transform: translate3d(0, 44px, 0) scale3d(0.94, 0.94, 1) !important;
+  transform: translate3d(0, 36px, 0) scale3d(0.95, 0.95, 1) !important;
   pointer-events: none !important;
 }
 
 .ui-unhide-hidden {
   opacity: 0 !important;
-  filter: blur(6px);
-  transform: translate3d(0, -18px, 0) scale3d(0.88, 0.88, 1) !important;
+  transform: translate3d(0, -14px, 0) scale3d(0.9, 0.9, 1) !important;
   pointer-events: none !important;
 }
 
@@ -618,59 +666,63 @@ body.dark-ui .title-gradient {
   flex-shrink: 0;
 }
 .ui-hide-chip:hover {
-  transform: scale(1.1);
+  transform: scale3d(1.1, 1.1, 1);
   color: #ec4899;
 }
 .ui-hide-chip:active {
-  transform: scale(0.92);
+  transform: scale3d(0.92, 0.92, 1);
 }
 
-/* Ultra-Smooth Circular Countdown Rim & Numeral Animations */
+/* =================================================================== */
+/* GLITCH-FREE 3S COUNTDOWN & MODAL ENTRANCE ANIMATIONS                */
+/* =================================================================== */
 @keyframes numeralPopSmooth {
   0% {
     opacity: 0;
-    transform: scale3d(0.45, 0.45, 1);
-    filter: blur(10px);
+    transform: translate3d(0, 6px, 0) scale3d(0.55, 0.55, 1);
   }
-  28% {
+  24% {
     opacity: 1;
-    transform: scale3d(1.08, 1.08, 1);
-    filter: blur(0px);
+    transform: translate3d(0, 0, 0) scale3d(1.06, 1.06, 1);
   }
-  82% {
+  80% {
     opacity: 1;
-    transform: scale3d(1, 1, 1);
-    filter: blur(0px);
+    transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
   }
   100% {
     opacity: 0;
-    transform: scale3d(1.28, 1.28, 1);
-    filter: blur(6px);
+    transform: translate3d(0, -4px, 0) scale3d(1.22, 1.22, 1);
   }
 }
 
 .countdown-numeral-anim {
-  animation: numeralPopSmooth 0.98s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  will-change: transform, opacity, filter;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  animation: numeralPopSmooth 0.96s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  will-change: transform, opacity;
 }
 
 .countdown-outer-rim {
-  transition: transform 0.95s cubic-bezier(0.22, 1, 0.36, 1);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transition: transform 0.92s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: transform;
 }
 
 @keyframes modalFadeScaleIn {
   0% {
     opacity: 0;
-    transform: scale3d(0.94, 0.94, 1) translate3d(0, 10px, 0);
+    transform: translate3d(0, 12px, 0) scale3d(0.96, 0.96, 1);
   }
   100% {
     opacity: 1;
-    transform: scale3d(1, 1, 1) translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
   }
 }
 
 .modal-smooth-enter {
-  animation: modalFadeScaleIn 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  animation: modalFadeScaleIn 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
   will-change: transform, opacity;
 }
