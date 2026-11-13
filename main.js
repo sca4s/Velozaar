@@ -707,6 +707,39 @@ class TrafficRGame {
     this.animate();
   }
 
+  /**
+   * Prevents frame-time spikes after UI / modal / graphics transitions
+   */
+  resetClockAfterTransition() {
+    if (this.clock) {
+      this.clock.getDelta();
+    }
+    this.smoothedDt = 1 / 60;
+  }
+
+  /**
+   * Runs a 100% compositor-driven entrance animation on modal cards
+   * without forcing synchronous layout reflows.
+   */
+  animateModalEntrance(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (!section) return;
+    const card = section.querySelector('.spatial-glass');
+    if (card && typeof card.animate === 'function' && this.graphicsQuality !== 'ld') {
+      card.animate(
+        [
+          { opacity: 0, transform: 'translate3d(0, 12px, 0) scale3d(0.96, 0.96, 1)' },
+          { opacity: 1, transform: 'translate3d(0, 0, 0) scale3d(1, 1, 1)' }
+        ],
+        {
+          duration: 320,
+          easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+          fill: 'both'
+        }
+      );
+    }
+  }
+
   loadSavedRecords() {
     try {
       const savedScore = localStorage.getItem('velozaar_high_score');
@@ -873,6 +906,7 @@ class TrafficRGame {
     document.getElementById('hud-pause-btn').classList.remove('hidden');
     document.getElementById('hud-pause-btn').classList.add('flex');
 
+    this.resetClockAfterTransition();
     this.state = 'PAUSED';
     this.resumeGameWithCountdown();
   }
@@ -1020,7 +1054,7 @@ class TrafficRGame {
     document.getElementById('screen-gameover').classList.add('hidden');
     document.getElementById('gameplay-hud').classList.remove('hidden');
 
-    // Transition into PAUSED and immediately trigger the 3-second circular countdown
+    this.resetClockAfterTransition();
     this.state = 'PAUSED';
     this.resumeGameWithCountdown();
     this.showToast(`💎 REVIVED WITH ${this.reviveCost} DIAMONDS • +1 SHIELD EQUIPPED!`);
@@ -1100,6 +1134,8 @@ class TrafficRGame {
     if (this.mountainGroup && this.terrainProps.length > 0) {
       this.randomizeTerrainProps();
     }
+
+    this.resetClockAfterTransition();
 
     if (notify) {
       this.showToast(
@@ -1212,6 +1248,13 @@ class TrafficRGame {
     this.previewCamera.aspect = w / h;
     this.previewCamera.updateProjectionMatrix();
     this.previewRenderer.setSize(w, h, false);
+    if (this.previewStageGroup && this.previewScene) {
+      this.previewStageGroup.rotation.y = this.previewYaw;
+      this.previewStageGroup.rotation.x = this.previewPitch;
+      this.previewCamera.position.set(0, 1.35, 8.2);
+      this.previewCamera.lookAt(0, 0.1, 0);
+      this.previewRenderer.render(this.previewScene, this.previewCamera);
+    }
   }
 
   getSelectedPastelHexes() {
@@ -2059,6 +2102,11 @@ class TrafficRGame {
     this.syncCameraUI();
   }
 
+  /**
+   * ===================================================================
+   * GLITCH-FREE THEME SWITCHER (Zero Reflow + Self-Fading Wave)
+   * ===================================================================
+   */
   setUITheme(theme) {
     this.audio.playUITap(620);
     const nextTheme = theme === 'dark' ? 'dark' : 'light';
@@ -2072,16 +2120,18 @@ class TrafficRGame {
       this.themeTransitionTimer = null;
     }
 
-    document.body.classList.remove('theme-to-dark', 'theme-to-light');
-    void document.body.offsetWidth;
-
     document.body.classList.toggle('dark-ui', isDark);
-    document.body.classList.add(isDark ? 'theme-to-dark' : 'theme-to-light');
 
-    this.themeTransitionTimer = setTimeout(() => {
+    if (this.graphicsQuality !== 'ld') {
       document.body.classList.remove('theme-to-dark', 'theme-to-light');
-      this.themeTransitionTimer = null;
-    }, 720);
+      requestAnimationFrame(() => {
+        document.body.classList.add(isDark ? 'theme-to-dark' : 'theme-to-light');
+        this.themeTransitionTimer = setTimeout(() => {
+          document.body.classList.remove('theme-to-dark', 'theme-to-light');
+          this.themeTransitionTimer = null;
+        }, 580);
+      });
+    }
 
     const lightBtn = document.getElementById('init-theme-light');
     const darkBtn = document.getElementById('init-theme-dark');
@@ -2109,7 +2159,6 @@ class TrafficRGame {
     this.audio.playUITap(540);
     this.state = 'DEVICE_SELECT';
     this.updateRecordDisplays();
-    document.getElementById('screen-device').classList.remove('hidden');
     document.getElementById('screen-mode').classList.add('hidden');
     document.getElementById('screen-garage').classList.add('hidden');
     document.getElementById('screen-pause').classList.add('hidden');
@@ -2117,7 +2166,12 @@ class TrafficRGame {
     document.getElementById('screen-gameover').classList.add('hidden');
     document.getElementById('gameplay-hud').classList.add('hidden');
     document.getElementById('hud-pause-btn').classList.add('hidden');
+
+    const s1 = document.getElementById('screen-device');
+    s1.classList.remove('hidden');
+    this.animateModalEntrance('screen-device');
     this.syncControlOverlays();
+    this.resetClockAfterTransition();
   }
 
   selectDeviceAndGoToStep2(type) {
@@ -2135,7 +2189,6 @@ class TrafficRGame {
     this.audio.stopEngineSound();
     this.updateRecordDisplays();
     document.getElementById('screen-device').classList.add('hidden');
-    document.getElementById('screen-mode').classList.remove('hidden');
     document.getElementById('screen-garage').classList.add('hidden');
     document.getElementById('screen-pause').classList.add('hidden');
     document.getElementById('screen-countdown').classList.add('hidden');
@@ -2143,7 +2196,12 @@ class TrafficRGame {
     document.getElementById('gameplay-hud').classList.add('hidden');
     document.getElementById('hud-menu-btn').classList.add('hidden');
     document.getElementById('hud-pause-btn').classList.add('hidden');
+
+    const s2 = document.getElementById('screen-mode');
+    s2.classList.remove('hidden');
+    this.animateModalEntrance('screen-mode');
     this.syncControlOverlays();
+    this.resetClockAfterTransition();
   }
 
   selectModeAndGoToStep3(mode) {
@@ -2166,6 +2224,7 @@ class TrafficRGame {
     this.resetObstacles();
     this.resetCollectibles();
     this.updateStudioUI();
+    this.resizePreviewRenderer();
   }
 
   openGarageScreen() {
@@ -2184,9 +2243,15 @@ class TrafficRGame {
     document.getElementById('gameplay-hud').classList.add('hidden');
     document.getElementById('hud-menu-btn').classList.add('hidden');
     document.getElementById('hud-pause-btn').classList.add('hidden');
-    document.getElementById('screen-garage').classList.remove('hidden');
+
+    const s3 = document.getElementById('screen-garage');
+    s3.classList.remove('hidden');
+
+    // Immediately size & render the 3D Showroom on the exact frame the modal un-hides
+    this.resizePreviewRenderer();
+    this.animateModalEntrance('screen-garage');
     this.syncControlOverlays();
-    setTimeout(() => this.resizePreviewRenderer(), 30);
+    this.resetClockAfterTransition();
   }
 
   saveAndLeaveGameplay() {
@@ -2226,8 +2291,11 @@ class TrafficRGame {
     if (pauseLabel) pauseLabel.textContent = 'Resume';
 
     this.syncCameraUI();
-    document.getElementById('screen-pause').classList.remove('hidden');
+    const pauseScreen = document.getElementById('screen-pause');
+    pauseScreen.classList.remove('hidden');
+    this.animateModalEntrance('screen-pause');
     this.syncControlOverlays();
+    this.resetClockAfterTransition();
   }
 
   resumeGameWithCountdown() {
@@ -2252,10 +2320,12 @@ class TrafficRGame {
     if (rimEl) {
       rimEl.style.transition = 'none';
       rimEl.style.transform = 'rotate(0deg)';
-      void rimEl.offsetWidth;
-      rimEl.style.transition = 'transform 0.95s cubic-bezier(0.22, 1, 0.36, 1)';
+      requestAnimationFrame(() => {
+        rimEl.style.transition = 'transform 0.92s cubic-bezier(0.22, 1, 0.36, 1)';
+      });
     }
 
+    this.resetClockAfterTransition();
     this.triggerCountdownTick(3);
   }
 
@@ -2266,9 +2336,17 @@ class TrafficRGame {
 
     if (numEl) {
       numEl.textContent = num;
-      numEl.classList.remove('countdown-numeral-anim');
-      void numEl.offsetWidth;
-      numEl.classList.add('countdown-numeral-anim');
+      if (typeof numEl.animate === 'function') {
+        numEl.animate(
+          [
+            { opacity: 0, transform: 'translate3d(0, 6px, 0) scale3d(0.55, 0.55, 1)' },
+            { opacity: 1, transform: 'translate3d(0, 0, 0) scale3d(1.06, 1.06, 1)', offset: 0.24 },
+            { opacity: 1, transform: 'translate3d(0, 0, 0) scale3d(1, 1, 1)', offset: 0.8 },
+            { opacity: 0, transform: 'translate3d(0, -4px, 0) scale3d(1.22, 1.22, 1)' }
+          ],
+          { duration: 960, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'forwards' }
+        );
+      }
     }
 
     if (subEl) {
@@ -2279,7 +2357,9 @@ class TrafficRGame {
 
     this.countdownRimAngle += 120;
     if (rimEl) {
-      rimEl.style.transform = `rotate(${this.countdownRimAngle}deg)`;
+      requestAnimationFrame(() => {
+        rimEl.style.transform = `rotate(${this.countdownRimAngle}deg)`;
+      });
     }
 
     const toneMap = { 3: 523.25, 2: 659.25, 1: 783.99 };
@@ -3011,6 +3091,7 @@ class TrafficRGame {
     if (pauseBiomeBadge) pauseBiomeBadge.textContent = cfg.name;
 
     this.randomizeTerrainProps();
+    this.resetClockAfterTransition();
 
     if (notify && this.state === 'PLAYING') {
       this.showToast(`GEOTYPE CHANGED: ${cfg.name.toUpperCase()}`);
@@ -3094,6 +3175,7 @@ class TrafficRGame {
     this.randomizeTerrainProps();
     this.resetObstacles();
     this.resetCollectibles();
+    this.resetClockAfterTransition();
     this.audio.startEngineSound(mode);
 
     const activeVehicleName = isCar
@@ -3150,9 +3232,11 @@ class TrafficRGame {
 
     setTimeout(() => {
       if (this.state === 'GAMEOVER') {
-        document.getElementById('screen-gameover').classList.remove('hidden');
+        const goScreen = document.getElementById('screen-gameover');
+        goScreen.classList.remove('hidden');
+        this.animateModalEntrance('screen-gameover');
       }
-    }, 450);
+    }, 420);
   }
 
   bindEvents() {
@@ -3417,6 +3501,7 @@ class TrafficRGame {
       if (this.countdownRemaining <= 0) {
         document.getElementById('screen-countdown').classList.add('hidden');
         this.state = 'PLAYING';
+        this.resetClockAfterTransition();
         this.audio.playWrapChime();
         this.audio.startEngineSound(this.gameMode);
         this.syncControlOverlays();
@@ -3809,7 +3894,7 @@ class TrafficRGame {
 
   animate() {
     requestAnimationFrame(() => this.animate());
-    const rawDt = Math.min(this.clock.getDelta(), 0.05);
+    const rawDt = Math.min(this.clock.getDelta(), 0.033);
     this.smoothedDt = THREE.MathUtils.lerp(this.smoothedDt, rawDt, 0.35);
     this.update(this.smoothedDt);
     this.renderer.render(this.scene, this.camera);
